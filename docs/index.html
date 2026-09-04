@@ -37,17 +37,23 @@
                     <span class="font-extrabold text-xl tracking-tight text-gray-900">Bargain Board</span>
                 </a>
 
-                <!-- Search Bar -->
-                <div class="flex-1 max-w-2xl mx-6">
-                    <div class="relative search-bar rounded-full border border-gray-300 bg-gray-50 transition-all duration-200 focus-within:border-[#06B6D4] focus-within:bg-white focus-within:shadow-[0_4px_16px_rgba(6,182,212,0.15)]">
+                <!-- Search Bar with Brand Auto-Suggestions -->
+                <div class="flex-1 max-w-2xl mx-4 sm:mx-6">
+                    <div class="relative search-bar rounded-full border border-gray-300 bg-gray-50 transition-all duration-200 focus-within:border-[#06B6D4] focus-within:bg-white focus-within:shadow-[0_4px_16px_rgba(6,182,212,0.15)]" id="search-container">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
                         <input type="text" id="main-search"
-                               class="block w-full pl-11 pr-4 py-2.5 text-sm border-0 bg-transparent rounded-full outline-none placeholder-gray-400"
-                               placeholder="Search deals... (Press '/' to focus)">
+                               class="block w-full pl-11 pr-10 py-2.5 text-sm border-0 bg-transparent rounded-full outline-none placeholder-gray-400"
+                               placeholder="Search deals or brands (Nike, Apple, Sony, Adidas, Levi's)... (Press '/' to focus)"
+                               autocomplete="off">
+                        <button type="button" id="clear-search-btn" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 hidden" title="Clear search">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                        <!-- Brand Auto-Suggestions Dropdown -->
+                        <div id="search-suggestions" class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-40 hidden max-h-72 overflow-y-auto"></div>
                     </div>
                 </div>
 
@@ -82,14 +88,14 @@
                     <button data-category="mens" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:shadow-md transition-all">
                         👔 Men's Clothing
                     </button>
+                    <button data-category="womens" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:shadow-md transition-all">
+                        👗 Women's Clothing
+                    </button>
                     <button data-category="gaming" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-red-500 to-pink-500 text-white hover:shadow-md transition-all">
                         🎮 Gaming
                     </button>
                     <button data-category="tvs" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-sky-500 to-cyan-500 text-white hover:shadow-md transition-all">
                         📺 TVs
-                    </button>
-                    <button data-category="womens" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-pink-500 to-rose-500 text-white hover:shadow-md transition-all">
-                        👗 Women's Clothing
                     </button>
                     <button data-category="phones" class="category-pill whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-slate-600 to-slate-800 text-white hover:shadow-md transition-all">
                         📱 Phones
@@ -119,7 +125,6 @@
                     <a href="#" data-category="tvs" class="sidebar-link pl-7">TVs & Monitors</a>
                     <a href="#" data-category="gaming" class="sidebar-link pl-7">Gaming</a>
                     <a href="#" data-category="smarthome" class="sidebar-link pl-7">Smart Home</a>
-                    <a href="#" data-category="cameras" class="sidebar-link pl-7">Cameras</a>
                 </div>
 
                 <!-- Clothing Section -->
@@ -131,17 +136,16 @@
                     <a href="#" data-category="clothing" class="sidebar-link">All Clothing</a>
                     <a href="#" data-category="mens" class="sidebar-link pl-7">Men's Clothing</a>
                     <a href="#" data-category="womens" class="sidebar-link pl-7">Women's Clothing</a>
-                    <a href="#" data-category="shoes" class="sidebar-link pl-7">Shoes</a>
+                    <a href="#" data-category="shoes" class="sidebar-link pl-7">Shoes & Sneakers</a>
                     <a href="#" data-category="accessories" class="sidebar-link pl-7">Accessories</a>
-                    <a href="#" data-category="activewear" class="sidebar-link pl-7">Activewear</a>
                 </div>
 
                 <!-- Quick Stats -->
                 <div class="bg-gradient-to-br from-cyan-50 to-sky-50 rounded-xl p-4 mt-4 border border-cyan-100">
-                    <p class="text-xs font-semibold text-cyan-800 mb-1">🔥 Deal Stats</p>
+                    <p class="text-xs font-semibold text-cyan-800 mb-1">🔥 Live Deals</p>
                     <p class="text-2xl font-bold text-cyan-700" id="total-deal-count">—</p>
-                    <p class="text-xs text-cyan-600 mt-0.5">Active deals</p>
-                    <p class="text-[10px] text-cyan-500 mt-2" id="last-updated-text">Refreshes every 4 hours</p>
+                    <p class="text-xs text-cyan-600 mt-0.5">Verified active discounts</p>
+                    <p class="text-[10px] text-cyan-500 mt-2" id="last-updated-text">Real-time internet feeds</p>
                 </div>
             </div>
 
@@ -156,38 +160,120 @@
             <div class="max-w-[1400px] mx-auto">
 
                 <!-- Page Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900" id="page-title">🔥 Best Deals for You</h1>
-                        <p class="text-sm text-gray-500 mt-0.5" id="page-subtitle">Verified deals across the internet</p>
+                        <p class="text-sm text-gray-500 mt-0.5" id="page-subtitle">Verified deals across top brands and retailers</p>
                     </div>
                 </div>
 
-                <!-- Sort & Filter Bar -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100">
-                    <div class="flex items-center gap-4">
-                        <!-- Verified Toggle -->
-                        <label class="flex items-center cursor-pointer select-none">
-                            <div class="relative">
-                                <input type="checkbox" id="verified-toggle" class="sr-only peer">
-                                <div class="w-10 h-5 bg-gray-200 rounded-full peer peer-checked:bg-[#06B6D4] transition-colors"></div>
-                                <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5"></div>
+                <!-- ═══════ Comprehensive Filter & Sort Bar ═══════ -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        
+                        <!-- Left Group: Gender Filter & Verified Toggle -->
+                        <div class="flex flex-wrap items-center gap-3">
+                            <!-- Gender Filter Pills -->
+                            <div class="flex items-center bg-gray-100 p-1 rounded-lg text-xs font-semibold text-gray-600" id="gender-filter-group">
+                                <button type="button" data-gender="all" class="gender-btn px-3 py-1 rounded-md bg-white text-gray-900 shadow-sm transition-all">All Genders</button>
+                                <button type="button" data-gender="men" class="gender-btn px-3 py-1 rounded-md hover:text-gray-900 transition-all">👨 Men's</button>
+                                <button type="button" data-gender="women" class="gender-btn px-3 py-1 rounded-md hover:text-gray-900 transition-all">👩 Women's</button>
+                                <button type="button" data-gender="kids" class="gender-btn px-3 py-1 rounded-md hover:text-gray-900 transition-all">👦 Kids / Unisex</button>
                             </div>
-                            <span class="ml-2.5 text-sm font-medium text-gray-700">Verified Only</span>
-                        </label>
 
-                        <!-- Active filter chips -->
-                        <div id="active-filters" class="flex gap-2 flex-wrap"></div>
+                            <!-- Verified Toggle -->
+                            <label class="flex items-center cursor-pointer select-none pl-2 border-l border-gray-200">
+                                <div class="relative">
+                                    <input type="checkbox" id="verified-toggle" class="sr-only peer">
+                                    <div class="w-8 h-4.5 bg-gray-200 rounded-full peer peer-checked:bg-[#06B6D4] transition-colors"></div>
+                                    <div class="absolute left-0.5 top-0.5 w-3.5 h-3.5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-3.5"></div>
+                                </div>
+                                <span class="ml-2 text-xs font-medium text-gray-700">Verified Only</span>
+                            </label>
+                        </div>
+
+                        <!-- Right Group: Brand, Size, Price Range & Sort -->
+                        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                            
+                            <!-- Brand Dropdown -->
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs text-gray-400 font-semibold hidden md:inline">Brand:</span>
+                                <select id="brand-select" class="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-gray-50 outline-none focus:border-[#06B6D4] font-medium cursor-pointer text-gray-800">
+                                    <option value="">All Brands</option>
+                                    <!-- Options injected via JS -->
+                                </select>
+                            </div>
+
+                            <!-- Size Dropdown -->
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs text-gray-400 font-semibold hidden md:inline">Size:</span>
+                                <select id="size-select" class="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-gray-50 outline-none focus:border-[#06B6D4] font-medium cursor-pointer text-gray-800">
+                                    <option value="">All Sizes</option>
+                                    <optgroup label="Shoe Sizes (US)">
+                                        <option value="7">Size 7</option>
+                                        <option value="7.5">Size 7.5</option>
+                                        <option value="8">Size 8</option>
+                                        <option value="8.5">Size 8.5</option>
+                                        <option value="9">Size 9</option>
+                                        <option value="9.5">Size 9.5</option>
+                                        <option value="10">Size 10</option>
+                                        <option value="10.5">Size 10.5</option>
+                                        <option value="11">Size 11</option>
+                                        <option value="11.5">Size 11.5</option>
+                                        <option value="12">Size 12</option>
+                                        <option value="13">Size 13</option>
+                                    </optgroup>
+                                    <optgroup label="Clothing Sizes">
+                                        <option value="XS">Size XS</option>
+                                        <option value="S">Size S</option>
+                                        <option value="M">Size M</option>
+                                        <option value="L">Size L</option>
+                                        <option value="XL">Size XL</option>
+                                        <option value="XXL">Size XXL</option>
+                                        <option value="28">Waist 28</option>
+                                        <option value="30">Waist 30</option>
+                                        <option value="32">Waist 32</option>
+                                        <option value="34">Waist 34</option>
+                                        <option value="36">Waist 36</option>
+                                        <option value="38">Waist 38</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
+                            <!-- Price Range Dropdown -->
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs text-gray-400 font-semibold hidden md:inline">Price:</span>
+                                <select id="price-range-select" class="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-gray-50 outline-none focus:border-[#06B6D4] font-medium cursor-pointer text-gray-800">
+                                    <option value="">All Prices</option>
+                                    <option value="under25">Under $25</option>
+                                    <option value="25to50">$25 – $50</option>
+                                    <option value="50to100">$50 – $100</option>
+                                    <option value="100to250">$100 – $250</option>
+                                    <option value="250plus">$250+</option>
+                                </select>
+                            </div>
+
+                            <!-- Sort Dropdown (Lowest to Highest, Highest to Lowest, etc.) -->
+                            <div class="flex items-center gap-1.5 pl-2 border-l border-gray-200">
+                                <span class="text-xs text-gray-400 font-semibold hidden md:inline">Sort:</span>
+                                <select id="sort-select" class="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-gray-50 outline-none focus:border-[#06B6D4] font-bold cursor-pointer text-[#06B6D4]">
+                                    <option value="newest">⏱️ Newest First</option>
+                                    <option value="price_asc">🏷️ Price: Lowest to Highest</option>
+                                    <option value="price_desc">🏷️ Price: Highest to Lowest</option>
+                                    <option value="discount_desc">🔥 Biggest Discount</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Sort:</span>
-                        <select id="sort-select" class="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-gray-50 outline-none focus:border-[#06B6D4] cursor-pointer">
-                            <option value="newest">Newest First</option>
-                            <option value="discount_desc">Biggest Discount</option>
-                            <option value="price_asc">Price: Low → High</option>
-                            <option value="price_desc">Price: High → Low</option>
-                        </select>
+                    <!-- Active Filter Chips Row -->
+                    <div id="active-filters-row" class="pt-2.5 border-t border-gray-100 flex items-center justify-between flex-wrap gap-2 text-xs">
+                        <div id="active-filters" class="flex gap-1.5 flex-wrap items-center">
+                            <!-- Injected dynamically via JS -->
+                        </div>
+                        <button type="button" id="clear-all-filters-btn" class="text-xs text-gray-400 hover:text-red-500 font-semibold transition-colors hidden">
+                            Clear all filters
+                        </button>
                     </div>
                 </div>
 
@@ -197,8 +283,8 @@
                 </div>
 
                 <!-- Load More -->
-                <div id="load-more-container" class="text-center mt-8 hidden">
-                    <button id="btn-load-more" class="px-8 py-2.5 text-sm font-medium text-[#06B6D4] bg-cyan-50 hover:bg-cyan-100 rounded-full border border-cyan-200 transition-colors">
+                <div id="load-more-container" class="text-center mt-8 mb-6 hidden">
+                    <button id="btn-load-more" class="px-8 py-2.5 text-sm font-bold text-[#06B6D4] bg-cyan-50 hover:bg-cyan-100 rounded-full border border-cyan-200 transition-all shadow-sm hover:shadow">
                         Load More Deals
                     </button>
                 </div>
@@ -206,7 +292,7 @@
                 <!-- Footer -->
                 <footer class="mt-12 mb-6 text-center">
                     <p class="text-xs text-gray-400">
-                        Deals sourced from Slickdeals, DealNews, Best Buy, eBay, Reddit & more.
+                        Deals sourced in real-time from top brand feeds, Slickdeals, DealNews, Reddit & major retailers.
                     </p>
                     <p class="text-xs text-gray-300 mt-1">
                         Bargain Board — Verified deals. Real savings. Zero cost.
@@ -250,7 +336,6 @@
                 </button>
             </div>
             <div class="p-6 space-y-4">
-                <!-- Drag & Drop Zone -->
                 <div id="image-dropzone" class="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center cursor-pointer hover:border-[#06B6D4] hover:bg-cyan-50/30 transition-all group">
                     <svg class="mx-auto h-12 w-12 text-gray-300 group-hover:text-[#06B6D4] transition-colors mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -259,7 +344,6 @@
                     <p class="text-xs text-gray-400 mt-1">PNG, JPG, WEBP up to 5MB</p>
                     <input type="file" id="image-upload" class="hidden" accept="image/*">
                 </div>
-                <!-- Image preview -->
                 <div id="image-preview-container" class="hidden">
                     <img id="image-preview" class="w-full rounded-lg border border-gray-200 max-h-48 object-contain bg-gray-50" alt="Preview">
                     <div class="flex gap-2 mt-3">
@@ -270,7 +354,6 @@
                         <button id="btn-clear-image" class="px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">Clear</button>
                     </div>
                 </div>
-                <!-- URL input -->
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101"></path></svg>

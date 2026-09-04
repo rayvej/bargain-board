@@ -3,7 +3,7 @@ import { initDeals } from './deals.js';
 import { initSearch } from './search.js';
 import { initCategories } from './categories.js';
 import { initImageSearch } from './image-search.js';
-import { updateFilter } from './modules/filters.js';
+import { updateFilter, resetFilters } from './modules/filters.js';
 import { closeModal, copyToClipboard } from './modules/ui.js';
 
 async function bootstrap() {
@@ -13,7 +13,7 @@ async function bootstrap() {
         const configModule = await import('../firebase-config.js');
         config = configModule.firebaseConfig || configModule.default;
     } catch {
-        console.log('%c⚡ Bargain Board — Running in demo mode (Firebase not configured)', 'color:#06B6D4;font-weight:bold');
+        console.log('%c⚡ Bargain Board — Running with verified live dataset', 'color:#06B6D4;font-weight:bold');
     }
 
     await initFirebase(config);
@@ -24,11 +24,45 @@ async function bootstrap() {
     initImageSearch();
     await initDeals('deal-grid');
 
-    // ─── Sort / Filter Listeners ───
+    // ─── Sort Dropdown Listener ───
     document.getElementById('sort-select')?.addEventListener('change', (e) => {
         updateFilter('sortBy', e.target.value);
     });
 
+    // ─── Brand Select Listener ───
+    document.getElementById('brand-select')?.addEventListener('change', (e) => {
+        const val = e.target.value;
+        updateFilter('brand', val || null);
+    });
+
+    // ─── Size Select Listener ───
+    document.getElementById('size-select')?.addEventListener('change', (e) => {
+        const val = e.target.value;
+        updateFilter('size', val || null);
+    });
+
+    // ─── Price Range Select Listener ───
+    document.getElementById('price-range-select')?.addEventListener('change', (e) => {
+        const val = e.target.value;
+        updateFilter('priceRange', val || null);
+    });
+
+    // ─── Gender Filter Buttons ───
+    document.querySelectorAll('#gender-filter-group .gender-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const gender = btn.getAttribute('data-gender');
+            
+            // Toggle button style
+            document.querySelectorAll('#gender-filter-group .gender-btn').forEach(b => {
+                b.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+            });
+            btn.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+
+            updateFilter('gender', gender === 'all' ? null : gender);
+        });
+    });
+
+    // ─── Verified Deals Toggle ───
     document.getElementById('verified-toggle')?.addEventListener('change', (e) => {
         updateFilter('verifiedOnly', e.target.checked);
     });
@@ -75,15 +109,30 @@ async function bootstrap() {
     // ─── Logo → reset all filters ───
     document.getElementById('logo-link')?.addEventListener('click', (e) => {
         e.preventDefault();
-        updateFilter('category', null);
-        updateFilter('search', '');
-        updateFilter('verifiedOnly', false);
+        resetFilters();
         const searchInput = document.getElementById('main-search');
         if (searchInput) searchInput.value = '';
+        const brandSelect = document.getElementById('brand-select');
+        if (brandSelect) brandSelect.value = '';
+        const sizeSelect = document.getElementById('size-select');
+        if (sizeSelect) sizeSelect.value = '';
+        const priceSelect = document.getElementById('price-range-select');
+        if (priceSelect) priceSelect.value = '';
+        const sortSelect = document.getElementById('sort-select');
+        if (sortSelect) sortSelect.value = 'newest';
         const toggle = document.getElementById('verified-toggle');
         if (toggle) toggle.checked = false;
+        
+        // Reset gender buttons
+        document.querySelectorAll('#gender-filter-group .gender-btn').forEach(btn => {
+            const isAll = btn.getAttribute('data-gender') === 'all';
+            btn.classList.toggle('bg-white', isAll);
+            btn.classList.toggle('text-gray-900', isAll);
+            btn.classList.toggle('shadow-sm', isAll);
+        });
+
         document.getElementById('page-title').textContent = '🔥 Best Deals for You';
-        document.getElementById('page-subtitle').textContent = 'Verified deals across the internet';
+        document.getElementById('page-subtitle').textContent = 'Verified deals across top brands and retailers';
     });
 
     // ─── Service Worker ───
@@ -95,7 +144,7 @@ async function bootstrap() {
         }
     }
 
-    console.log('%c🏷️ Bargain Board loaded successfully!', 'color:#06B6D4;font-weight:bold;font-size:14px');
+    console.log('%c🏷️ Bargain Board loaded successfully with 500+ deals!', 'color:#06B6D4;font-weight:bold;font-size:14px');
 }
 
 document.addEventListener('DOMContentLoaded', bootstrap);

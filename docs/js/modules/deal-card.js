@@ -11,6 +11,21 @@ export function createDealCardHTML(deal) {
         `<span class="badge-expired bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Expired</span>` :
         `<span class="badge-unverified bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Unverified</span>`;
 
+    const genderBadge = deal.gender === 'men' 
+        ? `<span class="text-[10px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">Men's</span>`
+        : deal.gender === 'women'
+        ? `<span class="text-[10px] font-semibold text-pink-700 bg-pink-50 px-1.5 py-0.5 rounded">Women's</span>`
+        : deal.gender === 'kids'
+        ? `<span class="text-[10px] font-semibold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded">Kids</span>`
+        : '';
+
+    const sizesHtml = (deal.sizes && deal.sizes.length > 0 && !deal.sizes.includes('All'))
+        ? `<div class="text-[11px] text-gray-500 mt-1 mb-1.5 flex items-center gap-1">
+             <span class="text-gray-400 font-medium">Sizes:</span>
+             <span class="font-medium text-gray-700">${deal.sizes.slice(0, 4).join(', ')}${deal.sizes.length > 4 ? '…' : ''}</span>
+           </div>`
+        : '';
+
     const couponsHtml = (deal.couponCodes || []).map(coupon => `
         <div class="coupon-code mt-2 flex items-center justify-between border border-dashed border-cyan-400 rounded-lg px-2.5 py-1.5 bg-cyan-50/50 hover:bg-cyan-50 transition-colors">
             <div class="flex items-center gap-1.5">
@@ -24,6 +39,7 @@ export function createDealCardHTML(deal) {
     `).join('');
 
     const targetUrl = deal.productUrl || deal.sourceUrl || '#';
+    const displayBrand = deal.brand || deal.retailer || 'DEAL';
 
     return `
         <div class="deal-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col h-full" data-id="${deal.id}">
@@ -40,14 +56,19 @@ export function createDealCardHTML(deal) {
             
             <div class="p-4 flex-grow flex flex-col justify-between">
                 <div>
-                    <div class="flex justify-between items-center mb-1.5">
-                        <span class="text-[11px] font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-2 py-0.5 rounded">${deal.retailer || 'DEAL'}</span>
+                    <div class="flex justify-between items-center mb-1.5 flex-wrap gap-1">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[11px] font-bold text-gray-700 bg-gray-100 px-2 py-0.5 rounded uppercase tracking-wider">${displayBrand}</span>
+                            ${genderBadge}
+                        </div>
                         <span class="text-[11px] text-gray-400">${formatRelativeTime(deal.createdAt || new Date())}</span>
                     </div>
                     
-                    <h3 class="text-sm font-semibold text-gray-900 leading-snug mb-2 line-clamp-2 cursor-pointer hover:text-bb-primary open-deal-modal transition-colors" title="${deal.title}">
+                    <h3 class="text-sm font-semibold text-gray-900 leading-snug mb-1 line-clamp-2 cursor-pointer hover:text-bb-primary open-deal-modal transition-colors" title="${deal.title}">
                         ${deal.title}
                     </h3>
+
+                    ${sizesHtml}
                 </div>
                 
                 <div class="mt-3 pt-3 border-t border-gray-100">
