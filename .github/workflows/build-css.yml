@@ -1,0 +1,37 @@
+name: Build CSS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**/*.html'
+      - 'src/**/*.css'
+      - 'tailwind.config.js'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Tailwind
+        run: npm install -D tailwindcss
+
+      - name: Build CSS
+        run: npx tailwindcss -i ./src/input.css -o ./docs/output.css --minify
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: compile tailwind css"
+          file_pattern: "docs/output.css"

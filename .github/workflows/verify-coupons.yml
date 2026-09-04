@@ -1,0 +1,29 @@
+name: Verify Coupons
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # Every 6 hours
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci || npm install firebase-admin playwright
+
+      - name: Install Playwright Browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Run Coupon Verification
+        env:
+          FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+        run: node scripts/verify-coupons.js

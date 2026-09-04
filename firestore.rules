@@ -1,0 +1,29 @@
+rules_version = '2';
+
+// Bargain Board — Firestore Security Rules
+// Deals are publicly readable (anonymous app, no auth required).
+// Writes are blocked client-side — only the GitHub Actions pipeline
+// writes via the Firebase Admin SDK (service account), which bypasses
+// these rules entirely.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Deals collection — public read, no client write
+    match /deals/{dealId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Meta collection (stats, categories) — public read, no client write
+    match /meta/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Bargain Board — Base Layer ─── */
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-bb-bg text-bb-text;
+  }
+
+  /* Scrollbar styling for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-bb-border rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-bb-text-muted;
+  }
+}
+
+/* ─── Component Layer ─── */
+@layer components {
+  /* Search bar focus glow */
+  .search-bar:focus-within {
+    @apply ring-2 ring-bb-primary/30 shadow-search;
+  }
+
+  /* Deal card */
+  .deal-card {
+    @apply bg-bb-surface rounded-card shadow-card transition-all duration-200;
+  }
+  .deal-card:hover {
+    @apply shadow-card-hover -translate-y-0.5;
+  }
+
+  /* Coupon code pill */
+  .coupon-code {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 
+           border-2 border-dashed border-bb-primary/40 
+           rounded-lg font-mono text-sm bg-bb-primary/5 
+           select-all cursor-pointer transition-colors;
+  }
+  .coupon-code:hover {
+    @apply border-bb-primary bg-bb-primary/10;
+  }
+
+  /* Verified badge */
+  .badge-verified {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 
+           text-xs font-semibold rounded-pill 
+           bg-bb-success/10 text-bb-success;
+  }
+
+  /* Unverified badge */
+  .badge-unverified {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 
+           text-xs font-semibold rounded-pill 
+           bg-bb-warning/10 text-bb-warning;
+  }
+
+  /* Expired badge */
+  .badge-expired {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 
+           text-xs font-semibold rounded-pill 
+           bg-bb-danger/10 text-bb-danger;
+  }
+
+  /* Savings badge */
+  .savings-badge {
+    @apply inline-flex items-center px-2 py-0.5 
+           text-xs font-bold rounded-pill text-white;
+  }
+  .savings-high {
+    @apply bg-bb-success;
+  }
+  .savings-medium {
+    @apply bg-bb-accent;
+  }
+  .savings-low {
+    @apply bg-bb-text-muted;
+  }
+
+  /* Category pill button */
+  .category-pill {
+    @apply inline-flex items-center gap-1.5 px-4 py-2 
+           rounded-pill text-sm font-medium text-white 
+           transition-all duration-200 cursor-pointer 
+           hover:shadow-md hover:-translate-y-0.5 
+           active:translate-y-0;
+  }
+
+  /* Skeleton loading */
+  .skeleton {
+    @apply bg-gradient-to-r from-bb-border via-slate-100 to-bb-border 
+           bg-[length:200%_100%] animate-shimmer rounded-lg;
+  }
+
+  /* Sidebar category link */
+  .sidebar-link {
+    @apply flex items-center gap-2 px-3 py-2 text-sm 
+           text-bb-text-secondary rounded-lg transition-colors 
+           hover:bg-bb-primary/5 hover:text-bb-primary cursor-pointer;
+  }
+  .sidebar-link.active {
+    @apply bg-bb-primary/10 text-bb-primary font-medium;
+  }
+
+  /* Primary CTA button */
+  .btn-deal {
+    @apply w-full py-2.5 px-4 rounded-lg text-sm font-semibold 
+           text-white bg-bb-accent hover:bg-bb-accent-dark 
+           transition-colors duration-150 text-center;
+  }
+
+  /* Toast notification */
+  .toast {
+    @apply fixed bottom-6 right-6 z-50 px-4 py-3 rounded-card 
+           shadow-card-hover text-sm font-medium 
+           animate-slide-up pointer-events-auto;
+  }
+}

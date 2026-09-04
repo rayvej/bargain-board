@@ -1,0 +1,26 @@
+# Firebase credentials — keep private
+docs/firebase-config.js
+
+# Service account key — never commit
+*-service-account*.json
+service-account*.json
+
+# Node modules
+node_modules/
+
+# macOS junk
+.DS_Store
+
+# Editor folders
+.vscode/
+.idea/
+
+# Test artifacts
+tests/screenshots/
+
+# Playwright browsers (downloaded at runtime)
+playwright-browsers/
+
+# Environment files
+.env
+.env.local

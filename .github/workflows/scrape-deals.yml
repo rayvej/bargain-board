@@ -1,0 +1,50 @@
+name: Scrape Deals
+
+on:
+  schedule:
+    - cron: '0 */4 * * *' # Every 4 hours
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  scrape-and-write:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci || npm install firebase-admin playwright
+
+      - name: Scrape RSS feeds
+        run: node scripts/scrape-rss.js
+
+      - name: Scrape Best Buy
+        env:
+          BESTBUY_API_KEY: ${{ secrets.BESTBUY_API_KEY }}
+        run: node scripts/scrape-bestbuy.js
+
+      - name: Scrape eBay
+        env:
+          EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
+          EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
+        run: node scripts/scrape-ebay.js
+
+      - name: Scrape Coupons
+        env:
+          LINKMYDEALS_API_KEY: ${{ secrets.LINKMYDEALS_API_KEY }}
+        run: node scripts/scrape-coupons.js
+
+      - name: Write to Firestore
+        env:
+          FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+        run: node scripts/write-to-firestore.js
+
+      - name: Cleanup Expired Deals
+        env:
+          FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+        run: node scripts/cleanup-expired.js

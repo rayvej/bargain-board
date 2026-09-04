@@ -1,0 +1,26 @@
+{
+  "name": "bargain-board",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Bargain Board — Find the best verified deals on clothing & electronics",
+  "scripts": {
+    "build:css": "node node_modules/tailwindcss/lib/cli.js -i ./src/input.css -o ./docs/tailwind.min.css --minify",
+    "scrape:rss": "node scripts/scrape-rss.js",
+    "scrape:bestbuy": "node scripts/scrape-bestbuy.js",
+    "scrape:ebay": "node scripts/scrape-ebay.js",
+    "scrape:coupons": "node scripts/scrape-coupons.js",
+    "scrape:all": "node scripts/scrape-rss.js && node scripts/scrape-bestbuy.js && node scripts/scrape-ebay.js && node scripts/scrape-coupons.js",
+    "verify": "node scripts/verify-coupons.js",
+    "write": "node scripts/write-to-firestore.js",
+    "cleanup": "node scripts/cleanup-expired.js",
+    "pipeline": "npm run scrape:all && npm run write && npm run cleanup"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "playwright": "^1.45.0"
+  },
+  "devDependencies": {
+    "daisyui": "^4.12.24",
+    "tailwindcss": "^3.4.19"
+  }
+}
