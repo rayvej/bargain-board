@@ -1,5 +1,5 @@
 import { getDeals as getFirestoreDeals, isDbInitialized } from './modules/firestore-client.js';
-import { createDealCardHTML, setupDealCardListeners } from './modules/deal-card.js';
+import { createDealCardHTML, setupDealCardListeners, getComparisonLinks } from './modules/deal-card.js';
 import { getFilters, subscribe, updateFilter, resetFilters } from './modules/filters.js';
 import { setAvailableBrands } from './search.js';
 import { openModal } from './modules/ui.js';
@@ -12,118 +12,6 @@ let currentPage = 1;
 const PAGE_SIZE = 16;
 let isLoading = false;
 
-// ─── Curated Fallback Deals ───
-const CURATED_FALLBACK_DEALS = [
-    {
-        id: 'curated_1',
-        title: 'Sony WH-1000XM5 Wireless Industry Leading Noise Canceling Headphones',
-        description: 'Two processors and 8 microphones for unprecedented noise cancellation. Auto NC Optimizer. Crystal clear hands-free calling with 4 beamforming microphones.',
-        brand: 'Sony',
-        gender: 'all',
-        sizes: [],
-        originalPrice: 399.99, salePrice: 328.00, savingsPercent: 18,
-        retailer: 'Amazon',
-        productUrl: 'https://www.amazon.com/dp/B09XS7JWHH',
-        sourceUrl: 'https://slickdeals.net/f/19968100-sony-wh-1000xm5-headphones',
-        imageUrl: 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=400&q=80',
-        category: 'electronics', subcategory: 'headphones',
-        tags: ['sony', 'headphones', 'wireless', 'noise-canceling'],
-        verificationStatus: 'verified', verifiedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        couponCodes: [{ code: 'SONY10', discount: '10% off checkout', verified: true, stackable: false }]
-    },
-    {
-        id: 'curated_2',
-        title: 'Apple MacBook Air 13-inch M2 Chip (8GB RAM, 256GB SSD) - Space Gray',
-        description: 'Strikingly thin design with all-day battery life up to 18 hours. Big, beautiful Liquid Retina display with 500 nits of brightness.',
-        brand: 'Apple',
-        gender: 'all',
-        sizes: [],
-        originalPrice: 999.00, salePrice: 799.00, savingsPercent: 20,
-        retailer: 'Amazon',
-        productUrl: 'https://www.amazon.com/dp/B0B3C2R8MP',
-        sourceUrl: 'https://slickdeals.net/f/19965200-apple-macbook-air-m2-laptop',
-        imageUrl: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=400&q=80',
-        category: 'electronics', subcategory: 'laptops',
-        tags: ['apple', 'macbook', 'laptop', 'm2'],
-        verificationStatus: 'verified', verifiedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        couponCodes: []
-    },
-    {
-        id: 'curated_3',
-        title: 'Nike Air Zoom Pegasus 40 Men\'s Road Running Shoes',
-        description: 'A springy ride for every run, the Peg\'s familiar, just-for-you feel returns to help you accomplish your goals. React technology with 2 Zoom Air units.',
-        brand: 'Nike',
-        gender: 'men',
-        sizes: ['9', '9.5', '10', '10.5', '11'],
-        originalPrice: 130.00, salePrice: 78.97, savingsPercent: 39,
-        retailer: 'Nike',
-        productUrl: 'https://www.nike.com/w/mens-sale-shoes-3yaepznik1zy7ok',
-        sourceUrl: 'https://slickdeals.net/f/19964300-nike-pegasus-shoes-sale',
-        imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80',
-        category: 'clothing', subcategory: 'shoes',
-        tags: ['nike', 'shoes', 'running', 'pegasus', 'men'],
-        verificationStatus: 'verified', verifiedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        couponCodes: [{ code: 'EXTRA20', discount: 'Extra 20% off select styles', verified: true, stackable: false }]
-    },
-    {
-        id: 'curated_4',
-        title: 'Samsung 65" Class OLED 4K S90C Series Quantum HDR Smart TV',
-        description: 'Deep blacks, clean whites and lively colors boosted by Quantum Dot technology. Neural Quantum Processor 4K with Dolby Atmos sound.',
-        brand: 'Samsung',
-        gender: 'all',
-        sizes: [],
-        originalPrice: 1997.99, salePrice: 1497.99, savingsPercent: 25,
-        retailer: 'Samsung',
-        productUrl: 'https://www.amazon.com/dp/B0BV4SGLDC',
-        sourceUrl: 'https://slickdeals.net/f/19962100-samsung-65-oled-tv',
-        imageUrl: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&q=80',
-        category: 'electronics', subcategory: 'tvs',
-        tags: ['samsung', 'tv', 'oled', '4k'],
-        verificationStatus: 'verified', verifiedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        couponCodes: [{ code: 'SAMSUNG100', discount: '$100 off TVs over $1000', verified: true, stackable: false }]
-    },
-    {
-        id: 'curated_5',
-        title: 'Levi\'s Men\'s 511 Slim Fit Jeans (All Washes on Sale)',
-        description: 'A modern slim with room to move. Cut close through the thigh with slim leg opening. Classic 5-pocket styling with stretch comfort.',
-        brand: "Levi's",
-        gender: 'men',
-        sizes: ['30', '32', '34', '36'],
-        originalPrice: 69.50, salePrice: 39.99, savingsPercent: 42,
-        retailer: "Levi's",
-        productUrl: 'https://www.levi.com/US/en_US/sale/mens-sale/c/levi_clothing_men_sale_us',
-        sourceUrl: 'https://slickdeals.net/f/19961100-levis-jeans-clearance',
-        imageUrl: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&q=80',
-        category: 'clothing', subcategory: 'mens',
-        tags: ['levis', 'jeans', 'mens', 'slim'],
-        verificationStatus: 'verified', verifiedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        couponCodes: [{ code: 'INDIGO40', discount: '40% off $125+', verified: true, stackable: false }]
-    },
-    {
-        id: 'curated_6',
-        title: 'Lululemon Align High-Rise Pant 25" (Select Colors on Markdown)',
-        description: 'When feeling nothing is everything. The Align collection, powered by Nulu fabric, is so weightless and buttery soft, all you feel is your practice.',
-        brand: 'Lululemon',
-        gender: 'women',
-        sizes: ['XS', 'S', 'M', 'L'],
-        originalPrice: 98.00, salePrice: 69.00, savingsPercent: 30,
-        retailer: 'Lululemon',
-        productUrl: 'https://shop.lululemon.com/c/we-made-too-much/_/N-883',
-        sourceUrl: 'https://slickdeals.net/f/19961200-lululemon-align-leggings',
-        imageUrl: 'https://images.unsplash.com/photo-1506152983158-b4a74a01c721?w=400&q=80',
-        category: 'clothing', subcategory: 'womens',
-        tags: ['lululemon', 'align', 'leggings', 'women', 'yoga'],
-        verificationStatus: 'verified', verifiedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        couponCodes: []
-    }
-];
-
 export async function initDeals(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -132,7 +20,7 @@ export async function initDeals(containerId) {
 
     // Card click opens modal (unless button clicked)
     container.addEventListener('click', (e) => {
-        if (e.target.closest('.btn-deal') || e.target.closest('.copy-coupon-btn')) {
+        if (e.target.closest('.btn-deal') || e.target.closest('.copy-coupon-btn') || e.target.closest('.btn-compare')) {
             return;
         }
         const modalTrigger = e.target.closest('.open-deal-modal') || e.target.closest('.deal-card');
@@ -175,6 +63,8 @@ export async function initDeals(containerId) {
             if (searchInput) searchInput.value = '';
             const brandSelect = document.getElementById('brand-select');
             if (brandSelect) brandSelect.value = '';
+            const retailerSelect = document.getElementById('retailer-select');
+            if (retailerSelect) retailerSelect.value = '';
             const sizeSelect = document.getElementById('size-select');
             if (sizeSelect) sizeSelect.value = '';
             const priceSelect = document.getElementById('price-range-select');
@@ -183,6 +73,8 @@ export async function initDeals(containerId) {
             if (sortSelect) sortSelect.value = 'newest';
             const verifiedToggle = document.getElementById('verified-toggle');
             if (verifiedToggle) verifiedToggle.checked = false;
+            const amazonToggle = document.getElementById('exclude-amazon-toggle');
+            if (amazonToggle) amazonToggle.checked = false;
             updateGenderButtons(null);
         });
     }
@@ -202,13 +94,12 @@ async function fetchAllDeals(container) {
     container.innerHTML = createSkeletons(8);
 
     try {
-        // Priority 1: Check Firestore if initialized
         if (isDbInitialized()) {
             try {
-                const result = await getFirestoreDeals({}, null, 200);
+                const result = await getFirestoreDeals({}, null, 250);
                 if (result.deals && result.deals.length > 0) {
                     allLoadedDeals = result.deals;
-                    setupAvailableBrands(allLoadedDeals);
+                    setupAvailableFilters(allLoadedDeals);
                     applyFiltersAndRender(container, getFilters());
                     isLoading = false;
                     return;
@@ -218,36 +109,39 @@ async function fetchAllDeals(container) {
             }
         }
 
-        // Priority 2: Fetch deals-data.json
         const res = await fetch('./deals-data.json');
         if (res.ok) {
             const data = await res.json();
             if (Array.isArray(data) && data.length > 0) {
                 allLoadedDeals = data;
                 console.log(`Loaded ${data.length} deals from deals-data.json`);
-                setupAvailableBrands(allLoadedDeals);
+                setupAvailableFilters(allLoadedDeals);
                 applyFiltersAndRender(container, getFilters());
                 isLoading = false;
                 return;
             }
         }
     } catch (e) {
-        console.warn('Could not load deals-data.json, falling back to curated list:', e);
+        console.warn('Could not load deals-data.json:', e);
     }
 
-    // Priority 3: Fallback
-    allLoadedDeals = CURATED_FALLBACK_DEALS;
-    setupAvailableBrands(allLoadedDeals);
-    applyFiltersAndRender(container, getFilters());
     isLoading = false;
 }
 
-function setupAvailableBrands(deals) {
+function setupAvailableFilters(deals) {
+    // 1. Setup Brands
     const brandCounts = {};
+    const retailerCounts = {};
+
     deals.forEach(d => {
-        const b = d.brand || d.retailer;
+        const b = d.brand;
         if (b && b !== 'Online Store' && b !== 'Various') {
             brandCounts[b] = (brandCounts[b] || 0) + 1;
+        }
+
+        const r = d.retailer;
+        if (r && r !== 'Online Store') {
+            retailerCounts[r] = (retailerCounts[r] || 0) + 1;
         }
     });
 
@@ -256,10 +150,8 @@ function setupAvailableBrands(deals) {
         .sort((a, b) => b[1] - a[1])
         .map(([name, count]) => ({ name, count }));
 
-    // Send to search auto-complete
     setAvailableBrands(sortedBrands);
 
-    // Populate Brand select dropdown
     const brandSelect = document.getElementById('brand-select');
     if (brandSelect) {
         const currentVal = brandSelect.value;
@@ -271,6 +163,25 @@ function setupAvailableBrands(deals) {
             brandSelect.appendChild(opt);
         });
         if (currentVal) brandSelect.value = currentVal;
+    }
+
+    // 2. Setup Retailers / Stores
+    const sortedRetailers = Object.entries(retailerCounts)
+        .filter(([_, count]) => count >= 2)
+        .sort((a, b) => b[1] - a[1])
+        .map(([name, count]) => ({ name, count }));
+
+    const retailerSelect = document.getElementById('retailer-select');
+    if (retailerSelect) {
+        const currentVal = retailerSelect.value;
+        retailerSelect.innerHTML = '<option value="">All Stores</option>';
+        sortedRetailers.forEach(r => {
+            const opt = document.createElement('option');
+            opt.value = r.name;
+            opt.textContent = `${r.name} (${r.count})`;
+            retailerSelect.appendChild(opt);
+        });
+        if (currentVal) retailerSelect.value = currentVal;
     }
 }
 
@@ -291,8 +202,8 @@ function applyFiltersAndRender(container, filters) {
                 <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4 text-2xl">
                     🔍
                 </div>
-                <h3 class="text-lg font-bold text-gray-800">No deals found matching criteria</h3>
-                <p class="text-sm text-gray-500 mt-1 max-w-sm mx-auto">Try clearing one of your filters (brand, gender, size, or price) to view more available deals.</p>
+                <h3 class="text-lg font-bold text-gray-800">No deals match your selected filters</h3>
+                <p class="text-sm text-gray-500 mt-1 max-w-sm mx-auto">Try clearing one of your filters or unchecking "Exclude Amazon" to view more deals.</p>
                 <button type="button" id="reset-filters-empty-btn" class="mt-4 px-4 py-2 bg-[#06B6D4] text-white text-xs font-bold rounded-lg hover:bg-cyan-600 transition-colors shadow-sm">
                     Reset All Filters
                 </button>
@@ -318,7 +229,7 @@ function renderNextPage(container) {
         const temp = document.createElement('div');
         temp.innerHTML = cardHtml.trim();
         const cardEl = temp.firstElementChild;
-        cardEl.style.animationDelay = `${(idx % PAGE_SIZE) * 25}ms`;
+        cardEl.style.animationDelay = `${(idx % PAGE_SIZE) * 20}ms`;
         container.appendChild(cardEl);
         displayedDeals.push(deal);
     });
@@ -343,7 +254,18 @@ function filterDeals(deals, filters) {
         const retailerText = (deal.retailer || '').toLowerCase();
         const fullSearchable = `${titleText} ${descText} ${brandText} ${retailerText} ${(deal.tags || []).join(' ')}`.toLowerCase();
 
-        // 1. Brand Filter
+        // 1. Exclude Amazon Filter
+        if (filters.excludeAmazon && retailerText.includes('amazon')) {
+            return false;
+        }
+
+        // 2. Retailer Filter
+        if (filters.retailer) {
+            const r = filters.retailer.toLowerCase();
+            if (!retailerText.includes(r)) return false;
+        }
+
+        // 3. Brand Filter
         if (filters.brand) {
             const b = filters.brand.toLowerCase();
             const brandMatch = brandText === b || 
@@ -352,13 +274,13 @@ function filterDeals(deals, filters) {
             if (!brandMatch) return false;
         }
 
-        // 2. Search Query (searches brand, title, description, retailer)
+        // 4. Search Query (searches across brand, title, description, retailer, keywords)
         if (filters.search) {
             const q = filters.search.toLowerCase().trim();
             if (!fullSearchable.includes(q)) return false;
         }
 
-        // 3. Gender Filter ('men' | 'women' | 'kids' | 'unisex')
+        // 5. Gender Filter ('men' | 'women' | 'kids' | 'unisex')
         if (filters.gender && filters.gender !== 'all') {
             const g = filters.gender.toLowerCase();
             const dealGender = (deal.gender || '').toLowerCase();
@@ -378,7 +300,7 @@ function filterDeals(deals, filters) {
             }
         }
 
-        // 4. Size Filter (e.g. '10', '9.5', 'M', 'L', 'XL', '32')
+        // 6. Size Filter (e.g. '10', '9.5', 'M', 'L', 'XL', '32')
         if (filters.size) {
             const s = filters.size.toLowerCase();
             const dealSizes = (deal.sizes || []).map(x => String(x).toLowerCase());
@@ -390,7 +312,7 @@ function filterDeals(deals, filters) {
             if (!hasSize) return false;
         }
 
-        // 5. Price Range Filter
+        // 7. Price Range Filter
         if (filters.priceRange) {
             const price = deal.salePrice || 0;
             if (filters.priceRange === 'under25' && price >= 25) return false;
@@ -400,7 +322,7 @@ function filterDeals(deals, filters) {
             if (filters.priceRange === '250plus' && price < 250) return false;
         }
 
-        // 6. Category Filter
+        // 8. Category Filter
         if (filters.category) {
             const cat = filters.category.toLowerCase();
             const dealCat = (deal.category || '').toLowerCase();
@@ -429,7 +351,7 @@ function filterDeals(deals, filters) {
             }
         }
 
-        // 7. Verified Only
+        // 9. Verified Only
         if (filters.verifiedOnly && deal.verificationStatus !== 'verified') {
             return false;
         }
@@ -472,6 +394,24 @@ function renderActiveFilterChips(filters) {
             <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full text-xs font-semibold border border-blue-200">
                 Brand: ${filters.brand}
                 <button type="button" data-clear="brand" class="hover:text-red-500 ml-1 font-bold">✕</button>
+            </span>
+        `);
+    }
+
+    if (filters.retailer) {
+        chips.push(`
+            <span class="inline-flex items-center gap-1 bg-teal-50 text-teal-700 px-2.5 py-1 rounded-full text-xs font-semibold border border-teal-200">
+                Store: ${filters.retailer}
+                <button type="button" data-clear="retailer" class="hover:text-red-500 ml-1 font-bold">✕</button>
+            </span>
+        `);
+    }
+
+    if (filters.excludeAmazon) {
+        chips.push(`
+            <span class="inline-flex items-center gap-1 bg-red-50 text-red-700 px-2.5 py-1 rounded-full text-xs font-semibold border border-red-200">
+                🚫 Excluded Amazon
+                <button type="button" data-clear="excludeAmazon" class="hover:text-red-500 ml-1 font-bold">✕</button>
             </span>
         `);
     }
@@ -534,7 +474,6 @@ function renderActiveFilterChips(filters) {
         clearAllBtn.classList.toggle('hidden', chips.length === 0);
     }
 
-    // Individual chip remove listeners
     container.querySelectorAll('button[data-clear]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const key = btn.getAttribute('data-clear');
@@ -547,6 +486,14 @@ function renderActiveFilterChips(filters) {
                 updateFilter('brand', null);
                 const brandSelect = document.getElementById('brand-select');
                 if (brandSelect) brandSelect.value = '';
+            } else if (key === 'retailer') {
+                updateFilter('retailer', null);
+                const retailerSelect = document.getElementById('retailer-select');
+                if (retailerSelect) retailerSelect.value = '';
+            } else if (key === 'excludeAmazon') {
+                updateFilter('excludeAmazon', false);
+                const toggle = document.getElementById('exclude-amazon-toggle');
+                if (toggle) toggle.checked = false;
             } else if (key === 'gender') {
                 updateFilter('gender', null);
                 updateGenderButtons(null);
@@ -592,6 +539,9 @@ function showDealModal(deal) {
         link.setAttribute('data-target', targetUrl);
     }
 
+    const comp = getComparisonLinks(deal);
+    const isFashion = deal.category === 'clothing' || deal.subcategory === 'shoes';
+
     if (body) {
         const couponsHtml = (deal.couponCodes || []).map(c => `
             <div class="flex items-center justify-between p-3.5 bg-cyan-50/60 rounded-xl border border-dashed border-cyan-300">
@@ -627,8 +577,9 @@ function showDealModal(deal) {
                 </div>
                 <div class="flex-1 flex flex-col justify-between">
                     <div>
-                        <div class="flex items-center gap-2.5 mb-2 flex-wrap">
-                            <span class="text-xs font-bold uppercase tracking-wider bg-gray-100 px-2.5 py-1 rounded-lg text-gray-700">${deal.brand || deal.retailer || 'Retailer'}</span>
+                        <div class="flex items-center gap-2 mb-2 flex-wrap">
+                            <span class="text-xs font-bold bg-blue-600 text-white px-2.5 py-1 rounded-md">🏪 Sold at ${deal.retailer || 'Retailer'}</span>
+                            ${deal.brand && deal.brand !== deal.retailer ? `<span class="text-xs font-bold uppercase tracking-wider bg-gray-100 px-2.5 py-1 rounded-md text-gray-700">Brand: ${deal.brand}</span>` : ''}
                             ${deal.gender && deal.gender !== 'all' ? `<span class="text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md">${deal.gender === 'men' ? "Men's" : deal.gender === 'women' ? "Women's" : "Kids"}</span>` : ''}
                             ${verifiedBadgeHtml}
                         </div>
@@ -645,15 +596,52 @@ function showDealModal(deal) {
                             ${deal.savingsPercent ? `<span class="px-2.5 py-0.5 text-xs font-extrabold text-white bg-green-600 rounded-full">${deal.savingsPercent}% SAVINGS</span>` : ''}
                         </div>
                         <div class="flex items-center justify-between mt-2 pt-2 border-t border-gray-200/60 text-xs text-gray-500">
-                            <span>Sourced via ${deal.source || 'Verified Feed'}</span>
+                            <span>Listed at ${deal.retailer || 'Online Store'}</span>
                             <span>${formatRelativeTime(deal.createdAt || new Date())}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- ═══════ Cross-Store Price Comparison Section ═══════ -->
+            <div class="mt-6 p-4 rounded-xl bg-gradient-to-br from-slate-50 to-cyan-50/40 border border-cyan-100">
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
+                        <span>🔍 Compare Prices at Other Stores</span>
+                    </h4>
+                    <span class="text-[11px] text-cyan-700 font-medium">Find the lowest price</span>
+                </div>
+                <p class="text-xs text-gray-500 mb-3">Check if other major retailers currently offer a lower price or better coupon code on this item:</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <a href="${comp.googleShopping}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#06B6D4] hover:shadow-sm transition-all text-xs font-semibold text-gray-800 group">
+                        <span class="flex items-center gap-2">
+                            <span>🌐</span>
+                            <span>Google Shopping (All Stores)</span>
+                        </span>
+                        <span class="text-[#06B6D4] group-hover:translate-x-0.5 transition-transform">↗</span>
+                    </a>
+                    ${isFashion ? `
+                        <a href="${comp.fashionSearch}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#06B6D4] hover:shadow-sm transition-all text-xs font-semibold text-gray-800 group">
+                            <span class="flex items-center gap-2">
+                                <span>👟</span>
+                                <span>Foot Locker / Dick's / Nordstrom</span>
+                            </span>
+                            <span class="text-[#06B6D4] group-hover:translate-x-0.5 transition-transform">↗</span>
+                        </a>
+                    ` : `
+                        <a href="${comp.techSearch}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#06B6D4] hover:shadow-sm transition-all text-xs font-semibold text-gray-800 group">
+                            <span class="flex items-center gap-2">
+                                <span>⚡</span>
+                                <span>Best Buy / B&H / Newegg</span>
+                            </span>
+                            <span class="text-[#06B6D4] group-hover:translate-x-0.5 transition-transform">↗</span>
+                        </a>
+                    `}
+                </div>
+            </div>
+
             ${(deal.couponCodes || []).length > 0 ? `
-                <div class="mt-6 pt-5 border-t border-gray-100">
+                <div class="mt-5 pt-4 border-t border-gray-100">
                     <h4 class="text-sm font-bold text-gray-800 mb-3 flex items-center gap-1.5">
                         <span>🏷️ Promo Codes</span>
                         <span class="text-xs font-normal text-gray-500">(Click to copy before checking out)</span>

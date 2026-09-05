@@ -2,6 +2,8 @@ let currentFilters = {
     category: null,
     search: '',
     brand: null,
+    retailer: null,
+    excludeAmazon: false,
     gender: null,     // 'all' | 'men' | 'women' | 'kids' | 'unisex'
     size: null,       // e.g. '10', 'M', 'L', 'XL'
     priceRange: null, // 'under25' | '25to50' | '50to100' | '100to250' | '250plus'
@@ -32,6 +34,8 @@ export function resetFilters() {
         category: null,
         search: '',
         brand: null,
+        retailer: null,
+        excludeAmazon: false,
         gender: null,
         size: null,
         priceRange: null,

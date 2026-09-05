@@ -67,6 +67,17 @@ async function bootstrap() {
         updateFilter('verifiedOnly', e.target.checked);
     });
 
+    // ─── Hide Amazon Deals Toggle ───
+    document.getElementById('exclude-amazon-toggle')?.addEventListener('change', (e) => {
+        updateFilter('excludeAmazon', e.target.checked);
+    });
+
+    // ─── Store / Retailer Select Listener ───
+    document.getElementById('retailer-select')?.addEventListener('change', (e) => {
+        const val = e.target.value;
+        updateFilter('retailer', val || null);
+    });
+
     // ─── Modal Close Listeners ───
     document.querySelectorAll('.close-modal').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -114,6 +125,8 @@ async function bootstrap() {
         if (searchInput) searchInput.value = '';
         const brandSelect = document.getElementById('brand-select');
         if (brandSelect) brandSelect.value = '';
+        const retailerSelect = document.getElementById('retailer-select');
+        if (retailerSelect) retailerSelect.value = '';
         const sizeSelect = document.getElementById('size-select');
         if (sizeSelect) sizeSelect.value = '';
         const priceSelect = document.getElementById('price-range-select');
@@ -122,6 +135,8 @@ async function bootstrap() {
         if (sortSelect) sortSelect.value = 'newest';
         const toggle = document.getElementById('verified-toggle');
         if (toggle) toggle.checked = false;
+        const amazonToggle = document.getElementById('exclude-amazon-toggle');
+        if (amazonToggle) amazonToggle.checked = false;
         
         // Reset gender buttons
         document.querySelectorAll('#gender-filter-group .gender-btn').forEach(btn => {

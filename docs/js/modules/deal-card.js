@@ -1,15 +1,36 @@
 import { formatPrice, formatRelativeTime, copyToClipboard } from './ui.js';
 
+export function getComparisonLinks(deal) {
+    const cleanTitle = (deal.title || '')
+        .replace(/^(deal:\s*|\$\d+[\d\.]*\s*\|\s*)/i, '')
+        .replace(/\b(w\/|with|free s&h|free shipping|at [a-z0-9\.\s&]+)\b/gi, '')
+        .replace(/[\(\)\[\]]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .slice(0, 70)
+        .trim();
+
+    const brand = deal.brand && deal.brand !== 'Various' && deal.brand !== 'Online Store' ? deal.brand : '';
+    const query = (brand && !cleanTitle.toLowerCase().includes(brand.toLowerCase()) ? brand + ' ' : '') + cleanTitle;
+
+    return {
+        query,
+        googleShopping: `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(query)}`,
+        fashionSearch: `https://www.google.com/search?q=${encodeURIComponent(query + ' (site:footlocker.com OR site:dickssportinggoods.com OR site:nordstromrack.com OR site:finishline.com OR site:dsw.com)')}`,
+        techSearch: `https://www.google.com/search?q=${encodeURIComponent(query + ' (site:bestbuy.com OR site:bhphotovideo.com OR site:newegg.com OR site:target.com)')}`,
+        ebay: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(query)}&LH_ItemCondition=1000`
+    };
+}
+
 export function createDealCardHTML(deal) {
     const savingsClass = deal.savingsPercent > 40 ? 'savings-high text-bb-success font-bold' : 
                          deal.savingsPercent > 20 ? 'savings-medium text-bb-primary font-bold' : 
                          'savings-low text-gray-600';
                          
     const verifiedBadge = deal.verificationStatus === 'verified' ? 
-        `<span class="badge-verified bg-green-100 text-green-800 text-xs px-2 py-1 rounded flex items-center gap-1"><svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Verified</span>` : 
+        `<span class="badge-verified bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded flex items-center gap-1 font-semibold"><svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Verified</span>` : 
         deal.verificationStatus === 'expired' ? 
-        `<span class="badge-expired bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Expired</span>` :
-        `<span class="badge-unverified bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Unverified</span>`;
+        `<span class="badge-expired bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded font-semibold">Expired</span>` :
+        `<span class="badge-unverified bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded font-semibold">Community</span>`;
 
     const genderBadge = deal.gender === 'men' 
         ? `<span class="text-[10px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">Men's</span>`
@@ -39,26 +60,36 @@ export function createDealCardHTML(deal) {
     `).join('');
 
     const targetUrl = deal.productUrl || deal.sourceUrl || '#';
-    const displayBrand = deal.brand || deal.retailer || 'DEAL';
+    const displayRetailer = deal.retailer || 'Online Store';
+    const displayBrand = deal.brand && deal.brand !== displayRetailer && deal.brand !== 'Various' ? deal.brand : null;
+
+    const comp = getComparisonLinks(deal);
+    const isFashion = deal.category === 'clothing' || deal.subcategory === 'shoes';
 
     return `
         <div class="deal-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col h-full" data-id="${deal.id}">
-            <div class="relative pt-[70%] bg-gray-100 overflow-hidden cursor-pointer open-deal-modal group">
+            <div class="relative pt-[68%] bg-gray-100 overflow-hidden cursor-pointer open-deal-modal group">
                 <img src="${deal.imageUrl || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80'}" 
                      alt="${deal.title}" 
                      class="absolute top-0 left-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                      loading="lazy"
                      onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&q=80'">
+                
                 <div class="absolute top-2 right-2 flex flex-col gap-1 shadow-sm">
                     ${verifiedBadge}
+                </div>
+
+                <div class="absolute bottom-2 left-2 bg-black/75 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm">
+                    <span>🏪</span>
+                    <span class="truncate max-w-[130px]">${displayRetailer}</span>
                 </div>
             </div>
             
             <div class="p-4 flex-grow flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-1.5 flex-wrap gap-1">
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-[11px] font-bold text-gray-700 bg-gray-100 px-2 py-0.5 rounded uppercase tracking-wider">${displayBrand}</span>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            ${displayBrand ? `<span class="text-[11px] font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded">${displayBrand}</span>` : ''}
                             ${genderBadge}
                         </div>
                         <span class="text-[11px] text-gray-400">${formatRelativeTime(deal.createdAt || new Date())}</span>
@@ -75,17 +106,27 @@ export function createDealCardHTML(deal) {
                     <div class="flex items-baseline gap-2 mb-2">
                         <span class="text-lg font-extrabold text-gray-900">${formatPrice(deal.salePrice)}</span>
                         ${deal.originalPrice > deal.salePrice ? `<span class="text-xs text-gray-400 line-through">${formatPrice(deal.originalPrice)}</span>` : ''}
-                        ${deal.savingsPercent ? `<span class="${savingsClass} text-xs ml-auto">${deal.savingsPercent}% OFF</span>` : ''}
+                        ${deal.savingsPercent ? `<span class="${savingsClass} text-xs ml-auto font-bold">${deal.savingsPercent}% OFF</span>` : ''}
                     </div>
                     
                     ${couponsHtml}
                     
-                    <a href="${targetUrl}" 
-                       target="_blank" 
-                       rel="noopener noreferrer" 
-                       class="btn-deal mt-3 w-full block text-center bg-bb-accent hover:bg-orange-600 active:scale-[0.98] text-white font-semibold py-2 px-4 rounded-lg transition-all shadow-sm hover:shadow text-sm cursor-pointer select-none">
-                        Go to Deal →
-                    </a>
+                    <div class="flex gap-2 mt-3">
+                        <a href="${targetUrl}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="btn-deal flex-1 text-center bg-bb-accent hover:bg-orange-600 active:scale-[0.98] text-white font-semibold py-2 px-3 rounded-lg transition-all shadow-sm hover:shadow text-xs cursor-pointer select-none truncate">
+                            Go to Deal →
+                        </a>
+                        <a href="${comp.googleShopping}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="btn-compare px-2.5 py-2 text-center bg-gray-50 hover:bg-cyan-50 text-gray-700 hover:text-[#06B6D4] font-semibold rounded-lg border border-gray-200 hover:border-cyan-300 transition-all text-xs cursor-pointer select-none flex items-center gap-1"
+                           title="Compare prices across all stores on Google Shopping">
+                            <span>🔍</span>
+                            <span class="hidden sm:inline">Compare</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -112,6 +153,18 @@ export function setupDealCardListeners(container) {
             if (href && href !== '#') {
                 window.open(href, '_blank', 'noopener,noreferrer');
             }
+            return;
+        }
+
+        // Compare Stores button click handler
+        const compareBtn = e.target.closest('.btn-compare');
+        if (compareBtn) {
+            e.stopPropagation();
+            const href = compareBtn.getAttribute('href');
+            if (href && href !== '#') {
+                window.open(href, '_blank', 'noopener,noreferrer');
+            }
+            return;
         }
     });
 }
