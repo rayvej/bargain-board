@@ -184,27 +184,36 @@ function extractBrand(title, retailer, brandHint = '') {
 }
 
 function extractRetailer(title, fullHtml, retailerHint = '') {
-  // 1. Check title for "at Store" or "from Store" or "@ Store"
+  // 1. Check title for bracketed retailer e.g. [JD Sports], [Sport Chek], [Nike], [Sierra]
+  const bracketMatch = title.match(/^\[([^\]]+)\]/);
+  if (bracketMatch) {
+    const raw = bracketMatch[1].trim();
+    for (const r of KNOWN_RETAILERS) {
+      if (raw.toLowerCase().includes(r.toLowerCase())) return r;
+    }
+    if (raw.length > 2) return raw;
+  }
+
+  // 2. Check HTML data attributes e.g. data-product-exitWebsite="nike.com" or data-store-slug
+  const exitWebsiteMatch = fullHtml.match(/data-product-exitWebsite=["']([^"']+)["']/i);
+  if (exitWebsiteMatch) {
+    const domain = exitWebsiteMatch[1].toLowerCase().replace(/\.com|\.ca/g, '').replace(/[-_]/g, ' ').trim();
+    for (const r of KNOWN_RETAILERS) {
+      if (domain.includes(r.toLowerCase())) return r;
+    }
+    if (domain.length > 2) return domain.toUpperCase();
+  }
+
+  // 3. Check title for "at Store" or "from Store" or "@ Store"
   for (const r of KNOWN_RETAILERS) {
     const regex = new RegExp(`(?:at|from|@)\\s+${r.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")}`, "i");
     if (regex.test(title)) return r;
   }
 
-  // 2. Check retailerHint from feed configuration
+  // 4. Fallback to retailerHint from feed configuration
   if (retailerHint) return retailerHint;
 
-  // 3. Check HTML attributes from feed outclick
-  const retailerMatch = fullHtml.match(/data-product-exitWebsite=["']([^"']+)["']/i) ||
-                        fullHtml.match(/data-store-slug=["']([^"']+)["']/i);
-  if (retailerMatch) {
-    const slug = retailerMatch[1].replace('.com', '').replace('-', ' ').trim();
-    for (const r of KNOWN_RETAILERS) {
-      if (slug.toLowerCase().includes(r.toLowerCase())) return r;
-    }
-    return slug.toUpperCase();
-  }
-
-  // 4. Fallback search in title
+  // 5. Fallback search in title
   for (const r of KNOWN_RETAILERS) {
     const regex = new RegExp(`\\b${r.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")}\\b`, "i");
     if (regex.test(title)) return r;
@@ -222,44 +231,160 @@ function extractGender(title, category, subcategory) {
   return "all";
 }
 
-function extractSizes(title, description) {
+function extractSizes(title, description, subcategory = '') {
   const text = (title + " " + description).toLowerCase();
+  const isFootwear = subcategory === 'shoes' || /\b(shoes?|sneakers?|boots?|runners?|trainers?|cleats?)\b/i.test(title);
   const sizes = [];
 
-  // Range match e.g. "sizes 7-13", "sizes 8 to 12", "sz 8-11"
-  const rangeMatch = text.match(/\b(?:sizes?|sz\.?)\s*([0-9]{1,2}(?:\.[0-9])?)\s*(?:-|to)\s*([0-9]{1,2}(?:\.[0-9])?)\b/i);
-  if (rangeMatch) {
-    const start = parseFloat(rangeMatch[1]);
-    const end = parseFloat(rangeMatch[2]);
-    if (start >= 5 && end <= 15 && start < end) {
-      for (let s = start; s <= end; s += 0.5) {
-        sizes.push(String(s));
+  if (isFootwear) {
+    // 1. Range match e.g. "sizes 7-13", "sizes 8 to 12", "sz 8-11", "(6-8.5)"
+    const rangeMatch = text.match(/(?:\b(?:sizes?|sz\.?)\s*|\()([0-9]{1,2}(?:\.[0-9])?)\s*(?:-|to)\s*([0-9]{1,2}(?:\.[0-9])?)\)?/i);
+    if (rangeMatch) {
+      const start = parseFloat(rangeMatch[1]);
+      const end = parseFloat(rangeMatch[2]);
+      if (start >= 4 && end <= 16 && start < end) {
+        for (let s = start; s <= end; s += 0.5) {
+          sizes.push(String(s));
+        }
       }
     }
-  }
 
-  const shoeMatch = text.match(/\b(?:sizes?|sz\.?)\s*([0-9]{1,2}(?:\.[0-9])?)\b/i);
-  if (shoeMatch) {
-    sizes.push(shoeMatch[1]);
-  }
-
-  const clothingSizes = ["xs", "s", "m", "l", "xl", "xxl", "2xl", "3xl", "28", "30", "32", "34", "36", "38"];
-  for (const s of clothingSizes) {
-    if (new RegExp(`\\b(?:size|sizes|sz)?\\s*${s}\\b`, "i").test(text)) {
-      sizes.push(s.toUpperCase());
+    // 2. Comma-separated or list match e.g. "(6,8,9.5)" or "sizes 8, 9, 10"
+    const listMatch = text.match(/(?:sizes?|sz\.?|\()\s*([0-9]{1,2}(?:\.[0-9])?(?:\s*,\s*[0-9]{1,2}(?:\.[0-9])?)+)\)?/i);
+    if (listMatch) {
+      const nums = listMatch[1].split(',').map(n => n.trim()).filter(Boolean);
+      nums.forEach(n => {
+        const val = parseFloat(n);
+        if (val >= 4 && val <= 16) sizes.push(String(val));
+      });
     }
-  }
 
-  const isFootwear = /\b(shoes?|sneakers?|boots?|runners?|trainers?)\b/i.test(text);
-  if (isFootwear && sizes.length === 0) {
-    sizes.push("All");
-  }
+    // 3. Single shoe size match e.g. "size 10", "sz 8.5"
+    const singleMatch = text.match(/\b(?:size|sizes|sz)\.?\s*([0-9]{1,2}(?:\.[0-9])?)\b/i);
+    if (singleMatch) {
+      const val = parseFloat(singleMatch[1]);
+      if (val >= 4 && val <= 16) sizes.push(String(val));
+    }
 
-  if (/\b(select sizes|multiple sizes|all sizes|sizes available)\b/i.test(text)) {
-    sizes.push("All");
+    // Never add clothing sizes (XS, S, M, L) to shoes!
+    if (sizes.length === 0) {
+      sizes.push("All");
+    }
+  } else {
+    // Apparel / Clothing sizes only: Require explicit prefix or multi-char tag to prevent matching lone "S" or "SE"
+    const sizeTokens = text.match(/\b(?:size|sz)\s*([0-9]{1,2}|xs|s|m|l|xl|xxl|2xl|3xl)\b/gi) || [];
+    sizeTokens.forEach(tok => {
+      const clean = tok.replace(/^(?:size|sz)\s*/i, '').trim().toUpperCase();
+      if (clean) sizes.push(clean);
+    });
+
+    const directApparel = text.match(/\b(XS|XXL|2XL|3XL)\b/g) || [];
+    directApparel.forEach(tok => sizes.push(tok.toUpperCase()));
+
+    const waistMatch = text.match(/\b(?:waist|w)\s*([0-9]{2})\b/gi) || [];
+    waistMatch.forEach(tok => {
+      const clean = tok.replace(/^(?:waist|w)\s*/i, '').trim();
+      sizes.push(clean);
+    });
   }
 
   return [...new Set(sizes)];
+}
+
+function resolveMerchantUrl(retailer, title, exitWebsite = '') {
+  const cleanTitle = title
+    .replace(/\$\d+(?:\.\d{2})?.*$/, '')
+    .replace(/\[[^\]]+\]/g, '')
+    .replace(/free shipping/gi, '')
+    .trim();
+  const searchTerms = encodeURIComponent(cleanTitle);
+  const ret = (retailer || exitWebsite || '').toLowerCase();
+
+  // Return direct, 100% working merchant destination links (preferring Canadian domains)
+  if (ret.includes('sport chek') || ret.includes('sportchek')) {
+    return `https://www.sportchek.ca/en/search.html?q=${searchTerms}`;
+  }
+  if (ret.includes('foot locker') || ret.includes('footlocker')) {
+    return `https://www.footlocker.ca/en/search?query=${searchTerms}`;
+  }
+  if (ret.includes('the bay') || ret.includes('hudson') || ret.includes('hudsons-bay')) {
+    return `https://www.thebay.com/search?q=${searchTerms}`;
+  }
+  if (ret.includes('nike')) {
+    return `https://www.nike.com/ca/w?q=${searchTerms}`;
+  }
+  if (ret.includes('adidas')) {
+    return `https://www.adidas.ca/en/search?q=${searchTerms}`;
+  }
+  if (ret.includes('new balance')) {
+    return `https://www.newbalance.ca/en_ca/search/?q=${searchTerms}`;
+  }
+  if (ret.includes('best buy') || ret.includes('bestbuy')) {
+    return `https://www.bestbuy.ca/en-ca/search?search=${searchTerms}`;
+  }
+  if (ret.includes('canada computers')) {
+    return `https://www.canadacomputers.com/search/results_details.php?keywords=${searchTerms}`;
+  }
+  if (ret.includes('memory express')) {
+    return `https://www.memoryexpress.com/Search/Products?Search=${searchTerms}`;
+  }
+  if (ret.includes('the shoe company')) {
+    return `https://www.theshoecompany.ca/en/ca/search?query=${searchTerms}`;
+  }
+  if (ret.includes('the last hunt') || ret.includes('altitude')) {
+    return `https://www.thelasthunt.com/search/?q=${searchTerms}`;
+  }
+  if (ret.includes('simons')) {
+    return `https://www.simons.ca/en/search?query=${searchTerms}`;
+  }
+  if (ret.includes('lululemon')) {
+    return `https://shop.lululemon.com/c/search/_/N-1z13y8x?Ntt=${searchTerms}`;
+  }
+  if (ret.includes('under armour')) {
+    return `https://www.underarmour.ca/en-ca/search?q=${searchTerms}`;
+  }
+  if (ret.includes('amazon')) {
+    return `https://www.amazon.ca/s?k=${searchTerms}`;
+  }
+  if (ret.includes('walmart')) {
+    return `https://www.walmart.ca/search?q=${searchTerms}`;
+  }
+  if (ret.includes('costco')) {
+    return `https://www.costco.ca/CatalogSearch?dept=All&keyword=${searchTerms}`;
+  }
+  if (ret.includes('jd sports') || ret.includes('jdsports')) {
+    return `https://www.jdsports.com/search?q=${searchTerms}`;
+  }
+  if (ret.includes('dick') || ret.includes('dicks')) {
+    return `https://www.dickssportinggoods.com/search/SearchDisplay?searchTerm=${searchTerms}`;
+  }
+  if (ret.includes('nordstrom')) {
+    return `https://www.nordstromrack.com/sr?query=${searchTerms}`;
+  }
+  if (ret.includes('macy')) {
+    return `https://www.macys.com/shop/featured/${searchTerms}`;
+  }
+  if (ret.includes('kohl')) {
+    return `https://www.kohls.com/search.jsp?search=${searchTerms}`;
+  }
+  if (ret.includes('dsw')) {
+    return `https://www.dsw.com/browse/shoes?query=${searchTerms}`;
+  }
+  if (ret.includes('finish line') || ret.includes('finishline')) {
+    return `https://www.finishline.com/search?q=${searchTerms}`;
+  }
+  if (ret.includes('zappos')) {
+    return `https://www.zappos.com/search?term=${searchTerms}`;
+  }
+  if (ret.includes('scheels')) {
+    return `https://www.scheels.com/search?q=${searchTerms}`;
+  }
+  if (ret.includes('rei')) {
+    return `https://www.rei.com/search?q=${searchTerms}`;
+  }
+
+  // Fallback to Google Shopping Canada
+  return `https://www.google.ca/search?tbm=shop&gl=ca&hl=en&q=${encodeURIComponent(retailer + ' ' + cleanTitle)}`;
 }
 
 function parseSlickdealsItem(itemXml, defaultCategory = 'clothing', brandHint = '', retailerHint = '') {
@@ -281,13 +406,14 @@ function parseSlickdealsItem(itemXml, defaultCategory = 'clothing', brandHint = 
     let rawLink = linkMatch ? cleanHtml(linkMatch[1]) : '';
     let productUrl = rawLink.replace(/[?&]utm_[^&]+/g, '').replace(/\?$/, '');
 
-    const outclickMatch = fullHtml.match(/<a[^>]+href=["'](https:\/\/slickdeals\.net\/click\?[^"']+)["']/i);
-    let directStoreUrl = outclickMatch ? cleanHtml(outclickMatch[1]) : productUrl;
-
     let description = cleanHtml(descMatch ? descMatch[1] : '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').slice(0, 300);
 
     const retailer = extractRetailer(title, fullHtml, retailerHint);
     const brand = extractBrand(title, retailer, brandHint);
+
+    const exitWebsiteMatch = fullHtml.match(/data-product-exitWebsite=["']([^"']+)["']/i);
+    const exitWebsite = exitWebsiteMatch ? exitWebsiteMatch[1] : '';
+    const directStoreUrl = resolveMerchantUrl(retailer, title, exitWebsite);
 
     // Filter out random non-branded Amazon white-label junk
     if (retailer.toLowerCase().includes('amazon')) {
@@ -352,7 +478,7 @@ function parseSlickdealsItem(itemXml, defaultCategory = 'clothing', brandHint = 
 
     const { category, subcategory, tags, keywords } = classifyDeal(title, description, defaultCategory);
     const gender = extractGender(title, category, subcategory);
-    const sizes = extractSizes(title, description);
+    const sizes = extractSizes(title, description, subcategory);
 
     // Final check: Must belong to Clothing or Electronics
     if (category !== 'clothing' && category !== 'electronics') {
@@ -477,7 +603,8 @@ function parseRedFlagDealsEntry(entryXml, defaultCategory = 'clothing') {
     }
 
     const gender = extractGender(cleanTitle, category, subcategory);
-    const sizes = extractSizes(cleanTitle, fullHtml);
+    const sizes = extractSizes(cleanTitle, fullHtml, subcategory);
+    const directStoreUrl = resolveMerchantUrl(retailer, cleanTitle, '', productUrl);
 
     let imageUrl = '';
     if (category === 'clothing' || subcategory === 'shoes') {
@@ -506,7 +633,7 @@ function parseRedFlagDealsEntry(entryXml, defaultCategory = 'clothing') {
       salePrice: Math.round(salePrice * 100) / 100,
       savingsPercent,
       currency: 'CAD',
-      productUrl,
+      productUrl: directStoreUrl,
       sourceUrl: productUrl,
       imageUrl,
       category,

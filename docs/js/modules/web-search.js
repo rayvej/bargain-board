@@ -91,13 +91,24 @@ export function buildSearchQuery(filters) {
     
     // Determine category type
     const queryLower = displayQuery.toLowerCase();
-    const isFashion = filters.category === 'shoes' || 
+    const fashionBrands = [
+        'nike', 'adidas', 'new balance', 'lululemon', 'under armour', "levi's", 'levis',
+        'puma', 'asics', 'brooks', 'hoka', 'saucony', 'on running', 'vans', 'converse',
+        'timberland', 'skechers', 'the north face', 'north face', 'patagonia', 'columbia',
+        'carhartt', "arc'teryx", 'arcteryx', 'gap', 'old navy', 'banana republic', 'j.crew', 'jcrew'
+    ];
+    const brandLower = (filters.brand || '').toLowerCase();
+    const isFashionBrand = fashionBrands.some(b => brandLower.includes(b) || queryLower.includes(b));
+    const isFashion = isFashionBrand ||
+                      filters.category === 'shoes' || 
                       filters.category === 'clothing' || 
                       filters.category === 'mens' || 
                       filters.category === 'womens' || 
-                      filters.size || 
+                      Boolean(filters.size) || 
                       queryLower.includes('shoe') || 
                       queryLower.includes('sneaker') || 
+                      queryLower.includes('boot') || 
+                      queryLower.includes('runner') || 
                       queryLower.includes('shirt') || 
                       queryLower.includes('hoodie') ||
                       queryLower.includes('pant') ||

@@ -148,6 +148,48 @@ function extractSizes(title) {
     return [...new Set(sizes)];
 }
 
+function resolveMerchantUrl(retailer, title, link) {
+    const cleanTitle = title
+        .replace(/\$\d+(?:\.\d{2})?.*$/, '')
+        .replace(/\[[^\]]+\]/g, '')
+        .trim();
+    const searchTerms = encodeURIComponent(cleanTitle);
+    const ret = (retailer || '').toLowerCase();
+
+    if (ret.includes('sport chek') || ret.includes('sportchek')) {
+        return `https://www.sportchek.ca/en/search.html?q=${searchTerms}`;
+    }
+    if (ret.includes('foot locker') || ret.includes('footlocker')) {
+        return `https://www.footlocker.ca/en/search?query=${searchTerms}`;
+    }
+    if (ret.includes('the bay') || ret.includes('hudson')) {
+        return `https://www.thebay.com/search?q=${searchTerms}`;
+    }
+    if (ret.includes('nike')) {
+        return `https://www.nike.com/ca/w?q=${searchTerms}`;
+    }
+    if (ret.includes('adidas')) {
+        return `https://www.adidas.ca/en/search?q=${searchTerms}`;
+    }
+    if (ret.includes('best buy') || ret.includes('bestbuy')) {
+        return `https://www.bestbuy.ca/en-ca/search?search=${searchTerms}`;
+    }
+    if (ret.includes('the shoe company')) {
+        return `https://www.theshoecompany.ca/en/ca/search?query=${searchTerms}`;
+    }
+    if (ret.includes('canada computers')) {
+        return `https://www.canadacomputers.com/search/results_details.php?keywords=${searchTerms}`;
+    }
+    if (ret.includes('memory express')) {
+        return `https://www.memoryexpress.com/Search/Products?Search=${searchTerms}`;
+    }
+    if (ret.includes('amazon')) {
+        return `https://www.amazon.ca/s?k=${searchTerms}`;
+    }
+
+    return `https://www.google.ca/search?tbm=shop&gl=ca&hl=en&q=${encodeURIComponent(retailer + ' ' + cleanTitle)}`;
+}
+
 /**
  * Parses Atom / RSS text into structured deals and checks filter relevance
  */
@@ -252,7 +294,7 @@ function parseAtomOrRss(xmlText, filters) {
         deals.push({
             id: `rfd-live-${Date.now()}-${idx}`,
             title: cleanTitle,
-            productUrl: link,
+            productUrl: resolveMerchantUrl(retailer, cleanTitle, link),
             sourceUrl: link,
             retailer,
             brand: detectedBrand,

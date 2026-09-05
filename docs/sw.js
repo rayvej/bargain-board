@@ -1,5 +1,5 @@
-// ─── Bargain Board — Service Worker v8 ───
-const CACHE_NAME = 'bargain-board-v8';
+// ─── Bargain Board — Service Worker v9 ───
+const CACHE_NAME = 'bargain-board-v9';
 
 const STATIC_ASSETS = [
     './',
