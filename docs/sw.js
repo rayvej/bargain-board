@@ -1,5 +1,5 @@
-// ─── Bargain Board — Service Worker v4 ───
-const CACHE_NAME = 'bargain-board-v4';
+// ─── Bargain Board — Service Worker v5 ───
+const CACHE_NAME = 'bargain-board-v5';
 
 const STATIC_ASSETS = [
     './',
@@ -16,7 +16,8 @@ const STATIC_ASSETS = [
     './js/modules/ui.js',
     './js/modules/firestore-client.js',
     './js/modules/deal-card.js',
-    './js/modules/filters.js'
+    './js/modules/filters.js',
+    './js/modules/web-search.js'
 ];
 
 // Install — cache static assets

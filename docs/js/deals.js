@@ -4,6 +4,7 @@ import { getFilters, subscribe, updateFilter, resetFilters } from './modules/fil
 import { setAvailableBrands } from './search.js';
 import { openModal } from './modules/ui.js';
 import { formatPrice, formatRelativeTime, showToast } from './modules/ui.js';
+import { buildSearchQuery, openWebSearchModal } from './modules/web-search.js';
 
 let allLoadedDeals = [];
 let filteredDeals = [];
@@ -76,6 +77,16 @@ export async function initDeals(containerId) {
             const amazonToggle = document.getElementById('exclude-amazon-toggle');
             if (amazonToggle) amazonToggle.checked = false;
             updateGenderButtons(null);
+        });
+    }
+
+    // ─── Search The Web Button Listener ───
+    const searchWebBtn = document.getElementById('btn-search-the-web');
+    if (searchWebBtn) {
+        searchWebBtn.addEventListener('click', () => {
+            openWebSearchModal(getFilters(), filteredDeals.length, (newDeals) => {
+                handleAddLiveDeals(newDeals, container);
+            });
         });
     }
 
@@ -185,6 +196,26 @@ function setupAvailableFilters(deals) {
     }
 }
 
+function handleAddLiveDeals(newDeals, container) {
+    if (!newDeals || newDeals.length === 0) return;
+    const existingUrls = new Set(allLoadedDeals.map(d => d.productUrl));
+    let addedCount = 0;
+    newDeals.forEach(d => {
+        if (!existingUrls.has(d.productUrl)) {
+            existingUrls.add(d.productUrl);
+            allLoadedDeals.unshift(d);
+            addedCount++;
+        }
+    });
+
+    if (addedCount > 0) {
+        showToast(`⚡ Added ${addedCount} live web deals to your board!`, 'success');
+        applyFiltersAndRender(container, getFilters());
+    } else {
+        showToast('All discovered deals are already on your board!', 'info');
+    }
+}
+
 function applyFiltersAndRender(container, filters) {
     currentPage = 1;
     filteredDeals = filterDeals(allLoadedDeals, filters);
@@ -193,22 +224,50 @@ function applyFiltersAndRender(container, filters) {
     const totalCountEl = document.getElementById('total-deal-count');
     if (totalCountEl) totalCountEl.textContent = filteredDeals.length;
 
+    // ─── Update Live Internet Deal Search Banner ───
+    const queryInfo = buildSearchQuery(filters);
+    const badgeEl = document.getElementById('web-search-query-badge');
+    if (badgeEl) {
+        if (queryInfo.tags.length > 0) {
+            badgeEl.textContent = queryInfo.tags.join(' • ');
+            badgeEl.classList.remove('hidden');
+        } else {
+            badgeEl.textContent = 'All Categories & Deals';
+        }
+    }
+
+    const subtextEl = document.getElementById('web-search-banner-subtext');
+    if (subtextEl) {
+        subtextEl.textContent = `Showing ${filteredDeals.length} deals in current catalog. Click to search Google Shopping, Foot Locker, Dick's, Nordstrom Rack & top outlets for these exact filters.`;
+    }
+
     container.innerHTML = '';
     displayedDeals = [];
 
     if (filteredDeals.length === 0) {
         container.innerHTML = `
-            <div class="col-span-full py-20 text-center">
-                <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4 text-2xl">
-                    🔍
+            <div class="col-span-full py-16 text-center">
+                <div class="w-16 h-16 mx-auto bg-cyan-50 rounded-full flex items-center justify-center mb-4 text-3xl">
+                    🌐
                 </div>
-                <h3 class="text-lg font-bold text-gray-800">No deals match your selected filters</h3>
-                <p class="text-sm text-gray-500 mt-1 max-w-sm mx-auto">Try clearing one of your filters or unchecking "Exclude Amazon" to view more deals.</p>
-                <button type="button" id="reset-filters-empty-btn" class="mt-4 px-4 py-2 bg-[#06B6D4] text-white text-xs font-bold rounded-lg hover:bg-cyan-600 transition-colors shadow-sm">
-                    Reset All Filters
-                </button>
+                <h3 class="text-xl font-bold text-gray-900">No local deals found for: "${queryInfo.displayQuery}"</h3>
+                <p class="text-sm text-gray-500 mt-2 max-w-md mx-auto">
+                    Our local catalog doesn't have this item right now, but there are definitely deals live across the web! Tap below to search Google Shopping and 8+ major retailers with these exact filters.
+                </p>
+                <div class="flex items-center justify-center gap-3 mt-6 flex-wrap">
+                    <button type="button" id="search-web-empty-btn" class="px-6 py-3 bg-gradient-to-r from-[#06B6D4] to-cyan-500 hover:from-cyan-400 hover:to-cyan-500 active:scale-95 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-lg flex items-center gap-2">
+                        <span>⚡ Search Internet for "${queryInfo.displayQuery}"</span>
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </button>
+                    <button type="button" id="reset-filters-empty-btn" class="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition-colors">
+                        Reset Filters
+                    </button>
+                </div>
             </div>
         `;
+        document.getElementById('search-web-empty-btn')?.addEventListener('click', () => {
+            openWebSearchModal(filters, 0, (newDeals) => handleAddLiveDeals(newDeals, container));
+        });
         document.getElementById('reset-filters-empty-btn')?.addEventListener('click', () => {
             document.getElementById('clear-all-filters-btn')?.click();
         });
