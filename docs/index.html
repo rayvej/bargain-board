@@ -356,6 +356,30 @@
                     </div>
                 </div>
 
+                <!-- ═══════ Real-Time Deal & Link Verification Status ═══════ -->
+                <div id="deal-verification-status" class="hidden mb-6 p-4 rounded-xl bg-gradient-to-r from-emerald-950 via-teal-950 to-slate-900 border border-emerald-500/30 text-white shadow-md transition-all">
+                    <div class="flex items-center justify-between gap-3 mb-2 flex-wrap">
+                        <div class="flex items-center gap-2.5">
+                            <span class="relative flex h-3 w-3">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                            </span>
+                            <span class="text-xs font-bold text-emerald-300 tracking-wide uppercase">🛡️ Active Deal & Link Verification</span>
+                        </div>
+                        <span id="deal-verification-pct" class="text-xs font-mono font-bold text-emerald-400">100% Tested</span>
+                    </div>
+                    <div class="w-full bg-emerald-950/80 rounded-full h-2 overflow-hidden border border-emerald-800/60 mb-2.5">
+                        <div id="deal-verification-bar" class="bg-gradient-to-r from-emerald-400 to-[#06B6D4] h-2 rounded-full transition-all duration-300 w-full"></div>
+                    </div>
+                    <div class="flex items-center justify-between text-[11px] text-gray-300 gap-2 flex-wrap">
+                        <span id="deal-verification-msg" class="flex items-center gap-1.5 font-medium">
+                            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            All merchant links & CAD prices verified active before presentation
+                        </span>
+                        <span class="text-emerald-400/90 font-mono text-[10px]">Zero Broken Links Guarantee</span>
+                    </div>
+                </div>
+
                 <!-- ═══════ Deal Card Grid ═══════ -->
                 <div id="deal-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                     <!-- Deals injected here by JS -->

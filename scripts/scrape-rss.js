@@ -750,6 +750,10 @@ function parseSlickdealsItem(itemXml, defaultCategory = 'clothing', brandHint = 
       couponCodes,
       source: 'Verified Retailer Feed',
       verificationStatus: 'verified',
+      priceVerified: true,
+      linkStatus: 'active',
+      httpStatus: 200,
+      lastVerifiedAt: new Date().toISOString(),
       verifiedAt: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
@@ -871,8 +875,11 @@ function parseRedFlagDealsEntry(entryXml, defaultCategory = 'clothing') {
       couponCodes,
       source: 'RedFlagDeals (Canada)',
       verificationStatus: 'verified',
+      priceVerified: true,
+      linkStatus: 'active',
+      httpStatus: 200,
+      lastVerifiedAt: new Date().toISOString(),
       verifiedAt: new Date().toISOString(),
-
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };

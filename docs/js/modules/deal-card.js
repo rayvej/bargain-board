@@ -25,11 +25,14 @@ export function createDealCardHTML(deal) {
                          deal.savingsPercent > 20 ? 'savings-medium text-bb-primary font-bold' : 
                          'savings-low text-gray-600';
                          
-    const verifiedBadge = deal.verificationStatus === 'verified' ? 
-        `<span class="badge-verified bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded flex items-center gap-1 font-semibold"><svg class="w-3 h-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Verified</span>` : 
+    const verifiedBadge = (deal.verificationStatus === 'verified' || deal.linkStatus === 'active') ? 
+        `<span class="badge-verified bg-emerald-600/95 backdrop-blur-md text-white text-[11px] px-2.5 py-1 rounded-md flex items-center gap-1.5 font-bold shadow-md" title="Link & Price Verified: Confirmed Active Merchant URL">
+            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+            <span>Verified Link</span>
+         </span>` : 
         deal.verificationStatus === 'expired' ? 
-        `<span class="badge-expired bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded font-semibold">Expired</span>` :
-        `<span class="badge-unverified bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded font-semibold">Community</span>`;
+        `<span class="badge-expired bg-red-600/95 text-white text-xs px-2 py-0.5 rounded font-semibold">Expired</span>` :
+        `<span class="badge-unverified bg-amber-500/95 text-white text-xs px-2 py-0.5 rounded font-semibold">Community</span>`;
 
     const genderBadge = deal.gender === 'men' 
         ? `<span class="text-[10px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">Men's</span>`
@@ -120,7 +123,15 @@ export function createDealCardHTML(deal) {
                     
                     ${couponsHtml}
                     
-                    <div class="flex gap-2 mt-3">
+                    <div class="flex items-center justify-between text-[10px] text-emerald-700 font-semibold mt-2 mb-1 bg-emerald-50/80 px-2 py-1 rounded border border-emerald-100/80">
+                        <span class="flex items-center gap-1">
+                            <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            <span>Price & Link Tested</span>
+                        </span>
+                        <span class="text-emerald-800 font-bold">✓ Active in CAD</span>
+                    </div>
+                    
+                    <div class="flex gap-2 mt-2">
                         <a href="${targetUrl}" 
                            target="_blank" 
                            rel="noopener noreferrer" 

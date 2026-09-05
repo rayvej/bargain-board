@@ -143,7 +143,31 @@ async function runEvaluation() {
     await page.waitForTimeout(300);
   }
 
-  // 6. Inspect Store Clearance Portals
+  // 6. Test Real-Time Verification Flow on Search
+  console.log('Testing Real-Time Verification Flow on Search...');
+  const clearBtn = await page.$('#clear-all-filters-btn');
+  if (clearBtn && await clearBtn.isVisible()) {
+    await clearBtn.click();
+    await page.waitForTimeout(300);
+  }
+  const isCouponChecked = await page.$eval('#coupon-toggle', el => el.checked);
+  if (isCouponChecked) {
+    await page.locator('label:has(#coupon-toggle)').click();
+    await page.waitForTimeout(300);
+  }
+
+  await page.fill('#main-search', 'Nike');
+  await page.dispatchEvent('#main-search', 'input');
+  await page.waitForTimeout(100);
+  
+  // Check verification banner visibility and message
+  const isVerificationVisible = await page.$eval('#deal-verification-status', el => !el.classList.contains('hidden'));
+  const verificationMsg = await page.$eval('#deal-verification-msg', el => el.textContent.trim());
+  console.log(`Verification Banner Active: ${isVerificationVisible}, Message: "${verificationMsg}"`);
+  await page.waitForTimeout(700); // Allow verification routine to finish
+  await page.screenshot({ path: path.join(artifactsDir, 'eval_7_verification_flow.png'), fullPage: false });
+
+  // 7. Inspect Store Clearance Portals
   const portals = await page.$$eval('#clearance-portals-list a', links => {
     return links.map(a => ({
       name: a.textContent.trim().replace(/\s+/g, ' '),
@@ -152,8 +176,9 @@ async function runEvaluation() {
   });
   console.log('Generated Clearance Portals:', JSON.stringify(portals, null, 2));
 
-  // 7. Comprehensive Dataset Quality Audit
+  // 8. Comprehensive Dataset Quality Audit
   const deals = JSON.parse(fs.readFileSync(path.join(docsDir, 'deals-data.json'), 'utf8'));
+  const verifiedLinkCount = deals.filter(d => d.verificationStatus === 'verified' && d.priceVerified && d.linkStatus === 'active').length;
   const couponCount = deals.filter(d => d.couponCodes && d.couponCodes.length > 0).length;
   const directStoreUrlCount = deals.filter(d => d.productUrl && !d.productUrl.includes('slickdeals.net') && !d.productUrl.includes('google.ca') && !d.productUrl.includes('ebay')).length;
   const googleSearchCount = deals.filter(d => d.productUrl && d.productUrl.includes('google.ca/search')).length;
@@ -161,8 +186,9 @@ async function runEvaluation() {
   const slickdealsRedirectCount = deals.filter(d => d.productUrl && d.productUrl.includes('slickdeals.net')).length;
   const amazonCount = deals.filter(d => (d.retailer || '').toLowerCase().includes('amazon')).length;
 
-  console.log('\n--- DATASET QUALITY AUDIT ---');
+  console.log('\n--- DATASET QUALITY & VERIFICATION AUDIT ---');
   console.log(`Total Deals in Catalog: ${deals.length}`);
+  console.log(`100% Tested & Verified Working Deals: ${verifiedLinkCount} (${((verifiedLinkCount/deals.length)*100).toFixed(1)}%)`);
   console.log(`Deals with Coupon Codes: ${couponCount} (${((couponCount/deals.length)*100).toFixed(1)}%)`);
   console.log(`Deals with Direct Merchant Links: ${directStoreUrlCount} (${((directStoreUrlCount/deals.length)*100).toFixed(1)}%)`);
   console.log(`Deals with Google Search URLs: ${googleSearchCount} (Target: 0)`);

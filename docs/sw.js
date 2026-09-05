@@ -1,5 +1,5 @@
-// ─── Bargain Board — Service Worker v10 ───
-const CACHE_NAME = 'bargain-board-v10';
+// ─── Bargain Board — Service Worker v11 ───
+const CACHE_NAME = 'bargain-board-v11';
 
 const STATIC_ASSETS = [
     './',
@@ -18,7 +18,8 @@ const STATIC_ASSETS = [
     './js/modules/deal-card.js',
     './js/modules/filters.js',
     './js/modules/web-search.js',
-    './js/modules/deal-crawler.js'
+    './js/modules/deal-crawler.js',
+    './js/modules/deal-verifier.js'
 ];
 
 // Install — cache static assets
