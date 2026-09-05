@@ -77,6 +77,8 @@ export async function initDeals(containerId) {
             if (verifiedToggle) verifiedToggle.checked = false;
             const amazonToggle = document.getElementById('exclude-amazon-toggle');
             if (amazonToggle) amazonToggle.checked = false;
+            const couponToggle = document.getElementById('coupon-toggle');
+            if (couponToggle) couponToggle.checked = false;
             updateGenderButtons(null);
         });
     }
@@ -466,6 +468,11 @@ function filterDeals(deals, filters) {
             return false;
         }
 
+        // 10. Promo Codes / Coupons Only
+        if (filters.hasCoupon && (!deal.couponCodes || deal.couponCodes.length === 0)) {
+            return false;
+        }
+
         return true;
     });
 
@@ -660,19 +667,36 @@ function showDealModal(deal) {
 
     if (body) {
         const couponsHtml = (deal.couponCodes || []).map(c => `
-            <div class="flex items-center justify-between p-3.5 bg-cyan-50/60 rounded-xl border border-dashed border-cyan-300">
-                <div>
+            <div class="p-4 bg-gradient-to-br from-cyan-50/80 via-emerald-50/40 to-slate-50 rounded-xl border border-dashed border-cyan-400 shadow-sm">
+                <div class="flex items-center justify-between flex-wrap gap-2">
                     <div class="flex items-center gap-2">
-                        <span class="text-sm">🏷️</span>
-                        <span class="font-mono font-bold text-base text-cyan-950">${c.code}</span>
-                        <span class="text-xs bg-green-100 text-green-800 font-semibold px-2 py-0.5 rounded-full">Active</span>
+                        <span class="text-xl">🏷️</span>
+                        <span class="font-mono font-extrabold text-base sm:text-lg text-cyan-950 tracking-wider bg-white px-3 py-1 rounded-lg border border-cyan-200 shadow-inner">${c.code}</span>
+                        <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">${c.discount || 'Active Promo Code'}</span>
+                        <span class="text-xs bg-cyan-100 text-cyan-800 font-semibold px-2 py-0.5 rounded-full">✓ Verified</span>
                     </div>
-                    <p class="text-xs text-gray-600 mt-1">${c.discount || 'Discount code'}</p>
-                    ${c.restrictions ? `<p class="text-xs text-amber-700 mt-0.5">⚠️ ${c.restrictions}</p>` : ''}
+                    <button type="button" class="copy-coupon-btn px-4 py-2 text-xs font-bold text-white bg-[#06B6D4] hover:bg-cyan-600 active:scale-95 rounded-lg transition-all shadow-sm cursor-pointer select-none flex items-center gap-1.5" data-code="${c.code}">
+                        <span>📋</span>
+                        <span>Copy Code</span>
+                    </button>
                 </div>
-                <button type="button" class="copy-coupon-btn px-4 py-1.5 text-xs font-bold text-white bg-[#06B6D4] hover:bg-cyan-600 rounded-lg transition-colors shadow-sm" data-code="${c.code}">
-                    Copy Code
-                </button>
+                
+                <div class="mt-3 pt-3 border-t border-cyan-200/60 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div class="bg-white/80 p-2.5 rounded-lg border border-cyan-100">
+                        <div class="flex items-center gap-1.5 font-bold text-gray-800 mb-1">
+                            <span>🥞</span>
+                            <span>Stacking Policy:</span>
+                        </div>
+                        <p class="text-gray-600 leading-relaxed">${c.stackingPolicy || (c.stacksWithSale !== false ? 'Stacks on top of existing clearance markdowns.' : 'Single promotional code per order.')}</p>
+                    </div>
+                    <div class="bg-white/80 p-2.5 rounded-lg border border-cyan-100">
+                        <div class="flex items-center gap-1.5 font-bold text-gray-800 mb-1">
+                            <span>🛒</span>
+                            <span>How to Apply at Checkout:</span>
+                        </div>
+                        <p class="text-gray-600 leading-relaxed">${c.checkoutInstructions || `Paste code ${c.code} in the promo/coupon code box at checkout on ${deal.retailer || 'the store'}.`}</p>
+                    </div>
+                </div>
             </div>
         `).join('');
 

@@ -10,6 +10,7 @@ let currentFilters = {
     minPrice: null,
     maxPrice: null,
     verifiedOnly: false,
+    hasCoupon: false,
     sortBy: 'newest'  // 'newest' | 'price_asc' | 'price_desc' | 'discount_desc'
 };
 
@@ -42,6 +43,7 @@ export function resetFilters() {
         minPrice: null,
         maxPrice: null,
         verifiedOnly: false,
+        hasCoupon: false,
         sortBy: 'newest'
     };
     notifyListeners();

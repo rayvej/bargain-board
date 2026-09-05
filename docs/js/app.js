@@ -72,6 +72,11 @@ async function bootstrap() {
         updateFilter('excludeAmazon', e.target.checked);
     });
 
+    // ─── Promo Codes Only Toggle ───
+    document.getElementById('coupon-toggle')?.addEventListener('change', (e) => {
+        updateFilter('hasCoupon', e.target.checked);
+    });
+
     // ─── Store / Retailer Select Listener ───
     document.getElementById('retailer-select')?.addEventListener('change', (e) => {
         const val = e.target.value;
@@ -137,6 +142,8 @@ async function bootstrap() {
         if (toggle) toggle.checked = false;
         const amazonToggle = document.getElementById('exclude-amazon-toggle');
         if (amazonToggle) amazonToggle.checked = false;
+        const couponToggle = document.getElementById('coupon-toggle');
+        if (couponToggle) couponToggle.checked = false;
         
         // Reset gender buttons
         document.querySelectorAll('#gender-filter-group .gender-btn').forEach(btn => {

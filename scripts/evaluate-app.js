@@ -122,7 +122,28 @@ async function runEvaluation() {
     await page.waitForTimeout(300);
   }
 
-  // 5. Inspect Store Clearance Portals
+  // 5. Test Promo Codes Only Toggle
+  console.log('Testing Promo Codes Only Toggle...');
+  await page.click('#clear-all-filters-btn');
+  await page.waitForTimeout(400);
+  await page.locator('label:has(#coupon-toggle)').click();
+  await page.waitForTimeout(600);
+  const promoDealsCount = await page.$$eval('#deal-grid .deal-card', cards => cards.length);
+  const promoTotalCount = await page.$eval('#total-deal-count', el => el.textContent);
+  console.log(`Filtered by Promo Codes Only: Showing ${promoDealsCount} cards (Total matching: ${promoTotalCount})`);
+  await page.screenshot({ path: path.join(artifactsDir, 'eval_5_coupons_filtered.png'), fullPage: false });
+
+  // Open modal of a promo code deal to verify stacking breakdown
+  const firstPromoCard = await page.$('#deal-grid .deal-card');
+  if (firstPromoCard) {
+    await firstPromoCard.click();
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: path.join(artifactsDir, 'eval_6_promo_modal.png'), fullPage: false });
+    await page.click('.close-modal');
+    await page.waitForTimeout(300);
+  }
+
+  // 6. Inspect Store Clearance Portals
   const portals = await page.$$eval('#clearance-portals-list a', links => {
     return links.map(a => ({
       name: a.textContent.trim().replace(/\s+/g, ' '),
@@ -131,10 +152,12 @@ async function runEvaluation() {
   });
   console.log('Generated Clearance Portals:', JSON.stringify(portals, null, 2));
 
-  // 6. Test Deal URLs & Coupons in Catalog
+  // 7. Comprehensive Dataset Quality Audit
   const deals = JSON.parse(fs.readFileSync(path.join(docsDir, 'deals-data.json'), 'utf8'));
   const couponCount = deals.filter(d => d.couponCodes && d.couponCodes.length > 0).length;
-  const directStoreUrlCount = deals.filter(d => d.productUrl && !d.productUrl.includes('slickdeals.net')).length;
+  const directStoreUrlCount = deals.filter(d => d.productUrl && !d.productUrl.includes('slickdeals.net') && !d.productUrl.includes('google.ca') && !d.productUrl.includes('ebay')).length;
+  const googleSearchCount = deals.filter(d => d.productUrl && d.productUrl.includes('google.ca/search')).length;
+  const ebayCount = deals.filter(d => (d.productUrl && d.productUrl.includes('ebay')) || (d.retailer || '').toLowerCase().includes('ebay')).length;
   const slickdealsRedirectCount = deals.filter(d => d.productUrl && d.productUrl.includes('slickdeals.net')).length;
   const amazonCount = deals.filter(d => (d.retailer || '').toLowerCase().includes('amazon')).length;
 
@@ -142,7 +165,9 @@ async function runEvaluation() {
   console.log(`Total Deals in Catalog: ${deals.length}`);
   console.log(`Deals with Coupon Codes: ${couponCount} (${((couponCount/deals.length)*100).toFixed(1)}%)`);
   console.log(`Deals with Direct Merchant Links: ${directStoreUrlCount} (${((directStoreUrlCount/deals.length)*100).toFixed(1)}%)`);
-  console.log(`Deals with Intermediary Aggregator (Slickdeals/RFD) Links: ${slickdealsRedirectCount} (${((slickdealsRedirectCount/deals.length)*100).toFixed(1)}%)`);
+  console.log(`Deals with Google Search URLs: ${googleSearchCount} (Target: 0)`);
+  console.log(`Deals with eBay URLs: ${ebayCount} (Target: 0)`);
+  console.log(`Deals with Intermediary Slickdeals Redirects: ${slickdealsRedirectCount} (Target: 0)`);
   console.log(`Amazon Deals: ${amazonCount} (${((amazonCount/deals.length)*100).toFixed(1)}%)`);
   console.log(`Console Errors during session: ${errors.length}`);
   if (errors.length > 0) console.log('Errors:', errors);

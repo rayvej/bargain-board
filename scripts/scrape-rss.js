@@ -152,8 +152,8 @@ const KNOWN_RETAILERS = [
   "Jomashop", "Dell", "Lenovo", "Journeys", "Champs", "Eastbay", "PacSun", "Adorama"
 ];
 
-// Aggressive Junk / Non-clothing / Non-electronics regex
-const JUNK_REGEX = /\b(flight|flights|airline|airlines|airfare|hotel|vacation|roundtrip|resort|cruise|gift card|giftcard|extra bucks|extrabucks|cashback|cash back|trade-in|trade in|publix|cvs|walgreens|grocery|food|snack|cookie|candy|meat|cheese|coffee|hose|watering wand|insect|mosquito|bug spray|picaridin|cushion|pillow|throw pillow|cutting board|propane|deadbolt|pressure washer|wrench|socket|drill bit|fertilizer|plant|shampoo|soap|detergent|toothpaste|pan|pot|skillet|knife|blender|mattress|towel|bedding|sheet set|comforter|board game|puzzle|card game|lego|doll|toy|car cover|wiper|brake|motor oil|oil filter|spark plug)\b/i;
+// Aggressive Junk / Non-clothing / Non-electronics / Sweepstakes / Contests regex
+const JUNK_REGEX = /\b(flight|flights|airline|airlines|airfare|hotel|vacation|roundtrip|resort|cruise|gift card|giftcard|extra bucks|extrabucks|cashback|cash back|trade-in|trade in|publix|cvs|walgreens|grocery|food|snack|cookie|candy|meat|cheese|coffee|hose|watering wand|insect|mosquito|bug spray|picaridin|cushion|pillow|throw pillow|cutting board|propane|deadbolt|pressure washer|wrench|socket|drill bit|fertilizer|plant|shampoo|soap|detergent|toothpaste|pan|pot|skillet|knife|blender|mattress|towel|bedding|sheet set|comforter|board game|puzzle|card game|lego|doll|toy|car cover|wiper|brake|motor oil|oil filter|spark plug|sweepstakes|sweeps|sweep|giveaway|contest|win big|instant win|instant-win|chance to win|free entry|enter to win|win a|cataboom|gleam\.io|sweeppea|hydrate to win|coors light|heineken|kwik fill|ebay|resale)\b/i;
 
 function cleanHtml(str) {
   if (!str) return '';
@@ -291,16 +291,46 @@ function extractSizes(title, description, subcategory = '') {
   return [...new Set(sizes)];
 }
 
-function resolveMerchantUrl(retailer, title, exitWebsite = '') {
-  const cleanTitle = title
-    .replace(/\$\d+(?:\.\d{2})?.*$/, '')
-    .replace(/\[[^\]]+\]/g, '')
-    .replace(/free shipping/gi, '')
+function cleanProductQuery(title) {
+  let q = title
+    .replace(/\[[^\]]+\]/g, ' ')
+    .replace(/\([^\)]+\)/g, ' ')
+    .replace(/\$\s*\d+(?:\.\d{2})?/g, ' ')
+    .replace(/\b\d+(?:\.\d{2})?\s*(?:usd|cad)\b/gi, ' ')
+    .replace(/\b(?:usd|cad|ca\$|us\$)\b/gi, ' ')
+    .replace(/^(?:kohl'?s|amazon|nike|best\s*buy|dick'?s|walmart|target|costco|woot|scheels)\s*[-–:]\s*/gi, ' ')
+    .replace(/\b(?:free shipping|free s&h|free delivery|free pickup|free store pickup|free s\/h|fs on \$\d+\+?|free shipping on \$\d+\+?)\b.*$/gi, ' ')
+    .replace(/\b(?:with promo code|with coupon|with code|w\/\s*code|apply code|use code|code:?|promo code:?|ecoupon)\b.*$/gi, ' ')
+    .replace(/\b(?:save \d+%|\d+%\s*off|ymmv|new atl|atl|reg\.?\s*\$\d+|lowest in \d+|bogo)\b.*$/gi, ' ')
+    .replace(/\b(?:select accts|select accounts|select stores|select sizes|members:?|at macys|at woot|at kohls|at adidas|via ebay|at amazon)\b.*$/gi, ' ')
+    .replace(/['"]/g, '')
+    .replace(/[:|,\/\\!~–—\-]/g, ' ')
+    .replace(/^[\s\d]+/, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
-  const searchTerms = encodeURIComponent(cleanTitle);
+
+  let words = q.split(' ').filter(w => w.length > 0);
+  if (words.length > 5) words = words.slice(0, 5);
+  return words.join(' ');
+}
+
+function resolveMerchantUrl(retailer, title, exitWebsite = '', directLink = '', category = 'clothing', subcategory = 'shoes') {
+  // 1. Check for valid direct merchant product link (e.g. Amazon ASIN or official store URL)
+  if (directLink) {
+    if (directLink.includes('amazon.com/dp/') || directLink.includes('amazon.ca/dp/')) {
+      const asinMatch = directLink.match(/\/dp\/([A-Z0-9]{10})/i);
+      if (asinMatch) return `https://www.amazon.ca/dp/${asinMatch[1]}`;
+    }
+    if (/^https?:\/\/(?:www\.)?(?:nike\.com|adidas\.ca|sportchek\.ca|footlocker\.ca|thebay\.com|bestbuy\.ca|canadacomputers\.com|memoryexpress\.com|theshoecompany\.ca|walmart\.ca|costco\.ca|lenovo\.com|dell\.com|apple\.com|gapcanada\.ca|oldnavy\.gapcanada\.ca)\//i.test(directLink)) {
+      return directLink;
+    }
+  }
+
+  const query = cleanProductQuery(title);
+  const searchTerms = encodeURIComponent(query);
   const ret = (retailer || exitWebsite || '').toLowerCase();
 
-  // Return direct, 100% working merchant destination links (preferring Canadian domains)
+  // Primary Canadian Retailers & Top Fashion/Tech Merchants
   if (ret.includes('sport chek') || ret.includes('sportchek')) {
     return `https://www.sportchek.ca/en/search.html?q=${searchTerms}`;
   }
@@ -316,8 +346,11 @@ function resolveMerchantUrl(retailer, title, exitWebsite = '') {
   if (ret.includes('adidas')) {
     return `https://www.adidas.ca/en/search?q=${searchTerms}`;
   }
-  if (ret.includes('new balance')) {
+  if (ret.includes('new balance') || ret.includes('newbalance') || ret.includes('joesnewbalanceoutlet')) {
     return `https://www.newbalance.ca/en_ca/search/?q=${searchTerms}`;
+  }
+  if (ret.includes('the shoe company') || ret.includes('shoe company')) {
+    return `https://www.theshoecompany.ca/en/ca/search?query=${searchTerms}`;
   }
   if (ret.includes('best buy') || ret.includes('bestbuy')) {
     return `https://www.bestbuy.ca/en-ca/search?search=${searchTerms}`;
@@ -328,21 +361,6 @@ function resolveMerchantUrl(retailer, title, exitWebsite = '') {
   if (ret.includes('memory express')) {
     return `https://www.memoryexpress.com/Search/Products?Search=${searchTerms}`;
   }
-  if (ret.includes('the shoe company')) {
-    return `https://www.theshoecompany.ca/en/ca/search?query=${searchTerms}`;
-  }
-  if (ret.includes('the last hunt') || ret.includes('altitude')) {
-    return `https://www.thelasthunt.com/search/?q=${searchTerms}`;
-  }
-  if (ret.includes('simons')) {
-    return `https://www.simons.ca/en/search?query=${searchTerms}`;
-  }
-  if (ret.includes('lululemon')) {
-    return `https://shop.lululemon.com/c/search/_/N-1z13y8x?Ntt=${searchTerms}`;
-  }
-  if (ret.includes('under armour')) {
-    return `https://www.underarmour.ca/en-ca/search?q=${searchTerms}`;
-  }
   if (ret.includes('amazon')) {
     return `https://www.amazon.ca/s?k=${searchTerms}`;
   }
@@ -352,14 +370,89 @@ function resolveMerchantUrl(retailer, title, exitWebsite = '') {
   if (ret.includes('costco')) {
     return `https://www.costco.ca/CatalogSearch?dept=All&keyword=${searchTerms}`;
   }
-  if (ret.includes('jd sports') || ret.includes('jdsports')) {
-    return `https://www.jdsports.com/search?q=${searchTerms}`;
+  if (ret.includes('gap factory')) {
+    return `https://www.gapfactory.com/browse/search.do?searchText=${searchTerms}`;
+  }
+  if (ret.includes('gap')) {
+    return `https://www.gapcanada.ca/browse/search.do?searchText=${searchTerms}`;
+  }
+  if (ret.includes('old navy')) {
+    return `https://oldnavy.gapcanada.ca/browse/search.do?searchText=${searchTerms}`;
+  }
+  if (ret.includes('banana republic')) {
+    return `https://bananarepublic.gapcanada.ca/browse/search.do?searchText=${searchTerms}`;
+  }
+  if (ret.includes('j.crew') || ret.includes('jcrew')) {
+    return `https://www.jcrew.com/r/search?Ntt=${searchTerms}`;
+  }
+  if (ret.includes('lululemon')) {
+    return `https://shop.lululemon.com/c/search/_/N-1z13y8x?Ntt=${searchTerms}`;
+  }
+  if (ret.includes('under armour') || ret.includes('underarmour')) {
+    return `https://www.underarmour.ca/en-ca/search?q=${searchTerms}`;
+  }
+  if (ret.includes('puma')) {
+    return `https://ca.puma.com/ca/en/search?q=${searchTerms}`;
+  }
+  if (ret.includes('asics')) {
+    return `https://www.asics.com/ca/en-ca/search?q=${searchTerms}`;
+  }
+  if (ret.includes('vans')) {
+    return `https://www.vans.ca/en-ca/search?q=${searchTerms}`;
+  }
+  if (ret.includes('converse')) {
+    return `https://www.converse.ca/search?q=${searchTerms}`;
+  }
+  if (ret.includes('timberland')) {
+    return `https://www.timberland.ca/en-ca/search?q=${searchTerms}`;
+  }
+  if (ret.includes('columbia')) {
+    return `https://www.columbiasportswear.ca/en/search?q=${searchTerms}`;
+  }
+  if (ret.includes('carhartt')) {
+    return `https://www.carhartt.com/search/${searchTerms}`;
+  }
+  if (ret.includes('patagonia')) {
+    return `https://www.patagonia.ca/search/?q=${searchTerms}`;
+  }
+  if (ret.includes('arcteryx') || ret.includes("arc'teryx")) {
+    return `https://arcteryx.com/ca/en/search?q=${searchTerms}`;
+  }
+  if (ret.includes('levi')) {
+    return `https://www.levi.com/CA/en_CA/search/${searchTerms}`;
+  }
+  if (ret.includes('lenovo')) {
+    return `https://www.lenovo.com/ca/en/search?fq=&text=${searchTerms}`;
+  }
+  if (ret.includes('dell')) {
+    return `https://www.dell.com/en-ca/search/${searchTerms}`;
+  }
+  if (ret.includes('apple')) {
+    return `https://www.apple.com/ca/search/${searchTerms}`;
+  }
+  if (ret.includes('samsung')) {
+    return `https://www.samsung.com/ca/search/?searchvalue=${searchTerms}`;
+  }
+  if (ret.includes('woot')) {
+    return `https://www.woot.com/category/sellout?q=${searchTerms}`;
+  }
+  if (ret.includes('newegg')) {
+    return `https://www.newegg.ca/p/pl?d=${searchTerms}`;
+  }
+  if (ret.includes('b&h') || ret.includes('bhphotovideo')) {
+    return `https://www.bhphotovideo.com/c/search?Ntt=${searchTerms}`;
+  }
+  if (ret.includes('staples')) {
+    return `https://www.staples.ca/search?q=${searchTerms}`;
+  }
+  if (ret.includes('simons')) {
+    return `https://www.simons.ca/en/search?query=${searchTerms}`;
+  }
+  if (ret.includes('the last hunt')) {
+    return `https://www.thelasthunt.com/search/?q=${searchTerms}`;
   }
   if (ret.includes('dick') || ret.includes('dicks')) {
     return `https://www.dickssportinggoods.com/search/SearchDisplay?searchTerm=${searchTerms}`;
-  }
-  if (ret.includes('nordstrom')) {
-    return `https://www.nordstromrack.com/sr?query=${searchTerms}`;
   }
   if (ret.includes('macy')) {
     return `https://www.macys.com/shop/featured/${searchTerms}`;
@@ -367,25 +460,161 @@ function resolveMerchantUrl(retailer, title, exitWebsite = '') {
   if (ret.includes('kohl')) {
     return `https://www.kohls.com/search.jsp?search=${searchTerms}`;
   }
+  if (ret.includes('nordstrom')) {
+    return `https://www.nordstromrack.com/sr?query=${searchTerms}`;
+  }
+  if (ret.includes('rei')) {
+    return `https://www.rei.com/search?q=${searchTerms}`;
+  }
+  if (ret.includes('zappos')) {
+    return `https://www.zappos.com/search?term=${searchTerms}`;
+  }
   if (ret.includes('dsw')) {
     return `https://www.dsw.com/browse/shoes?query=${searchTerms}`;
   }
   if (ret.includes('finish line') || ret.includes('finishline')) {
     return `https://www.finishline.com/search?q=${searchTerms}`;
   }
-  if (ret.includes('zappos')) {
-    return `https://www.zappos.com/search?term=${searchTerms}`;
-  }
   if (ret.includes('scheels')) {
     return `https://www.scheels.com/search?q=${searchTerms}`;
   }
-  if (ret.includes('rei')) {
-    return `https://www.rei.com/search?q=${searchTerms}`;
+  if (ret.includes('jd sports') || ret.includes('jdsports')) {
+    return `https://www.jdsports.com/search?q=${searchTerms}`;
+  }
+  if (ret.includes('champs')) {
+    return `https://www.champssports.com/search?query=${searchTerms}`;
+  }
+  if (ret.includes('journeys')) {
+    return `https://www.journeys.ca/search?keywords=${searchTerms}`;
+  }
+  if (ret.includes('shoe carnival') || ret.includes('shoecarnival')) {
+    return `https://www.shoecarnival.com/search?q=${searchTerms}`;
+  }
+  if (ret.includes('famous footwear') || ret.includes('famousfootwear')) {
+    return `https://www.famousfootwear.com/search#q=${searchTerms}`;
+  }
+  if (ret.includes('sierra')) {
+    return `https://www.sierra.com/s~${searchTerms}/`;
+  }
+  if (ret.includes('backcountry')) {
+    return `https://www.backcountry.com/bcs/search?s=u&q=${searchTerms}`;
+  }
+  if (ret.includes('micro center') || ret.includes('microcenter')) {
+    return `https://www.microcenter.com/search/search_results.aspx?Ntt=${searchTerms}`;
+  }
+  if (ret.includes('target')) {
+    return `https://www.target.com/s?searchTerm=${searchTerms}`;
   }
 
-  // Fallback to Google Shopping Canada
-  return `https://www.google.ca/search?tbm=shop&gl=ca&hl=en&q=${encodeURIComponent(retailer + ' ' + cleanTitle)}`;
+  // ABSOLUTE GUARANTEE: Never fall back to Google Search or eBay!
+  // Route to Canada's premier retailer for that category
+  if (category === 'clothing' || subcategory === 'shoes') {
+    return `https://www.sportchek.ca/en/search.html?q=${searchTerms}`;
+  } else {
+    return `https://www.bestbuy.ca/en-ca/search?search=${searchTerms}`;
+  }
 }
+
+function extractCouponCodes(title, description, fullHtml, retailer) {
+  const text = `${title} ${description} ${fullHtml}`;
+  const couponCodes = [];
+  const seen = new Set();
+
+  const FALSE_POSITIVES = new Set([
+    'AND', 'FOR', 'FREE', 'THE', 'NEW', 'SAVE', 'WITH', 'SALE', 'CODE', 
+    'ITEM', 'ONLY', 'DEAL', 'OFF', 'PLUS', 'THIS', 'FROM', 'GET', 'ALL', 
+    'NOW', 'SHOP', 'CARD', 'BUY', 'SIZE', 'CART', 'BEST', 'PRICE', 'MORE',
+    'VERY', 'GOOD', 'JUST', 'LIKE', 'SOME', 'THAT', 'THEM', 'THEN', 'WANT',
+    'WILL', 'YOUR', 'WHAT', 'WHEN', 'MUCH', 'OVER', 'DROP', 'LAST', 'DEALS',
+    'COOL', 'HOT', 'HOTDEAL', 'TODAY', 'INLINECOUPONICON', 'PRICES', 'START',
+    'REQUIRED', 'SHOES', 'FOUND', 'AFTER', 'NEEDED', 'WORKS', 'ADDITIONAL',
+    'DOESN', 'MAKING', 'ABOVE', 'VALID', 'ITEMS', 'CODES', 'SHOULD', 'APPLIED',
+    'AMAZON', 'NECESSARY', 'APPLIES', 'XXXXXXXXXXXX', '4-IN-2'
+  ]);
+  const VALID_WORDS = new Set(['EXTRA', 'BONUS', 'SUMMER', 'FALL', 'SPRING', 'WINTER', 'DAYONE', 'LASTSHOT', 'WELCOME', 'VIP', 'BUY1GET1', 'GET10', 'SUPERSAVING', 'ZAPEXTRA15', 'AUGUST50', 'STYLEDEAL20']);
+
+  const markupMatches = [
+    ...fullHtml.matchAll(/<span[^>]*class=['"][^'"]*code[^'"]*['"][^>]*><strong>([^<]+)<\/strong>/gi),
+    ...fullHtml.matchAll(/data-role=['"]couponCode['"][\s\S]*?<strong[^>]*>([A-Z0-9_-]{3,20})<\/strong>/gi)
+  ];
+  markupMatches.forEach(m => {
+    const raw = m[1].trim().toUpperCase();
+    if (/^[A-Z0-9_-]{3,20}$/.test(raw) && (!FALSE_POSITIVES.has(raw) || VALID_WORDS.has(raw))) {
+      seen.add(raw);
+    }
+  });
+
+  const regexPatterns = [
+    /(?:use code|coupon code|promo code|w\/\s*code|apply code|with code|code:?|coupon:?|ecoupon)\s*[:\s]?\s*[\*\"'“”]?([A-Z0-9_-]{3,18})[\*\"'“”]?/gi,
+    /(?:extra|save an extra)\s+(?:\$\d+|\d+%\s*off)\s+(?:with|w\/|using)\s+(?:code|coupon|promo)\s*[\*\"'“”]?([A-Z0-9_-]{3,18})[\*\"'“”]?/gi
+  ];
+
+  regexPatterns.forEach(regex => {
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+      const code = match[1].trim().toUpperCase();
+      if (/^[A-Z0-9_-]{3,20}$/.test(code)) {
+        if (!FALSE_POSITIVES.has(code) || VALID_WORDS.has(code)) {
+          seen.add(code);
+        }
+      }
+    }
+  });
+
+  let discountStr = 'Verified Promo Code';
+  const discountMatch = text.match(/(\d+%\s*off|\$\d+(?:\.\d{2})?\s*off|buy\s*1\s*get\s*1|bogo|extra\s*\d+%\s*off)/i);
+  if (discountMatch) {
+    discountStr = discountMatch[1].toUpperCase();
+  }
+
+  const retLower = (retailer || '').toLowerCase();
+  let stacksWithSale = true;
+  let multiCodeStackable = false;
+  let stackingPolicy = 'Stacks with existing sale markdowns at checkout.';
+  let checkoutInstructions = `Apply code at checkout on ${retailer || 'the store'}.`;
+
+  if (retLower.includes("kohl")) {
+    multiCodeStackable = true;
+    stackingPolicy = 'Highly stackable! Kohl\'s allows stacking up to 4 promo codes per order, plus Kohl\'s Cash.';
+    checkoutInstructions = 'In cart, expand "Apply Kohl\'s Coupons" and enter code.';
+  } else if (retLower.includes("nike")) {
+    multiCodeStackable = false;
+    stackingPolicy = 'Stacks with sale prices & free shipping for Nike Members (1 code per order).';
+    checkoutInstructions = 'Under Order Summary at checkout, click "Do you have a promo code?" and paste.';
+  } else if (retLower.includes("adidas")) {
+    multiCodeStackable = false;
+    stackingPolicy = 'Stacks with existing sale markdowns & adiClub member free shipping (1 code per order).';
+    checkoutInstructions = 'In your bag or at checkout, enter the code in the "Use a promo code" box.';
+  } else if (retLower.includes("gap") || retLower.includes("old navy") || retLower.includes("banana republic")) {
+    multiCodeStackable = true;
+    stackingPolicy = 'Stackable! Gap & Old Navy permit stacking up to 3 compatible promotional codes or rewards per order.';
+    checkoutInstructions = 'In checkout or shopping bag, enter the code under "Promotions & Rewards".';
+  } else if (retLower.includes("amazon")) {
+    multiCodeStackable = true;
+    stackingPolicy = 'Stacks with on-page clip coupons and existing deal markdowns at checkout.';
+    checkoutInstructions = 'At final review screen, enter code in "Gift Cards & Promotional Codes".';
+  } else if (retLower.includes("lenovo")) {
+    multiCodeStackable = false;
+    stackingPolicy = 'eCoupon stacks on top of instant doorbuster clearance savings.';
+    checkoutInstructions = 'In cart, enter the code into the "eCoupon" box and click Apply.';
+  }
+
+  seen.forEach(code => {
+    couponCodes.push({
+      code,
+      discount: discountStr,
+      verified: true,
+      verifiedAt: new Date().toISOString(),
+      stacksWithSale,
+      multiCodeStackable,
+      stackingPolicy,
+      checkoutInstructions
+    });
+  });
+
+  return couponCodes;
+}
+
 
 function parseSlickdealsItem(itemXml, defaultCategory = 'clothing', brandHint = '', retailerHint = '') {
   try {
@@ -411,9 +640,10 @@ function parseSlickdealsItem(itemXml, defaultCategory = 'clothing', brandHint = 
     const retailer = extractRetailer(title, fullHtml, retailerHint);
     const brand = extractBrand(title, retailer, brandHint);
 
-    const exitWebsiteMatch = fullHtml.match(/data-product-exitWebsite=["']([^"']+)["']/i);
-    const exitWebsite = exitWebsiteMatch ? exitWebsiteMatch[1] : '';
-    const directStoreUrl = resolveMerchantUrl(retailer, title, exitWebsite);
+    // Purge eBay & Resellers
+    if (retailer.toLowerCase().includes('ebay') || title.toLowerCase().includes('via ebay') || fullHtml.toLowerCase().includes('via ebay') || retailer.toLowerCase().includes('resale') || retailer.toLowerCase().includes('sneakersupply')) {
+      return null;
+    }
 
     // Filter out random non-branded Amazon white-label junk
     if (retailer.toLowerCase().includes('amazon')) {
@@ -424,33 +654,25 @@ function parseSlickdealsItem(itemXml, defaultCategory = 'clothing', brandHint = 
       }
     }
 
+    const { category, subcategory, tags, keywords } = classifyDeal(title, description, defaultCategory);
+
+    // Direct store URL resolution (prioritizing Amazon ASIN or genuine retailer endpoints)
+    let directStoreUrl = '';
+    const asinMatch = fullHtml.match(/data-aps-asin=["']([A-Z0-9]{10})["']/i) || 
+                      fullHtml.match(/amazon\.[a-z\.]+\/dp\/([A-Z0-9]{10})/i) || 
+                      description.match(/amazon\.[a-z\.]+\/dp\/([A-Z0-9]{10})/i);
+    if (asinMatch) {
+      directStoreUrl = `https://www.amazon.ca/dp/${asinMatch[1]}`;
+    } else {
+      const exitWebsiteMatch = fullHtml.match(/data-product-exitWebsite=["']([^"']+)["']/i);
+      const exitWebsite = exitWebsiteMatch ? exitWebsiteMatch[1] : '';
+      directStoreUrl = resolveMerchantUrl(retailer, title, exitWebsite, '', category, subcategory);
+    }
+
     const imgMatch = fullHtml.match(/<img[^>]+src=["'](https:\/\/[^"']+)["']/i);
     let imageUrl = imgMatch ? imgMatch[1] : '';
 
-    const couponCodes = [];
-    const couponSpanMatch = fullHtml.match(/<span[^>]*class=['"][^'"]*code[^'"]*['"][^>]*><strong>([^<]+)<\/strong>/i) ||
-                             fullHtml.match(/data-role=['"]couponCode['"][\s\S]*?<strong[^>]*>([A-Z0-9_-]{3,20})<\/strong>/i);
-    if (couponSpanMatch) {
-      couponCodes.push({
-        code: couponSpanMatch[1].trim(),
-        discount: 'Active Promo Code',
-        verified: true,
-        verifiedAt: new Date().toISOString(),
-        stackable: false
-      });
-    } else {
-      const promoRegex = /(?:use code|coupon code|promo code|w\/ code|code:?)\s*[:\s]?\s*([A-Z0-9]{3,15})\b/i;
-      const foundPromo = title.match(promoRegex) || description.match(promoRegex);
-      if (foundPromo && !['AND', 'FOR', 'FREE', 'THE', 'NEW', 'SAVE', 'WITH'].includes(foundPromo[1].toUpperCase())) {
-        couponCodes.push({
-          code: foundPromo[1].trim().toUpperCase(),
-          discount: 'Promo Code',
-          verified: true,
-          verifiedAt: new Date().toISOString(),
-          stackable: false
-        });
-      }
-    }
+    const couponCodes = extractCouponCodes(title, description, fullHtml, retailer);
 
     let salePrice = 0;
     let originalPrice = 0;
@@ -476,7 +698,6 @@ function parseSlickdealsItem(itemXml, defaultCategory = 'clothing', brandHint = 
       }
     }
 
-    const { category, subcategory, tags, keywords } = classifyDeal(title, description, defaultCategory);
     const gender = extractGender(title, category, subcategory);
     const sizes = extractSizes(title, description, subcategory);
 
@@ -567,6 +788,12 @@ function parseRedFlagDealsEntry(entryXml, defaultCategory = 'clothing') {
     }
 
     const brand = extractBrand(cleanTitle, retailer);
+
+    // Purge eBay & Resellers
+    if (retailer.toLowerCase().includes('ebay') || cleanTitle.toLowerCase().includes('via ebay') || fullHtml.toLowerCase().includes('via ebay') || retailer.toLowerCase().includes('resale')) {
+      return null;
+    }
+
     const { category, subcategory, tags, keywords } = classifyDeal(cleanTitle, fullHtml, defaultCategory);
 
     if (category !== 'clothing' && category !== 'electronics') {
@@ -604,7 +831,7 @@ function parseRedFlagDealsEntry(entryXml, defaultCategory = 'clothing') {
 
     const gender = extractGender(cleanTitle, category, subcategory);
     const sizes = extractSizes(cleanTitle, fullHtml, subcategory);
-    const directStoreUrl = resolveMerchantUrl(retailer, cleanTitle, '', productUrl);
+    const directStoreUrl = resolveMerchantUrl(retailer, cleanTitle, '', productUrl, category, subcategory);
 
     let imageUrl = '';
     if (category === 'clothing' || subcategory === 'shoes') {
@@ -620,6 +847,7 @@ function parseRedFlagDealsEntry(entryXml, defaultCategory = 'clothing') {
     }
 
     const id = crypto.createHash('sha256').update(productUrl + cleanTitle).digest('hex').slice(0, 16);
+    const couponCodes = extractCouponCodes(cleanTitle, fullHtml, fullHtml, retailer);
 
     return {
       id,
@@ -640,10 +868,11 @@ function parseRedFlagDealsEntry(entryXml, defaultCategory = 'clothing') {
       subcategory,
       tags: [...new Set([...tags, brand.toLowerCase(), retailer.toLowerCase(), gender])],
       keywords: [...new Set([...keywords, brand.toLowerCase(), retailer.toLowerCase(), gender])],
-      couponCodes: [],
+      couponCodes,
       source: 'RedFlagDeals (Canada)',
       verificationStatus: 'verified',
       verifiedAt: new Date().toISOString(),
+
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };

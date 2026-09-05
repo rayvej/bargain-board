@@ -16,8 +16,7 @@ export function getComparisonLinks(deal) {
         query,
         googleShopping: `https://www.google.com/search?tbm=shop&gl=ca&hl=en&q=${encodeURIComponent(query)}`,
         fashionSearch: `https://www.google.com/search?q=${encodeURIComponent(query + ' (site:sportchek.ca OR site:footlocker.ca OR site:thebay.com OR site:theshoecompany.ca OR site:nike.com/ca)')}`,
-        techSearch: `https://www.google.com/search?q=${encodeURIComponent(query + ' (site:bestbuy.ca OR site:canadacomputers.com OR site:memoryexpress.com OR site:apple.com/ca)')}`,
-        ebay: `https://www.ebay.ca/sch/i.html?_nkw=${encodeURIComponent(query)}&LH_ItemCondition=1000`
+        techSearch: `https://www.google.com/search?q=${encodeURIComponent(query + ' (site:bestbuy.ca OR site:canadacomputers.com OR site:memoryexpress.com OR site:apple.com/ca)')}`
     };
 }
 
@@ -48,14 +47,24 @@ export function createDealCardHTML(deal) {
         : '';
 
     const couponsHtml = (deal.couponCodes || []).map(coupon => `
-        <div class="coupon-code mt-2 flex items-center justify-between border border-dashed border-cyan-400 rounded-lg px-2.5 py-1.5 bg-cyan-50/50 hover:bg-cyan-50 transition-colors">
-            <div class="flex items-center gap-1.5">
-                <span class="text-xs text-cyan-700">🏷️</span>
-                <span class="font-mono text-xs text-cyan-900 font-bold tracking-wide">${coupon.code}</span>
+        <div class="coupon-code mt-2 border border-dashed border-cyan-400 rounded-lg p-2 bg-gradient-to-r from-cyan-50/60 to-emerald-50/40">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-xs">🏷️</span>
+                    <span class="font-mono text-xs text-cyan-950 font-bold tracking-wide">${coupon.code}</span>
+                    <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100/70 px-1.5 py-0.5 rounded">${coupon.discount || 'PROMO'}</span>
+                </div>
+                <button type="button" class="copy-coupon-btn text-xs font-bold text-white bg-[#06B6D4] hover:bg-cyan-600 px-2 py-0.5 rounded shadow-sm transition-colors cursor-pointer" data-code="${coupon.code}">
+                    Copy
+                </button>
             </div>
-            <button type="button" class="copy-coupon-btn text-xs font-semibold text-[#06B6D4] hover:text-cyan-700 px-2 py-0.5 rounded hover:bg-white transition-colors" data-code="${coupon.code}">
-                Copy
-            </button>
+            <div class="mt-1 flex items-center justify-between text-[10px] text-gray-500">
+                <span class="flex items-center gap-0.5 text-emerald-700 font-medium">
+                    <span>🥞</span>
+                    <span>${coupon.stacksWithSale !== false ? 'Stacks with Sale' : 'Promo Only'}</span>
+                </span>
+                <span class="text-gray-400 font-mono">Verified</span>
+            </div>
         </div>
     `).join('');
 

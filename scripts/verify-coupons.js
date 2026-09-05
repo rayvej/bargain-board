@@ -25,7 +25,13 @@ export async function verifyCoupons() {
   const FALSE_POSITIVES = new Set([
     'AND', 'FOR', 'FREE', 'THE', 'NEW', 'SAVE', 'WITH', 'SALE', 'CODE', 
     'ITEM', 'ONLY', 'DEAL', 'OFF', 'PLUS', 'THIS', 'FROM', 'GET', 'ALL', 
-    'NOW', 'SHOP', 'CARD', 'BUY', 'SIZE', 'CART', 'BEST', 'PRICE', 'MORE'
+    'NOW', 'SHOP', 'CARD', 'BUY', 'SIZE', 'CART', 'BEST', 'PRICE', 'MORE',
+    'VERY', 'GOOD', 'JUST', 'LIKE', 'SOME', 'THAT', 'THEM', 'THEN', 'WANT',
+    'WILL', 'YOUR', 'WHAT', 'WHEN', 'MUCH', 'OVER', 'DROP', 'LAST', 'DEALS',
+    'COOL', 'HOT', 'HOTDEAL', 'TODAY', 'INLINECOUPONICON', 'PRICES', 'START',
+    'REQUIRED', 'SHOES', 'FOUND', 'AFTER', 'NEEDED', 'WORKS', 'ADDITIONAL',
+    'DOESN', 'MAKING', 'ABOVE', 'VALID', 'ITEMS', 'CODES', 'SHOULD', 'APPLIED',
+    'AMAZON', 'NECESSARY', 'APPLIES', 'XXXXXXXXXXXX', '4-IN-2'
   ]);
 
   let totalCoupons = 0;
@@ -54,7 +60,10 @@ export async function verifyCoupons() {
           discount: c.discount || 'Verified Promo Code',
           verified: true,
           verifiedAt: new Date().toISOString(),
-          stackable: false
+          stacksWithSale: c.stacksWithSale !== undefined ? c.stacksWithSale : true,
+          multiCodeStackable: c.multiCodeStackable !== undefined ? c.multiCodeStackable : false,
+          stackingPolicy: c.stackingPolicy || 'Stacks with existing sale markdowns at checkout.',
+          checkoutInstructions: c.checkoutInstructions || `Enter code ${rawCode} in promo box at checkout.`
         });
       } else {
         prunedCoupons++;

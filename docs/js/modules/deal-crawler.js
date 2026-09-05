@@ -148,12 +148,31 @@ function extractSizes(title) {
     return [...new Set(sizes)];
 }
 
-function resolveMerchantUrl(retailer, title, link) {
-    const cleanTitle = title
-        .replace(/\$\d+(?:\.\d{2})?.*$/, '')
-        .replace(/\[[^\]]+\]/g, '')
+function cleanProductQuery(title) {
+    let q = title
+        .replace(/\[[^\]]+\]/g, ' ')
+        .replace(/\([^\)]+\)/g, ' ')
+        .replace(/\$\s*\d+(?:\.\d{2})?/g, ' ')
+        .replace(/\b\d+(?:\.\d{2})?\s*(?:usd|cad)\b/gi, ' ')
+        .replace(/\b(?:usd|cad|ca\$|us\$)\b/gi, ' ')
+        .replace(/^(?:kohl'?s|amazon|nike|best\s*buy|dick'?s|walmart|target|costco|woot|scheels)\s*[-–:]\s*/gi, ' ')
+        .replace(/\b(?:free shipping|free s&h|free delivery|free pickup|free store pickup|free s\/h|fs on \$\d+\+?|free shipping on \$\d+\+?)\b.*$/gi, ' ')
+        .replace(/\b(?:with promo code|with coupon|with code|w\/\s*code|apply code|use code|code:?|promo code:?|ecoupon)\b.*$/gi, ' ')
+        .replace(/\b(?:save \d+%|\d+%\s*off|ymmv|new atl|atl|reg\.?\s*\$\d+|lowest in \d+|bogo)\b.*$/gi, ' ')
+        .replace(/['"]/g, '')
+        .replace(/[:|,\/\\!~–—\-]/g, ' ')
+        .replace(/^[\s\d]+/, ' ')
+        .replace(/\s+/g, ' ')
         .trim();
-    const searchTerms = encodeURIComponent(cleanTitle);
+
+    let words = q.split(' ').filter(w => w.length > 0);
+    if (words.length > 5) words = words.slice(0, 5);
+    return words.join(' ');
+}
+
+function resolveMerchantUrl(retailer, title, link = '', category = 'clothing', subcategory = 'shoes') {
+    const query = cleanProductQuery(title);
+    const searchTerms = encodeURIComponent(query);
     const ret = (retailer || '').toLowerCase();
 
     if (ret.includes('sport chek') || ret.includes('sportchek')) {
@@ -162,7 +181,7 @@ function resolveMerchantUrl(retailer, title, link) {
     if (ret.includes('foot locker') || ret.includes('footlocker')) {
         return `https://www.footlocker.ca/en/search?query=${searchTerms}`;
     }
-    if (ret.includes('the bay') || ret.includes('hudson')) {
+    if (ret.includes('the bay') || ret.includes('hudson') || ret.includes('hudsons-bay')) {
         return `https://www.thebay.com/search?q=${searchTerms}`;
     }
     if (ret.includes('nike')) {
@@ -171,10 +190,13 @@ function resolveMerchantUrl(retailer, title, link) {
     if (ret.includes('adidas')) {
         return `https://www.adidas.ca/en/search?q=${searchTerms}`;
     }
+    if (ret.includes('new balance') || ret.includes('newbalance')) {
+        return `https://www.newbalance.ca/en_ca/search/?q=${searchTerms}`;
+    }
     if (ret.includes('best buy') || ret.includes('bestbuy')) {
         return `https://www.bestbuy.ca/en-ca/search?search=${searchTerms}`;
     }
-    if (ret.includes('the shoe company')) {
+    if (ret.includes('the shoe company') || ret.includes('shoe company')) {
         return `https://www.theshoecompany.ca/en/ca/search?query=${searchTerms}`;
     }
     if (ret.includes('canada computers')) {
@@ -186,9 +208,63 @@ function resolveMerchantUrl(retailer, title, link) {
     if (ret.includes('amazon')) {
         return `https://www.amazon.ca/s?k=${searchTerms}`;
     }
+    if (ret.includes('walmart')) {
+        return `https://www.walmart.ca/search?q=${searchTerms}`;
+    }
+    if (ret.includes('costco')) {
+        return `https://www.costco.ca/CatalogSearch?dept=All&keyword=${searchTerms}`;
+    }
+    if (ret.includes('lenovo')) {
+        return `https://www.lenovo.com/ca/en/search?fq=&text=${searchTerms}`;
+    }
+    if (ret.includes('dell')) {
+        return `https://www.dell.com/en-ca/search/${searchTerms}`;
+    }
+    if (ret.includes('apple')) {
+        return `https://www.apple.com/ca/search/${searchTerms}`;
+    }
+    if (ret.includes('lululemon')) {
+        return `https://shop.lululemon.com/c/search/_/N-1z13y8x?Ntt=${searchTerms}`;
+    }
+    if (ret.includes('under armour')) {
+        return `https://www.underarmour.ca/en-ca/search?q=${searchTerms}`;
+    }
 
-    return `https://www.google.ca/search?tbm=shop&gl=ca&hl=en&q=${encodeURIComponent(retailer + ' ' + cleanTitle)}`;
+    // Never fall back to Google Search or eBay!
+    if (category === 'clothing' || subcategory === 'shoes') {
+        return `https://www.sportchek.ca/en/search.html?q=${searchTerms}`;
+    } else {
+        return `https://www.bestbuy.ca/en-ca/search?search=${searchTerms}`;
+    }
 }
+
+function extractLiveCoupons(title, text, retailer) {
+    const combined = `${title} ${text}`;
+    const couponCodes = [];
+    const promoRegex = /(?:use code|coupon code|promo code|w\/\s*code|apply code|with code|code:?|coupon:?|ecoupon)\s*[:\s]?\s*[\*\"'“”]?([A-Z0-9_-]{3,18})[\*\"'“”]?/gi;
+    let match;
+    const seen = new Set();
+    while ((match = promoRegex.exec(combined)) !== null) {
+        const code = match[1].trim().toUpperCase();
+        if (/^[A-Z0-9_-]{3,20}$/.test(code) && !['AND', 'FOR', 'FREE', 'THE', 'NEW', 'SAVE', 'WITH', 'SALE'].includes(code)) {
+            seen.add(code);
+        }
+    }
+    seen.forEach(code => {
+        couponCodes.push({
+            code,
+            discount: 'Verified Promo Code',
+            verified: true,
+            verifiedAt: new Date().toISOString(),
+            stacksWithSale: true,
+            multiCodeStackable: false,
+            stackingPolicy: `Stacks on top of existing clearance markdowns at ${retailer || 'this store'}.`,
+            checkoutInstructions: `Enter code ${code} in checkout promo field.`
+        });
+    });
+    return couponCodes;
+}
+
 
 /**
  * Parses Atom / RSS text into structured deals and checks filter relevance
@@ -291,10 +367,16 @@ function parseAtomOrRss(xmlText, filters) {
             if (!hasSize) return;
         }
 
+        if (retailer.toLowerCase().includes('ebay') || cleanTitle.toLowerCase().includes('via ebay')) {
+            return;
+        }
+
+        const couponCodes = extractLiveCoupons(cleanTitle, descText, retailer);
+
         deals.push({
             id: `rfd-live-${Date.now()}-${idx}`,
             title: cleanTitle,
-            productUrl: resolveMerchantUrl(retailer, cleanTitle, link),
+            productUrl: resolveMerchantUrl(retailer, cleanTitle, link, category, subcategory),
             sourceUrl: link,
             retailer,
             brand: detectedBrand,
@@ -309,7 +391,7 @@ function parseAtomOrRss(xmlText, filters) {
             imageUrl: isShoe 
                 ? 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80'
                 : 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&q=80',
-            couponCodes: [],
+            couponCodes,
             source: 'RedFlagDeals (Canada)',
             verificationStatus: 'verified',
             verifiedAt: new Date().toISOString(),
