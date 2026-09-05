@@ -33,10 +33,8 @@ export function closeModal(modalId) {
 }
 
 export function formatPrice(amount) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
-    }).format(amount);
+    if (typeof amount !== 'number' || isNaN(amount)) return 'CA$0.00';
+    return 'CA$' + amount.toFixed(2);
 }
 
 export function formatRelativeTime(dateInput) {

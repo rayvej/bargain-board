@@ -162,8 +162,13 @@
                 <!-- Page Header -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900" id="page-title">🔥 Best Deals for You</h1>
-                        <p class="text-sm text-gray-500 mt-0.5" id="page-subtitle">Verified deals across top brands and retailers</p>
+                        <div class="flex items-center gap-2.5 flex-wrap">
+                            <h1 class="text-2xl font-bold text-gray-900" id="page-title">🔥 Best Deals for You</h1>
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200 shadow-sm">
+                                🇨🇦 Canada • CAD
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-0.5" id="page-subtitle">Verified deals in CAD from retailers in Canada and stores shipping to Canada</p>
                     </div>
                 </div>
 
@@ -231,7 +236,7 @@
                                 <span class="text-xs text-gray-400 font-semibold hidden md:inline">Size:</span>
                                 <select id="size-select" class="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-gray-50 outline-none focus:border-[#06B6D4] font-medium cursor-pointer text-gray-800">
                                     <option value="">All Sizes</option>
-                                    <optgroup label="Shoe Sizes (US)">
+                                    <optgroup label="Shoe Sizes (US / CA)">
                                         <option value="7">Size 7</option>
                                         <option value="7.5">Size 7.5</option>
                                         <option value="8">Size 8</option>
@@ -267,11 +272,11 @@
                                 <span class="text-xs text-gray-400 font-semibold hidden md:inline">Price:</span>
                                 <select id="price-range-select" class="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 bg-gray-50 outline-none focus:border-[#06B6D4] font-medium cursor-pointer text-gray-800">
                                     <option value="">All Prices</option>
-                                    <option value="under25">Under $25</option>
-                                    <option value="25to50">$25 – $50</option>
-                                    <option value="50to100">$50 – $100</option>
-                                    <option value="100to250">$100 – $250</option>
-                                    <option value="250plus">$250+</option>
+                                    <option value="under25">Under $25 CAD</option>
+                                    <option value="25to50">$25 – $50 CAD</option>
+                                    <option value="50to100">$50 – $100 CAD</option>
+                                    <option value="100to250">$100 – $250 CAD</option>
+                                    <option value="250plus">$250+ CAD</option>
                                 </select>
                             </div>
 
@@ -313,7 +318,7 @@
                                 </span>
                             </div>
                             <p class="text-xs text-gray-300 mt-0.5" id="web-search-banner-subtext">
-                                Want more deals? Search Google Shopping, Foot Locker, Dick's, Nordstrom Rack & top outlets for these exact filters.
+                                Want more deals? Scan Sport Chek, Foot Locker CA, Nike Canada, The Bay, Best Buy CA & top stores shipping to Canada.
                             </p>
                         </div>
                     </div>

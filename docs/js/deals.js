@@ -5,6 +5,7 @@ import { setAvailableBrands } from './search.js';
 import { openModal } from './modules/ui.js';
 import { formatPrice, formatRelativeTime, showToast } from './modules/ui.js';
 import { buildSearchQuery, openWebSearchModal } from './modules/web-search.js';
+import { searchCanadianDeals } from './modules/deal-crawler.js';
 
 let allLoadedDeals = [];
 let filteredDeals = [];
@@ -80,13 +81,11 @@ export async function initDeals(containerId) {
         });
     }
 
-    // ─── Search The Web Button Listener ───
+    // ─── Search The Web Button Listener (In-Page Canadian Deal Discovery) ───
     const searchWebBtn = document.getElementById('btn-search-the-web');
     if (searchWebBtn) {
         searchWebBtn.addEventListener('click', () => {
-            openWebSearchModal(getFilters(), filteredDeals.length, (newDeals) => {
-                handleAddLiveDeals(newDeals, container);
-            });
+            triggerInPageInternetSearch(container);
         });
     }
 
@@ -196,23 +195,56 @@ function setupAvailableFilters(deals) {
     }
 }
 
-function handleAddLiveDeals(newDeals, container) {
-    if (!newDeals || newDeals.length === 0) return;
-    const existingUrls = new Set(allLoadedDeals.map(d => d.productUrl));
-    let addedCount = 0;
-    newDeals.forEach(d => {
-        if (!existingUrls.has(d.productUrl)) {
-            existingUrls.add(d.productUrl);
-            allLoadedDeals.unshift(d);
-            addedCount++;
-        }
-    });
+async function triggerInPageInternetSearch(container) {
+    const filters = getFilters();
+    const queryInfo = buildSearchQuery(filters);
 
-    if (addedCount > 0) {
-        showToast(`⚡ Added ${addedCount} live web deals to your board!`, 'success');
-        applyFiltersAndRender(container, getFilters());
-    } else {
-        showToast('All discovered deals are already on your board!', 'info');
+    // Show active Canadian scanning state in deal grid
+    container.innerHTML = `
+        <div class="col-span-full py-16 text-center">
+            <div class="relative w-16 h-16 mx-auto mb-4">
+                <div class="animate-spin rounded-full h-16 w-16 border-4 border-[#06B6D4] border-t-transparent"></div>
+                <div class="absolute inset-0 flex items-center justify-center text-2xl">🇨🇦</div>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900">Scanning Canadian Retailers for Deals...</h3>
+            <p class="text-xs text-gray-500 mt-1 max-w-md mx-auto">
+                Searching Sport Chek, Foot Locker Canada, Nike Canada, Hudson's Bay, The Shoe Company & Best Buy Canada for deals matching <span class="font-bold text-[#06B6D4]">"${queryInfo.displayQuery}"</span>...
+            </p>
+            <div class="flex items-center justify-center gap-2 mt-4 flex-wrap text-[11px] font-semibold text-gray-600">
+                <span class="bg-red-50 text-red-700 border border-red-200 px-2.5 py-1 rounded-md">🇨🇦 All Prices in CAD</span>
+                <span class="bg-gray-100 px-2.5 py-1 rounded-md">📦 Ships to Canada</span>
+                <span class="bg-cyan-50 text-cyan-800 border border-cyan-200 px-2.5 py-1 rounded-md">⚡ Verified Clearance</span>
+            </div>
+        </div>
+    `;
+
+    try {
+        const foundDeals = await searchCanadianDeals(filters);
+        if (foundDeals && foundDeals.length > 0) {
+            const existingUrls = new Set(allLoadedDeals.map(d => d.productUrl));
+            let addedCount = 0;
+            foundDeals.forEach(d => {
+                if (!existingUrls.has(d.productUrl)) {
+                    existingUrls.add(d.productUrl);
+                    allLoadedDeals.unshift(d);
+                    addedCount++;
+                }
+            });
+
+            // Update stores dropdown with newly discovered Canadian retailers
+            setupAvailableFilters(allLoadedDeals);
+
+            // Re-render directly onto the current page!
+            applyFiltersAndRender(container, filters);
+
+            showToast(`🇨🇦 Found ${addedCount} live Canadian deals in CAD across Sport Chek, Foot Locker CA, Nike & Hudson's Bay!`, 'success');
+        } else {
+            showToast('No extra Canadian deals found matching this combination.', 'info');
+            applyFiltersAndRender(container, filters);
+        }
+    } catch (e) {
+        console.error('Error scanning Canadian deals:', e);
+        applyFiltersAndRender(container, filters);
     }
 }
 
@@ -232,13 +264,13 @@ function applyFiltersAndRender(container, filters) {
             badgeEl.textContent = queryInfo.tags.join(' • ');
             badgeEl.classList.remove('hidden');
         } else {
-            badgeEl.textContent = 'All Categories & Deals';
+            badgeEl.textContent = 'All Categories & Deals (CAD)';
         }
     }
 
     const subtextEl = document.getElementById('web-search-banner-subtext');
     if (subtextEl) {
-        subtextEl.textContent = `Showing ${filteredDeals.length} deals in current catalog. Click to search Google Shopping, Foot Locker, Dick's, Nordstrom Rack & top outlets for these exact filters.`;
+        subtextEl.textContent = `Showing ${filteredDeals.length} deals in current catalog. Click to search Sport Chek, Foot Locker CA, Nike Canada, Hudson's Bay & Best Buy CA for these exact filters.`;
     }
 
     container.innerHTML = '';
@@ -247,16 +279,16 @@ function applyFiltersAndRender(container, filters) {
     if (filteredDeals.length === 0) {
         container.innerHTML = `
             <div class="col-span-full py-16 text-center">
-                <div class="w-16 h-16 mx-auto bg-cyan-50 rounded-full flex items-center justify-center mb-4 text-3xl">
-                    🌐
+                <div class="w-16 h-16 mx-auto bg-red-50 rounded-full flex items-center justify-center mb-4 text-3xl">
+                    🇨🇦
                 </div>
                 <h3 class="text-xl font-bold text-gray-900">No local deals found for: "${queryInfo.displayQuery}"</h3>
                 <p class="text-sm text-gray-500 mt-2 max-w-md mx-auto">
-                    Our local catalog doesn't have this item right now, but there are definitely deals live across the web! Tap below to search Google Shopping and 8+ major retailers with these exact filters.
+                    We didn't find this item in the initial catalog, but Canadian stores (Sport Chek, Foot Locker CA, Nike Canada, Hudson's Bay) have active clearance sales! Tap below to search Canadian retailers.
                 </p>
                 <div class="flex items-center justify-center gap-3 mt-6 flex-wrap">
                     <button type="button" id="search-web-empty-btn" class="px-6 py-3 bg-gradient-to-r from-[#06B6D4] to-cyan-500 hover:from-cyan-400 hover:to-cyan-500 active:scale-95 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-lg flex items-center gap-2">
-                        <span>⚡ Search Internet for "${queryInfo.displayQuery}"</span>
+                        <span>⚡ Search Canadian Stores for "${queryInfo.displayQuery}"</span>
                         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </button>
                     <button type="button" id="reset-filters-empty-btn" class="px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition-colors">
@@ -266,7 +298,7 @@ function applyFiltersAndRender(container, filters) {
             </div>
         `;
         document.getElementById('search-web-empty-btn')?.addEventListener('click', () => {
-            openWebSearchModal(filters, 0, (newDeals) => handleAddLiveDeals(newDeals, container));
+            triggerInPageInternetSearch(container);
         });
         document.getElementById('reset-filters-empty-btn')?.addEventListener('click', () => {
             document.getElementById('clear-all-filters-btn')?.click();
@@ -666,16 +698,16 @@ function showDealModal(deal) {
             <div class="mt-6 p-4 rounded-xl bg-gradient-to-br from-slate-50 to-cyan-50/40 border border-cyan-100">
                 <div class="flex items-center justify-between mb-2">
                     <h4 class="text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
-                        <span>🔍 Compare Prices at Other Stores</span>
+                        <span>🔍 Compare Canadian Prices & Other Stores</span>
                     </h4>
-                    <span class="text-[11px] text-cyan-700 font-medium">Find the lowest price</span>
+                    <span class="text-[11px] text-cyan-700 font-medium">Find lowest CAD price</span>
                 </div>
-                <p class="text-xs text-gray-500 mb-3">Check if other major retailers currently offer a lower price or better coupon code on this item:</p>
+                <p class="text-xs text-gray-500 mb-3">Check other stores in Canada or shipping to Canada for clearance discounts or promo codes:</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <a href="${comp.googleShopping}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#06B6D4] hover:shadow-sm transition-all text-xs font-semibold text-gray-800 group">
                         <span class="flex items-center gap-2">
-                            <span>🌐</span>
-                            <span>Google Shopping (All Stores)</span>
+                            <span>🇨🇦</span>
+                            <span>Google Shopping (Canada)</span>
                         </span>
                         <span class="text-[#06B6D4] group-hover:translate-x-0.5 transition-transform">↗</span>
                     </a>
@@ -683,7 +715,7 @@ function showDealModal(deal) {
                         <a href="${comp.fashionSearch}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#06B6D4] hover:shadow-sm transition-all text-xs font-semibold text-gray-800 group">
                             <span class="flex items-center gap-2">
                                 <span>👟</span>
-                                <span>Foot Locker / Dick's / Nordstrom</span>
+                                <span>Sport Chek / Foot Locker CA / The Bay</span>
                             </span>
                             <span class="text-[#06B6D4] group-hover:translate-x-0.5 transition-transform">↗</span>
                         </a>
@@ -691,7 +723,7 @@ function showDealModal(deal) {
                         <a href="${comp.techSearch}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#06B6D4] hover:shadow-sm transition-all text-xs font-semibold text-gray-800 group">
                             <span class="flex items-center gap-2">
                                 <span>⚡</span>
-                                <span>Best Buy / B&H / Newegg</span>
+                                <span>Best Buy CA / Canada Computers / Apple</span>
                             </span>
                             <span class="text-[#06B6D4] group-hover:translate-x-0.5 transition-transform">↗</span>
                         </a>

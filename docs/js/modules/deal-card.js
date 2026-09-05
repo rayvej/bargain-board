@@ -14,10 +14,10 @@ export function getComparisonLinks(deal) {
 
     return {
         query,
-        googleShopping: `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(query)}`,
-        fashionSearch: `https://www.google.com/search?q=${encodeURIComponent(query + ' (site:footlocker.com OR site:dickssportinggoods.com OR site:nordstromrack.com OR site:finishline.com OR site:dsw.com)')}`,
-        techSearch: `https://www.google.com/search?q=${encodeURIComponent(query + ' (site:bestbuy.com OR site:bhphotovideo.com OR site:newegg.com OR site:target.com)')}`,
-        ebay: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(query)}&LH_ItemCondition=1000`
+        googleShopping: `https://www.google.com/search?tbm=shop&gl=ca&hl=en&q=${encodeURIComponent(query)}`,
+        fashionSearch: `https://www.google.com/search?q=${encodeURIComponent(query + ' (site:sportchek.ca OR site:footlocker.ca OR site:thebay.com OR site:theshoecompany.ca OR site:nike.com/ca)')}`,
+        techSearch: `https://www.google.com/search?q=${encodeURIComponent(query + ' (site:bestbuy.ca OR site:canadacomputers.com OR site:memoryexpress.com OR site:apple.com/ca)')}`,
+        ebay: `https://www.ebay.ca/sch/i.html?_nkw=${encodeURIComponent(query)}&LH_ItemCondition=1000`
     };
 }
 
