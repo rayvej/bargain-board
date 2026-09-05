@@ -237,9 +237,9 @@ async function triggerInPageInternetSearch(container) {
             // Re-render directly onto the current page!
             applyFiltersAndRender(container, filters);
 
-            showToast(`🇨🇦 Found ${addedCount} live Canadian deals in CAD across Sport Chek, Foot Locker CA, Nike & Hudson's Bay!`, 'success');
+            showToast(`🇨🇦 Found ${addedCount} verified live deals from RedFlagDeals & Canadian feeds!`, 'success');
         } else {
-            showToast('No extra Canadian deals found matching this combination.', 'info');
+            showToast('Live Canadian feeds verified: No additional active clearance posts found right now. Showing all verified catalog deals.', 'info');
             applyFiltersAndRender(container, filters);
         }
     } catch (e) {

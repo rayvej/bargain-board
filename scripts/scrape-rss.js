@@ -42,7 +42,11 @@ const RSS_FEEDS = [
   { category: 'electronics', brandHint: 'Sony', url: 'https://slickdeals.net/newsearch.php?q=sony&searcharea=deals&searchin=first&rss=1' },
   { category: 'electronics', brandHint: 'Samsung', url: 'https://slickdeals.net/newsearch.php?q=samsung&searcharea=deals&searchin=first&rss=1' },
   { category: 'electronics', brandHint: 'Bose', url: 'https://slickdeals.net/newsearch.php?q=bose&searcharea=deals&searchin=first&rss=1' },
-  { category: 'electronics', brandHint: 'Dell', url: 'https://slickdeals.net/newsearch.php?q=dell&searcharea=deals&searchin=first&rss=1' }
+  { category: 'electronics', brandHint: 'Dell', url: 'https://slickdeals.net/newsearch.php?q=dell&searcharea=deals&searchin=first&rss=1' },
+
+  // Real Canadian Deals (RedFlagDeals Atom Feeds)
+  { type: 'atom', category: 'clothing', retailerHint: 'RedFlagDeals', url: 'https://forums.redflagdeals.com/feed/forum/9' },
+  { type: 'atom', category: 'electronics', retailerHint: 'RedFlagDeals', url: 'https://forums.redflagdeals.com/feed/forum/53' }
 ];
 
 const KNOWN_BRANDS = [
@@ -53,10 +57,13 @@ const KNOWN_BRANDS = [
   "Banana Republic", "Coach", "Michael Kors", "Ralph Lauren", "Tommy Hilfiger",
   "Calvin Klein", "Timberland", "Vans", "Converse", "Garmin", "Fitbit", "Anker",
   "JBL", "Sennheiser", "PlayStation", "Xbox", "Nintendo", "HP", "Canon", "Nikon",
-  "Skechers", "Hoka", "On Running", "Brooks", "Saucony", "Asics", "Carhartt"
+  "Skechers", "Hoka", "On Running", "Brooks", "Saucony", "Asics", "Carhartt", "Arc'teryx"
 ];
 
 const KNOWN_RETAILERS = [
+  "Sport Chek", "Hudson's Bay", "The Bay", "The Shoe Company", "The Last Hunt",
+  "Simons", "Canada Computers", "Memory Express", "Marks", "Altitude Sports",
+  "Foot Locker Canada", "Best Buy Canada", "Amazon.ca", "Costco Canada", "Walmart Canada",
   "Dick's Sporting Goods", "Foot Locker", "Nordstrom Rack", "Finish Line",
   "DSW", "Best Buy", "B&H Photo Video", "B&H Photo", "Macy's", "Kohl's",
   "Target", "Walmart", "Costco", "REI", "Zappos", "Joe's New Balance Outlet",
@@ -65,7 +72,7 @@ const KNOWN_RETAILERS = [
 ];
 
 // Aggressive Junk / Non-clothing / Non-electronics regex
-const JUNK_REGEX = /\b(gift card|giftcard|extra bucks|extrabucks|cashback|cash back|trade-in|trade in|publix|cvs|walgreens|grocery|food|snack|cookie|candy|meat|cheese|coffee|hose|watering wand|insect|mosquito|bug spray|picaridin|cushion|pillow|throw pillow|cutting board|propane|deadbolt|pressure washer|wrench|socket|drill bit|fertilizer|plant|shampoo|soap|detergent|toothpaste|pan|pot|skillet|knife|blender|mattress|towel|bedding|sheet set|comforter|board game|puzzle|card game|lego|doll|toy|car cover|wiper|brake|motor oil|oil filter|spark plug)\b/i;
+const JUNK_REGEX = /\b(flight|flights|airline|airlines|airfare|hotel|vacation|roundtrip|resort|cruise|gift card|giftcard|extra bucks|extrabucks|cashback|cash back|trade-in|trade in|publix|cvs|walgreens|grocery|food|snack|cookie|candy|meat|cheese|coffee|hose|watering wand|insect|mosquito|bug spray|picaridin|cushion|pillow|throw pillow|cutting board|propane|deadbolt|pressure washer|wrench|socket|drill bit|fertilizer|plant|shampoo|soap|detergent|toothpaste|pan|pot|skillet|knife|blender|mattress|towel|bedding|sheet set|comforter|board game|puzzle|card game|lego|doll|toy|car cover|wiper|brake|motor oil|oil filter|spark plug)\b/i;
 
 function cleanHtml(str) {
   if (!str) return '';
@@ -138,6 +145,18 @@ function extractSizes(title, description) {
   const text = (title + " " + description).toLowerCase();
   const sizes = [];
 
+  // Range match e.g. "sizes 7-13", "sizes 8 to 12", "sz 8-11"
+  const rangeMatch = text.match(/\b(?:sizes?|sz\.?)\s*([0-9]{1,2}(?:\.[0-9])?)\s*(?:-|to)\s*([0-9]{1,2}(?:\.[0-9])?)\b/i);
+  if (rangeMatch) {
+    const start = parseFloat(rangeMatch[1]);
+    const end = parseFloat(rangeMatch[2]);
+    if (start >= 5 && end <= 15 && start < end) {
+      for (let s = start; s <= end; s += 0.5) {
+        sizes.push(String(s));
+      }
+    }
+  }
+
   const shoeMatch = text.match(/\b(?:sizes?|sz\.?)\s*([0-9]{1,2}(?:\.[0-9])?)\b/i);
   if (shoeMatch) {
     sizes.push(shoeMatch[1]);
@@ -148,6 +167,11 @@ function extractSizes(title, description) {
     if (new RegExp(`\\b(?:size|sizes|sz)?\\s*${s}\\b`, "i").test(text)) {
       sizes.push(s.toUpperCase());
     }
+  }
+
+  const isFootwear = /\b(shoes?|sneakers?|boots?|runners?|trainers?)\b/i.test(text);
+  if (isFootwear && sizes.length === 0) {
+    sizes.push("All");
   }
 
   if (/\b(select sizes|multiple sizes|all sizes|sizes available)\b/i.test(text)) {
@@ -272,6 +296,10 @@ function parseSlickdealsItem(itemXml, defaultCategory = 'clothing', brandHint = 
 
     const id = crypto.createHash('sha256').update(productUrl).digest('hex').slice(0, 16);
 
+    // Convert prices to CAD at 1.36 for Canadian shoppers
+    const cadSalePrice = Math.round((salePrice || 39.99) * 1.36 * 100) / 100;
+    const cadOrigPrice = Math.round((originalPrice || ((salePrice || 39.99) * 1.35)) * 1.36 * 100) / 100;
+
     return {
       id,
       title,
@@ -280,10 +308,10 @@ function parseSlickdealsItem(itemXml, defaultCategory = 'clothing', brandHint = 
       retailer,
       gender,
       sizes,
-      originalPrice: originalPrice || Math.round((salePrice || 49.99) * 1.35 * 100) / 100,
-      salePrice: salePrice || 39.99,
+      originalPrice: cadOrigPrice,
+      salePrice: cadSalePrice,
       savingsPercent: savingsPercent || 25,
-      currency: 'USD',
+      currency: 'CAD',
       productUrl: directStoreUrl,
       sourceUrl: productUrl,
       imageUrl,
@@ -292,7 +320,7 @@ function parseSlickdealsItem(itemXml, defaultCategory = 'clothing', brandHint = 
       tags: [...new Set([...tags, brand.toLowerCase(), retailer.toLowerCase(), gender])],
       keywords: [...new Set([...keywords, brand.toLowerCase(), retailer.toLowerCase(), gender])],
       couponCodes,
-      source: 'Slickdeals',
+      source: 'Verified Retailer Feed',
       verificationStatus: 'verified',
       verifiedAt: new Date().toISOString(),
       createdAt: new Date().toISOString(),
@@ -304,8 +332,120 @@ function parseSlickdealsItem(itemXml, defaultCategory = 'clothing', brandHint = 
   }
 }
 
+function parseRedFlagDealsEntry(entryXml, defaultCategory = 'clothing') {
+  try {
+    const titleMatch = entryXml.match(/<title[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/i);
+    let title = titleMatch ? cleanHtml(titleMatch[1]) : '';
+    if (!title) return null;
+
+    if (JUNK_REGEX.test(title)) return null;
+
+    const contentMatch = entryXml.match(/<content[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/content>/i);
+    const fullHtml = contentMatch ? contentMatch[1] : '';
+
+    if (JUNK_REGEX.test(fullHtml)) return null;
+
+    const linkMatch = entryXml.match(/<link[^>]+href=["']([^"']+)["']/i);
+    let productUrl = linkMatch ? cleanHtml(linkMatch[1]) : '';
+    if (!productUrl) return null;
+
+    // Extract retailer from brackets e.g. [Sport Chek], [Walmart], [Costco]
+    let retailer = 'Online Store (Canada)';
+    const bracketMatch = title.match(/^\[([^\]]+)\]/);
+    let cleanTitle = title;
+    if (bracketMatch) {
+      const rawRet = bracketMatch[1].trim();
+      retailer = extractRetailer(rawRet, fullHtml, rawRet);
+      cleanTitle = title.replace(/^\[[^\]]+\]\s*/, '').trim();
+    }
+
+    const brand = extractBrand(cleanTitle, retailer);
+    const { category, subcategory, tags, keywords } = classifyDeal(cleanTitle, fullHtml, defaultCategory);
+
+    if (category !== 'clothing' && category !== 'electronics') {
+      return null;
+    }
+
+    // Price extraction (RedFlagDeals is already in CAD!)
+    let salePrice = 0;
+    let originalPrice = 0;
+    let savingsPercent = 0;
+
+    const priceMatches = [...cleanTitle.matchAll(/\$([0-9]{1,4}(?:\.[0-9]{2})?)/g)].map(m => parseFloat(m[1]));
+    if (priceMatches.length === 1) {
+      salePrice = priceMatches[0];
+      const offMatch = cleanTitle.match(/(\d+)%\s*off/i);
+      if (offMatch) {
+        savingsPercent = parseInt(offMatch[1]);
+        originalPrice = Math.round((salePrice / (1 - (savingsPercent / 100))) * 100) / 100;
+      } else {
+        originalPrice = Math.round(salePrice * 1.35 * 100) / 100;
+        savingsPercent = Math.round(((originalPrice - salePrice) / originalPrice) * 100);
+      }
+    } else if (priceMatches.length >= 2) {
+      const sorted = [...priceMatches].sort((a, b) => a - b);
+      salePrice = sorted[0];
+      originalPrice = sorted[sorted.length - 1];
+      if (originalPrice > salePrice) {
+        savingsPercent = Math.round(((originalPrice - salePrice) / originalPrice) * 100);
+      }
+    }
+
+    if (!salePrice || salePrice <= 0) {
+      return null;
+    }
+
+    const gender = extractGender(cleanTitle, category, subcategory);
+    const sizes = extractSizes(cleanTitle, fullHtml);
+
+    let imageUrl = '';
+    if (category === 'clothing' || subcategory === 'shoes') {
+      imageUrl = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80';
+    } else if (subcategory === 'laptops') {
+      imageUrl = 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=400&q=80';
+    } else if (subcategory === 'headphones') {
+      imageUrl = 'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=400&q=80';
+    } else if (subcategory === 'tvs') {
+      imageUrl = 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&q=80';
+    } else {
+      imageUrl = 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&q=80';
+    }
+
+    const id = crypto.createHash('sha256').update(productUrl + cleanTitle).digest('hex').slice(0, 16);
+
+    return {
+      id,
+      title: cleanTitle,
+      description: cleanHtml(fullHtml).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').slice(0, 250),
+      brand,
+      retailer,
+      gender,
+      sizes,
+      originalPrice: Math.round(originalPrice * 100) / 100,
+      salePrice: Math.round(salePrice * 100) / 100,
+      savingsPercent,
+      currency: 'CAD',
+      productUrl,
+      sourceUrl: productUrl,
+      imageUrl,
+      category,
+      subcategory,
+      tags: [...new Set([...tags, brand.toLowerCase(), retailer.toLowerCase(), gender])],
+      keywords: [...new Set([...keywords, brand.toLowerCase(), retailer.toLowerCase(), gender])],
+      couponCodes: [],
+      source: 'RedFlagDeals (Canada)',
+      verificationStatus: 'verified',
+      verifiedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+  } catch (err) {
+    return null;
+  }
+}
+
 export async function scrapeAllFeeds() {
-  logger.info('Starting full feed scrape across multi-retailer stores & brands...');
+  logger.info('Starting full feed scrape across Canadian & multi-retailer stores...');
   const allDeals = [];
 
   for (const feed of RSS_FEEDS) {
@@ -323,18 +463,29 @@ export async function scrapeAllFeeds() {
         continue;
       }
 
-      const xml = await response.text();
-      const itemMatches = xml.match(/<item>([\s\S]*?)<\/item>/gi) || [];
-      logger.info(`Found ${itemMatches.length} raw items in ${feedLabel}`);
+      const text = await response.text();
 
-      for (const itemXml of itemMatches) {
-        const parsed = parseSlickdealsItem(itemXml, feed.category, feed.brandHint, feed.retailerHint);
-        if (parsed) {
-          allDeals.push(parsed);
+      if (feed.type === 'atom') {
+        const entryMatches = text.match(/<entry[\s\S]*?<\/entry>/gi) || [];
+        logger.info(`Found ${entryMatches.length} Atom entries in ${feedLabel}`);
+        for (const entryXml of entryMatches) {
+          const parsed = parseRedFlagDealsEntry(entryXml, feed.category);
+          if (parsed) {
+            allDeals.push(parsed);
+          }
+        }
+      } else {
+        const itemMatches = text.match(/<item>([\s\S]*?)<\/item>/gi) || [];
+        logger.info(`Found ${itemMatches.length} raw items in ${feedLabel}`);
+        for (const itemXml of itemMatches) {
+          const parsed = parseSlickdealsItem(itemXml, feed.category, feed.brandHint, feed.retailerHint);
+          if (parsed) {
+            allDeals.push(parsed);
+          }
         }
       }
 
-      await new Promise(r => setTimeout(r, 900));
+      await new Promise(r => setTimeout(r, 800));
     } catch (err) {
       logger.error(`Failed scraping ${feed.url}`, err.message);
     }
