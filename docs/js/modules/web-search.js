@@ -228,6 +228,77 @@ export function getRetailerSearchLinks(queryInfo) {
 }
 
 /**
+ * Canadian-specific direct clearance search portals for deep-linking
+ */
+export function getCanadianClearancePortals(queryInfo) {
+    const q = (queryInfo.cleanTerms || queryInfo.displayQuery || 'clearance sale').trim();
+    const isFashion = queryInfo.isFashion;
+
+    if (isFashion) {
+        return [
+            {
+                name: 'Sport Chek Clearance',
+                icon: '🍁',
+                url: `https://www.sportchek.ca/en/search.html?q=${encodeURIComponent(q + ' clearance')}`
+            },
+            {
+                name: 'Foot Locker Canada',
+                icon: '👟',
+                url: `https://www.footlocker.ca/en/search?query=${encodeURIComponent(q + ' sale')}`
+            },
+            {
+                name: "The Bay (Hudson's Bay)",
+                icon: '🏛️',
+                url: `https://www.thebay.com/search?q=${encodeURIComponent(q + ' sale')}`
+            },
+            {
+                name: 'Nike Canada Clearance',
+                icon: '✔️',
+                url: `https://www.nike.com/ca/w/sale-3yaep?q=${encodeURIComponent(q)}`
+            },
+            {
+                name: 'The Shoe Company',
+                icon: '👠',
+                url: `https://www.theshoecompany.ca/en/ca/search?query=${encodeURIComponent(q + ' clearance')}`
+            },
+            {
+                name: 'Google Shopping (Canada)',
+                icon: '🔍',
+                url: `https://www.google.ca/search?tbm=shop&gl=ca&hl=en&q=${encodeURIComponent(q + ' sale Canada')}`
+            }
+        ];
+    } else {
+        return [
+            {
+                name: 'Best Buy Canada Clearance',
+                icon: '💻',
+                url: `https://www.bestbuy.ca/en-ca/search?search=${encodeURIComponent(q + ' clearance')}`
+            },
+            {
+                name: 'Canada Computers',
+                icon: '🖥️',
+                url: `https://www.canadacomputers.com/search/results_details.php?keywords=${encodeURIComponent(q)}`
+            },
+            {
+                name: 'Memory Express',
+                icon: '⚡',
+                url: `https://www.memoryexpress.com/Search/Products?Search=${encodeURIComponent(q)}`
+            },
+            {
+                name: 'Amazon Canada Deals',
+                icon: '📦',
+                url: `https://www.amazon.ca/s?k=${encodeURIComponent(q + ' deals')}`
+            },
+            {
+                name: 'Google Shopping (Canada)',
+                icon: '🔍',
+                url: `https://www.google.ca/search?tbm=shop&gl=ca&hl=en&q=${encodeURIComponent(q + ' sale Canada')}`
+            }
+        ];
+    }
+}
+
+/**
  * Attempts real-time deal discovery via free public CORS proxy
  */
 export async function fetchLiveWebDeals(query) {

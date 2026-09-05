@@ -4,7 +4,7 @@ import { getFilters, subscribe, updateFilter, resetFilters } from './modules/fil
 import { setAvailableBrands } from './search.js';
 import { openModal } from './modules/ui.js';
 import { formatPrice, formatRelativeTime, showToast } from './modules/ui.js';
-import { buildSearchQuery, openWebSearchModal } from './modules/web-search.js';
+import { buildSearchQuery, openWebSearchModal, getCanadianClearancePortals } from './modules/web-search.js';
 import { searchCanadianDeals } from './modules/deal-crawler.js';
 
 let allLoadedDeals = [];
@@ -248,6 +248,22 @@ async function triggerInPageInternetSearch(container) {
     }
 }
 
+function renderClearancePortals(filters, queryInfo) {
+    const listEl = document.getElementById('clearance-portals-list');
+    if (!listEl) return;
+
+    const portals = getCanadianClearancePortals(queryInfo);
+    listEl.innerHTML = portals.map(p => `
+        <a href="${p.url}" target="_blank" rel="noopener noreferrer" 
+           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 hover:border-[#06B6D4] hover:bg-cyan-50 text-xs font-semibold text-gray-700 hover:text-[#06B6D4] transition-all bg-gray-50 shadow-2xs hover:shadow-xs group"
+           title="Direct live search on ${p.name}">
+            <span>${p.icon}</span>
+            <span>${p.name}</span>
+            <svg class="w-3 h-3 text-gray-400 group-hover:text-[#06B6D4] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
+    `).join('');
+}
+
 function applyFiltersAndRender(container, filters) {
     currentPage = 1;
     filteredDeals = filterDeals(allLoadedDeals, filters);
@@ -272,6 +288,9 @@ function applyFiltersAndRender(container, filters) {
     if (subtextEl) {
         subtextEl.textContent = `Showing ${filteredDeals.length} deals in current catalog. Click to search Sport Chek, Foot Locker CA, Nike Canada, Hudson's Bay & Best Buy CA for these exact filters.`;
     }
+
+    // Update Direct Canadian Store Clearance Portals
+    renderClearancePortals(filters, queryInfo);
 
     container.innerHTML = '';
     displayedDeals = [];

@@ -1,50 +1,46 @@
-name: Scrape Deals
+name: Auto-Scrape Canadian Deals Pipeline
 
 on:
   schedule:
-    - cron: '0 */4 * * *' # Every 4 hours
-  workflow_dispatch: # Manual trigger
+    # Run every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+permissions:
+  contents: write
 
 jobs:
-  scrape-and-write:
+  scrape-and-update:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci || npm install firebase-admin playwright
+        run: npm ci
 
-      - name: Scrape RSS feeds
-        run: node scripts/scrape-rss.js
+      - name: Ingest live Canadian & multi-retailer feeds
+        run: npm run scrape:rss
 
-      - name: Scrape Best Buy
-        env:
-          BESTBUY_API_KEY: ${{ secrets.BESTBUY_API_KEY }}
-        run: node scripts/scrape-bestbuy.js
+      - name: Rebuild Tailwind CSS
+        run: npm run build:css
 
-      - name: Scrape eBay
-        env:
-          EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
-          EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
-        run: node scripts/scrape-ebay.js
-
-      - name: Scrape Coupons
-        env:
-          LINKMYDEALS_API_KEY: ${{ secrets.LINKMYDEALS_API_KEY }}
-        run: node scripts/scrape-coupons.js
-
-      - name: Write to Firestore
-        env:
-          FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
-        run: node scripts/write-to-firestore.js
-
-      - name: Cleanup Expired Deals
-        env:
-          FIREBASE_SERVICE_ACCOUNT_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
-        run: node scripts/cleanup-expired.js
+      - name: Commit and push updated deals catalog
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/deals-data.json docs/tailwind.min.css
+          if git diff --staged --quiet; then
+            echo "No new deals to commit."
+          else
+            git commit -m "Auto-ingest fresh Canadian deals & clearance data [skip ci]"
+            git push
+          fi

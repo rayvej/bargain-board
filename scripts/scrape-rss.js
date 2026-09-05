@@ -10,43 +10,124 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const RSS_FEEDS = [
-  // Multi-Retailer Footwear & Apparel Feeds (Where brands like Nike, Adidas, etc. are discounted!)
-  { category: 'clothing', subcategory: 'shoes', url: 'https://slickdeals.net/newsearch.php?q=nike+shoes&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: "Dick's Sporting Goods", url: 'https://slickdeals.net/newsearch.php?q=dicks+sporting+goods&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', subcategory: 'shoes', retailerHint: 'Foot Locker', url: 'https://slickdeals.net/newsearch.php?q=foot+locker&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'Nordstrom Rack', url: 'https://slickdeals.net/newsearch.php?q=nordstrom+rack&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', subcategory: 'shoes', retailerHint: 'Finish Line', url: 'https://slickdeals.net/newsearch.php?q=finish+line&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', subcategory: 'shoes', retailerHint: 'DSW', url: 'https://slickdeals.net/newsearch.php?q=dsw+shoes&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: "Kohl's", url: 'https://slickdeals.net/newsearch.php?q=kohls+shoes&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: "Macy's", url: 'https://slickdeals.net/newsearch.php?q=macys+shoes&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'REI', url: 'https://slickdeals.net/newsearch.php?q=rei+outlet&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', subcategory: 'shoes', url: 'https://slickdeals.net/newsearch.php?q=adidas+shoes&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', subcategory: 'shoes', url: 'https://slickdeals.net/newsearch.php?q=new+balance+shoes&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', url: 'https://slickdeals.net/newsearch.php?q=under+armour&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', url: 'https://slickdeals.net/newsearch.php?q=levis&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', url: 'https://slickdeals.net/newsearch.php?q=lululemon&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', url: 'https://slickdeals.net/newsearch.php?q=patagonia&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', url: 'https://slickdeals.net/newsearch.php?q=north+face&searcharea=deals&searchin=first&rss=1' },
+  // ─── CANADIAN RETAILER & RFD FORUM FEEDS ───
+  { type: 'atom', category: 'clothing', retailerHint: 'RedFlagDeals', url: 'https://forums.redflagdeals.com/feed/forum/9' },
+  { type: 'atom', category: 'electronics', retailerHint: 'RedFlagDeals', url: 'https://forums.redflagdeals.com/feed/forum/53' },
+  { type: 'atom', category: 'clothing', retailerHint: 'RedFlagDeals Apparel', url: 'https://forums.redflagdeals.com/feed/forum/135' },
 
-  // Multi-Retailer Electronics Feeds
+  // ─── FOOTWEAR CLEARANCE & MULTI-RETAILER FEEDS ───
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Nike', url: 'https://slickdeals.net/newsearch.php?q=nike+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Nike', url: 'https://slickdeals.net/newsearch.php?q=nike+air+max&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Nike', url: 'https://slickdeals.net/newsearch.php?q=nike+pegasus&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Nike', url: 'https://slickdeals.net/newsearch.php?q=nike+running&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Nike', url: 'https://slickdeals.net/newsearch.php?q=nike+dunk&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Adidas', url: 'https://slickdeals.net/newsearch.php?q=adidas+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Adidas', url: 'https://slickdeals.net/newsearch.php?q=adidas+ultraboost&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Adidas', url: 'https://slickdeals.net/newsearch.php?q=adidas+samba&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'New Balance', url: 'https://slickdeals.net/newsearch.php?q=new+balance+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'New Balance', url: 'https://slickdeals.net/newsearch.php?q=new+balance+574&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'New Balance', url: 'https://slickdeals.net/newsearch.php?q=new+balance+fresh+foam&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Under Armour', url: 'https://slickdeals.net/newsearch.php?q=under+armour+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Puma', url: 'https://slickdeals.net/newsearch.php?q=puma+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Asics', url: 'https://slickdeals.net/newsearch.php?q=asics+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Brooks', url: 'https://slickdeals.net/newsearch.php?q=brooks+running&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Hoka', url: 'https://slickdeals.net/newsearch.php?q=hoka+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Saucony', url: 'https://slickdeals.net/newsearch.php?q=saucony+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'On Running', url: 'https://slickdeals.net/newsearch.php?q=on+running+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Vans', url: 'https://slickdeals.net/newsearch.php?q=vans+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Converse', url: 'https://slickdeals.net/newsearch.php?q=converse+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Timberland', url: 'https://slickdeals.net/newsearch.php?q=timberland+boots&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', brandHint: 'Skechers', url: 'https://slickdeals.net/newsearch.php?q=skechers+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', url: 'https://slickdeals.net/newsearch.php?q=running+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', url: 'https://slickdeals.net/newsearch.php?q=mens+sneakers&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', url: 'https://slickdeals.net/newsearch.php?q=womens+sneakers&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', url: 'https://slickdeals.net/newsearch.php?q=basketball+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', subcategory: 'shoes', url: 'https://slickdeals.net/newsearch.php?q=hiking+boots&searcharea=deals&searchin=first&rss=1' },
+
+  // ─── APPAREL & CLOTHING CLEARANCE ───
+  { category: 'clothing', brandHint: 'Nike', url: 'https://slickdeals.net/newsearch.php?q=nike+hoodie&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: 'Nike', url: 'https://slickdeals.net/newsearch.php?q=nike+jacket&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: 'Nike', url: 'https://slickdeals.net/newsearch.php?q=nike+clearance&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: 'Adidas', url: 'https://slickdeals.net/newsearch.php?q=adidas+hoodie&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: 'Adidas', url: 'https://slickdeals.net/newsearch.php?q=adidas+tracksuit&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: 'Lululemon', url: 'https://slickdeals.net/newsearch.php?q=lululemon&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: "Levi's", url: 'https://slickdeals.net/newsearch.php?q=levis+jeans&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: "Levi's", url: 'https://slickdeals.net/newsearch.php?q=levis+jacket&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: 'Under Armour', url: 'https://slickdeals.net/newsearch.php?q=under+armour+hoodie&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: 'Under Armour', url: 'https://slickdeals.net/newsearch.php?q=under+armour+clearance&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: 'The North Face', url: 'https://slickdeals.net/newsearch.php?q=north+face+jacket&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: 'Patagonia', url: 'https://slickdeals.net/newsearch.php?q=patagonia+fleece&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: 'Columbia', url: 'https://slickdeals.net/newsearch.php?q=columbia+jacket&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: 'Carhartt', url: 'https://slickdeals.net/newsearch.php?q=carhartt+jacket&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: 'Carhartt', url: 'https://slickdeals.net/newsearch.php?q=carhartt+hoodie&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: "Arc'teryx", url: 'https://slickdeals.net/newsearch.php?q=arcteryx&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', brandHint: 'Puma', url: 'https://slickdeals.net/newsearch.php?q=puma+hoodie&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', url: 'https://slickdeals.net/newsearch.php?q=mens+hoodie&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', url: 'https://slickdeals.net/newsearch.php?q=mens+jacket&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', url: 'https://slickdeals.net/newsearch.php?q=winter+parka&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', url: 'https://slickdeals.net/newsearch.php?q=mens+joggers&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', url: 'https://slickdeals.net/newsearch.php?q=fleece+jacket&searcharea=deals&searchin=first&rss=1' },
+
+  // ─── RETAILER STORES (SHOE & APPAREL CLEARANCE) ───
+  { category: 'clothing', retailerHint: 'Foot Locker', url: 'https://slickdeals.net/newsearch.php?q=foot+locker&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: "Dick's Sporting Goods", url: 'https://slickdeals.net/newsearch.php?q=dicks+sporting+goods&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Finish Line', url: 'https://slickdeals.net/newsearch.php?q=finish+line&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Nordstrom Rack', url: 'https://slickdeals.net/newsearch.php?q=nordstrom+rack&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'DSW', url: 'https://slickdeals.net/newsearch.php?q=dsw+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: "Macy's", url: 'https://slickdeals.net/newsearch.php?q=macys+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: "Macy's", url: 'https://slickdeals.net/newsearch.php?q=macys+clothing&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: "Kohl's", url: 'https://slickdeals.net/newsearch.php?q=kohls+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'REI', url: 'https://slickdeals.net/newsearch.php?q=rei+outlet&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Zappos', url: 'https://slickdeals.net/newsearch.php?q=zappos+clearance&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Shoe Carnival', url: 'https://slickdeals.net/newsearch.php?q=shoe+carnival&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Scheels', url: 'https://slickdeals.net/newsearch.php?q=scheels+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Champs Sports', url: 'https://slickdeals.net/newsearch.php?q=champs+sports&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Journeys', url: 'https://slickdeals.net/newsearch.php?q=journeys+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Sierra', url: 'https://slickdeals.net/newsearch.php?q=sierra+shoes&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Backcountry', url: 'https://slickdeals.net/newsearch.php?q=backcountry+clearance&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'J.Crew', url: 'https://slickdeals.net/newsearch.php?q=j+crew+clearance&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Gap', url: 'https://slickdeals.net/newsearch.php?q=gap+factory&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Banana Republic', url: 'https://slickdeals.net/newsearch.php?q=banana+republic+factory&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Old Navy', url: 'https://slickdeals.net/newsearch.php?q=old+navy+clearance&searcharea=deals&searchin=first&rss=1' },
+
+  // ─── ELECTRONICS & TECH HARDWARE FEEDS ───
   { category: 'electronics', retailerHint: 'Best Buy', url: 'https://slickdeals.net/newsearch.php?q=best+buy+deals&searcharea=deals&searchin=first&rss=1' },
   { category: 'electronics', retailerHint: 'B&H Photo Video', url: 'https://slickdeals.net/newsearch.php?q=bhphoto&searcharea=deals&searchin=first&rss=1' },
   { category: 'electronics', retailerHint: 'Newegg', url: 'https://slickdeals.net/newsearch.php?q=newegg&searcharea=deals&searchin=first&rss=1' },
   { category: 'electronics', retailerHint: 'Target', url: 'https://slickdeals.net/newsearch.php?q=target+electronics&searcharea=deals&searchin=first&rss=1' },
-  { category: 'electronics', subcategory: 'laptops', url: 'https://slickdeals.net/newsearch.php?q=laptops&searcharea=deals&searchin=first&rss=1' },
-  { category: 'electronics', subcategory: 'headphones', url: 'https://slickdeals.net/newsearch.php?q=headphones&searcharea=deals&searchin=first&rss=1' },
-  { category: 'electronics', subcategory: 'tvs', url: 'https://slickdeals.net/newsearch.php?q=tv&searcharea=deals&searchin=first&rss=1' },
-  { category: 'electronics', subcategory: 'gaming', url: 'https://slickdeals.net/newsearch.php?q=gaming&searcharea=deals&searchin=first&rss=1' },
-  { category: 'electronics', subcategory: 'phones', url: 'https://slickdeals.net/newsearch.php?q=phones&searcharea=deals&searchin=first&rss=1' },
-  { category: 'electronics', brandHint: 'Apple', url: 'https://slickdeals.net/newsearch.php?q=apple&searcharea=deals&searchin=first&rss=1' },
-  { category: 'electronics', brandHint: 'Sony', url: 'https://slickdeals.net/newsearch.php?q=sony&searcharea=deals&searchin=first&rss=1' },
-  { category: 'electronics', brandHint: 'Samsung', url: 'https://slickdeals.net/newsearch.php?q=samsung&searcharea=deals&searchin=first&rss=1' },
-  { category: 'electronics', brandHint: 'Bose', url: 'https://slickdeals.net/newsearch.php?q=bose&searcharea=deals&searchin=first&rss=1' },
-  { category: 'electronics', brandHint: 'Dell', url: 'https://slickdeals.net/newsearch.php?q=dell&searcharea=deals&searchin=first&rss=1' },
-
-  // Real Canadian Deals (RedFlagDeals Atom Feeds)
-  { type: 'atom', category: 'clothing', retailerHint: 'RedFlagDeals', url: 'https://forums.redflagdeals.com/feed/forum/9' },
-  { type: 'atom', category: 'electronics', retailerHint: 'RedFlagDeals', url: 'https://forums.redflagdeals.com/feed/forum/53' }
+  { category: 'electronics', subcategory: 'laptops', brandHint: 'Apple', url: 'https://slickdeals.net/newsearch.php?q=apple+macbook&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'phones', brandHint: 'Apple', url: 'https://slickdeals.net/newsearch.php?q=apple+ipad&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'headphones', brandHint: 'Apple', url: 'https://slickdeals.net/newsearch.php?q=airpods+pro&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', brandHint: 'Apple', url: 'https://slickdeals.net/newsearch.php?q=apple+watch&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'headphones', brandHint: 'Sony', url: 'https://slickdeals.net/newsearch.php?q=sony+headphones&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'headphones', brandHint: 'Sony', url: 'https://slickdeals.net/newsearch.php?q=sony+wh-1000xm&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'tvs', brandHint: 'Sony', url: 'https://slickdeals.net/newsearch.php?q=sony+bravia+tv&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'gaming', brandHint: 'Sony', url: 'https://slickdeals.net/newsearch.php?q=playstation+5&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'phones', brandHint: 'Samsung', url: 'https://slickdeals.net/newsearch.php?q=samsung+galaxy&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'tvs', brandHint: 'Samsung', url: 'https://slickdeals.net/newsearch.php?q=samsung+oled+tv&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', brandHint: 'Samsung', url: 'https://slickdeals.net/newsearch.php?q=samsung+monitor&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'headphones', brandHint: 'Bose', url: 'https://slickdeals.net/newsearch.php?q=bose+quietcomfort&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'laptops', brandHint: 'Dell', url: 'https://slickdeals.net/newsearch.php?q=dell+xps&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'laptops', brandHint: 'Dell', url: 'https://slickdeals.net/newsearch.php?q=dell+laptop&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'laptops', brandHint: 'Lenovo', url: 'https://slickdeals.net/newsearch.php?q=lenovo+thinkpad&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'laptops', brandHint: 'Lenovo', url: 'https://slickdeals.net/newsearch.php?q=lenovo+legion&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'laptops', brandHint: 'ASUS', url: 'https://slickdeals.net/newsearch.php?q=asus+rog+laptop&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'laptops', brandHint: 'HP', url: 'https://slickdeals.net/newsearch.php?q=hp+laptop&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'gaming', brandHint: 'Nintendo', url: 'https://slickdeals.net/newsearch.php?q=nintendo+switch&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'gaming', brandHint: 'Xbox', url: 'https://slickdeals.net/newsearch.php?q=xbox+series+x&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'headphones', brandHint: 'JBL', url: 'https://slickdeals.net/newsearch.php?q=jbl+speaker+headphones&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'headphones', brandHint: 'Sennheiser', url: 'https://slickdeals.net/newsearch.php?q=sennheiser+headphones&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', brandHint: 'Logitech', url: 'https://slickdeals.net/newsearch.php?q=logitech+mouse+keyboard&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', brandHint: 'Anker', url: 'https://slickdeals.net/newsearch.php?q=anker+charger&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'laptops', url: 'https://slickdeals.net/newsearch.php?q=gaming+laptop&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'tvs', url: 'https://slickdeals.net/newsearch.php?q=oled+tv+4k&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'tvs', url: 'https://slickdeals.net/newsearch.php?q=65+inch+tv&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'headphones', url: 'https://slickdeals.net/newsearch.php?q=wireless+earbuds&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', subcategory: 'headphones', url: 'https://slickdeals.net/newsearch.php?q=noise+cancelling+headphones&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', url: 'https://slickdeals.net/newsearch.php?q=gaming+monitor+144hz&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', url: 'https://slickdeals.net/newsearch.php?q=nvme+ssd&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', url: 'https://slickdeals.net/newsearch.php?q=garmin+smartwatch&searcharea=deals&searchin=first&rss=1' },
+  { category: 'electronics', url: 'https://slickdeals.net/newsearch.php?q=mechanical+keyboard&searcharea=deals&searchin=first&rss=1' }
 ];
 
 const KNOWN_BRANDS = [
@@ -452,11 +533,15 @@ export async function scrapeAllFeeds() {
     try {
       const feedLabel = feed.retailerHint || feed.brandHint || feed.category;
       logger.info(`Fetching feed: ${feedLabel}...`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 9000);
       const response = await fetch(feed.url, {
+        signal: controller.signal,
         headers: {
           'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) BargainBoard/1.0'
         }
       });
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         logger.warn(`Feed ${feedLabel} returned ${response.status}`);
@@ -485,7 +570,7 @@ export async function scrapeAllFeeds() {
         }
       }
 
-      await new Promise(r => setTimeout(r, 800));
+      await new Promise(r => setTimeout(r, 400));
     } catch (err) {
       logger.error(`Failed scraping ${feed.url}`, err.message);
     }
