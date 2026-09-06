@@ -314,9 +314,16 @@ async function applyFiltersAndRender(container, filters) {
         }
     }
 
-    // Update total count
+    // Update total count and visible results count
     const totalCountEl = document.getElementById('total-deal-count');
-    if (totalCountEl) totalCountEl.textContent = filteredDeals.length;
+    if (totalCountEl) totalCountEl.textContent = filteredDeals.length.toLocaleString();
+    const resultsCountEl = document.getElementById('results-count');
+    if (resultsCountEl) resultsCountEl.textContent = filteredDeals.length.toLocaleString();
+
+    const sortSelectEl = document.getElementById('sort-select');
+    if (sortSelectEl && sortSelectEl.value !== (filters.sortBy || 'newest')) {
+        sortSelectEl.value = filters.sortBy || 'newest';
+    }
 
     // ─── Update Live Internet Deal Search Banner ───
     const queryInfo = buildSearchQuery(filters);
@@ -637,8 +644,22 @@ function renderActiveFilterChips(filters) {
     if (filters.sortBy === 'price_asc') {
         chips.push(`
             <span class="inline-flex items-center gap-1 bg-purple-50 text-purple-700 px-2.5 py-1 rounded-full text-xs font-semibold border border-purple-200">
-                Price: Low to High
-                <button type="button" data-clear="sortBy" class="hover:text-red-500 ml-1 font-bold">✕</button>
+                🏷️ Price: Low to High
+                <button type="button" data-clear="sortBy" class="hover:text-red-500 ml-1 font-bold" title="Reset sort">✕</button>
+            </span>
+        `);
+    } else if (filters.sortBy === 'price_desc') {
+        chips.push(`
+            <span class="inline-flex items-center gap-1 bg-purple-50 text-purple-700 px-2.5 py-1 rounded-full text-xs font-semibold border border-purple-200">
+                🏷️ Price: High to Low
+                <button type="button" data-clear="sortBy" class="hover:text-red-500 ml-1 font-bold" title="Reset sort">✕</button>
+            </span>
+        `);
+    } else if (filters.sortBy === 'discount_desc') {
+        chips.push(`
+            <span class="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2.5 py-1 rounded-full text-xs font-semibold border border-orange-200">
+                ⚡ Biggest % Off
+                <button type="button" data-clear="sortBy" class="hover:text-red-500 ml-1 font-bold" title="Reset sort">✕</button>
             </span>
         `);
     }

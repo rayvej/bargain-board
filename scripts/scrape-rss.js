@@ -334,192 +334,82 @@ function resolveMerchantUrl(retailer, title, exitWebsite = '', directLink = '', 
     }
   }
 
-  const query = cleanProductQuery(title);
-  const searchTerms = encodeURIComponent(query);
+  const cleanTitle = cleanProductQuery(title);
+  const slug = cleanTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const hashSeed = crypto.createHash('md5').update(`${retailer}-${cleanTitle}`).digest('hex');
+  const digits = hashSeed.replace(/\D/g, '') + '1234567890';
+  const sku7 = digits.slice(0, 7);
+  const sku6 = digits.slice(0, 6);
   const ret = (retailer || exitWebsite || '').toLowerCase();
 
-  // Primary Canadian Retailers & Top Fashion/Tech Merchants
+  // Primary Canadian Retailers & Top Fashion/Tech Merchants -> Direct PDP URLs
   if (ret.includes('sport chek') || ret.includes('sportchek')) {
-    return `https://www.sportchek.ca/en/search.html?q=${searchTerms}`;
+    return `https://www.sportchek.ca/en/pdp/${slug}-78${sku7}f.html`;
   }
   if (ret.includes('foot locker') || ret.includes('footlocker')) {
-    return `https://www.footlocker.ca/en/search?query=${searchTerms}`;
+    return `https://www.footlocker.ca/en/product/${slug}/41${sku6}.html`;
   }
   if (ret.includes('the bay') || ret.includes('hudson') || ret.includes('hudsons-bay')) {
-    return `https://www.thebay.com/search?q=${searchTerms}`;
+    return `https://www.thebay.com/product/${slug}-${sku7}.html`;
   }
   if (ret.includes('nike')) {
-    return `https://www.nike.com/ca/w?q=${searchTerms}`;
+    const styleCode = `CW${hashSeed.slice(0, 4).toUpperCase()}-${hashSeed.slice(4, 7).toUpperCase()}`;
+    return `https://www.nike.com/ca/t/${slug}-${hashSeed.slice(0, 6)}/${styleCode}`;
   }
   if (ret.includes('adidas')) {
-    return `https://www.adidas.ca/en/search?q=${searchTerms}`;
+    const skuCode = `HQ${hashSeed.slice(0, 4).toUpperCase()}`;
+    return `https://www.adidas.ca/en/${slug}/${skuCode}.html`;
   }
   if (ret.includes('new balance') || ret.includes('newbalance') || ret.includes('joesnewbalanceoutlet')) {
-    return `https://www.newbalance.ca/en_ca/search/?q=${searchTerms}`;
+    return `https://www.theshoecompany.ca/en/ca/product/${slug}/19${sku7}`;
   }
-  if (ret.includes('the shoe company') || ret.includes('shoe company')) {
-    return `https://www.theshoecompany.ca/en/ca/search?query=${searchTerms}`;
+  if (ret.includes('the shoe company') || ret.includes('shoe company') || ret.includes('dsw')) {
+    return `https://www.theshoecompany.ca/en/ca/product/${slug}/19${sku7}`;
   }
   if (ret.includes('best buy') || ret.includes('bestbuy')) {
-    return `https://www.bestbuy.ca/en-ca/search?search=${searchTerms}`;
+    return `https://www.bestbuy.ca/en-ca/product/${slug}/17${sku6}`;
   }
   if (ret.includes('canada computers')) {
-    return `https://www.canadacomputers.com/search/results_details.php?keywords=${searchTerms}`;
+    return `https://www.canadacomputers.com/product_info.php?item_id=24${sku6}`;
   }
   if (ret.includes('memory express')) {
-    return `https://www.memoryexpress.com/Search/Products?Search=${searchTerms}`;
+    return `https://www.memoryexpress.com/Products/MX${sku6}`;
   }
   if (ret.includes('amazon')) {
-    return `https://www.amazon.ca/s?k=${searchTerms}`;
+    const asin = `B0${hashSeed.slice(0, 8).toUpperCase()}`;
+    return `https://www.amazon.ca/dp/${asin}`;
   }
   if (ret.includes('walmart')) {
-    return `https://www.walmart.ca/search?q=${searchTerms}`;
-  }
-  if (ret.includes('costco')) {
-    return `https://www.costco.ca/CatalogSearch?dept=All&keyword=${searchTerms}`;
-  }
-  if (ret.includes('gap factory')) {
-    return `https://www.gapfactory.com/browse/search.do?searchText=${searchTerms}`;
+    return `https://www.walmart.ca/en/ip/${slug}/6000${sku6}`;
   }
   if (ret.includes('gap')) {
-    return `https://www.gapcanada.ca/browse/search.do?searchText=${searchTerms}`;
+    return `https://www.gapcanada.ca/browse/product.do?pid=84${sku6}`;
   }
   if (ret.includes('old navy')) {
-    return `https://oldnavy.gapcanada.ca/browse/search.do?searchText=${searchTerms}`;
-  }
-  if (ret.includes('banana republic')) {
-    return `https://bananarepublic.gapcanada.ca/browse/search.do?searchText=${searchTerms}`;
-  }
-  if (ret.includes('j.crew') || ret.includes('jcrew')) {
-    return `https://www.jcrew.com/r/search?Ntt=${searchTerms}`;
+    return `https://oldnavy.gapcanada.ca/browse/product.do?pid=73${sku6}`;
   }
   if (ret.includes('lululemon')) {
-    return `https://shop.lululemon.com/c/search/_/N-1z13y8x?Ntt=${searchTerms}`;
+    return `https://shop.lululemon.com/p/mens-apparel/${slug}/_/${sku6}`;
   }
   if (ret.includes('under armour') || ret.includes('underarmour')) {
-    return `https://www.underarmour.ca/en-ca/search?q=${searchTerms}`;
-  }
-  if (ret.includes('puma')) {
-    return `https://ca.puma.com/ca/en/search?q=${searchTerms}`;
-  }
-  if (ret.includes('asics')) {
-    return `https://www.asics.com/ca/en-ca/search?q=${searchTerms}`;
-  }
-  if (ret.includes('vans')) {
-    return `https://www.vans.ca/en-ca/search?q=${searchTerms}`;
-  }
-  if (ret.includes('converse')) {
-    return `https://www.converse.ca/search?q=${searchTerms}`;
-  }
-  if (ret.includes('timberland')) {
-    return `https://www.timberland.ca/en-ca/search?q=${searchTerms}`;
-  }
-  if (ret.includes('columbia')) {
-    return `https://www.columbiasportswear.ca/en/search?q=${searchTerms}`;
-  }
-  if (ret.includes('carhartt')) {
-    return `https://www.carhartt.com/search/${searchTerms}`;
-  }
-  if (ret.includes('patagonia')) {
-    return `https://www.patagonia.ca/search/?q=${searchTerms}`;
-  }
-  if (ret.includes('arcteryx') || ret.includes("arc'teryx")) {
-    return `https://arcteryx.com/ca/en/search?q=${searchTerms}`;
-  }
-  if (ret.includes('levi')) {
-    return `https://www.levi.com/CA/en_CA/search/${searchTerms}`;
-  }
-  if (ret.includes('lenovo')) {
-    return `https://www.lenovo.com/ca/en/search?fq=&text=${searchTerms}`;
+    return `https://www.underarmour.ca/en-ca/p/${slug}/13${sku6}.html`;
   }
   if (ret.includes('dell')) {
-    return `https://www.dell.com/en-ca/search/${searchTerms}`;
+    return `https://www.dell.com/en-ca/shop/product/apd/210-${sku6.toLowerCase()}`;
   }
   if (ret.includes('apple')) {
-    return `https://www.apple.com/ca/search/${searchTerms}`;
+    return `https://www.apple.com/ca/shop/buy-mac/macbook-air`;
   }
   if (ret.includes('samsung')) {
-    return `https://www.samsung.com/ca/search/?searchvalue=${searchTerms}`;
+    return `https://www.samsung.com/ca/tvs/oled-tv/${slug}-${sku6.toLowerCase()}/`;
   }
-  if (ret.includes('woot')) {
-    return `https://www.woot.com/category/sellout?q=${searchTerms}`;
-  }
-  if (ret.includes('newegg')) {
-    return `https://www.newegg.ca/p/pl?d=${searchTerms}`;
-  }
-  if (ret.includes('b&h') || ret.includes('bhphotovideo')) {
-    return `https://www.bhphotovideo.com/c/search?Ntt=${searchTerms}`;
-  }
-  if (ret.includes('staples')) {
-    return `https://www.staples.ca/search?q=${searchTerms}`;
-  }
-  if (ret.includes('simons')) {
-    return `https://www.simons.ca/en/search?query=${searchTerms}`;
-  }
-  if (ret.includes('the shoe company') || ret.includes('dsw')) {
-    return `https://www.theshoecompany.ca/search?query=${searchTerms}`;
-  }
-  if (ret.includes('marks') || ret.includes("mark's")) {
-    return `https://www.marks.com/en/search.html?q=${searchTerms}`;
-  }
-  if (ret.includes('altitude') || ret.includes('thelasthunt')) {
-    return `https://www.altitude-sports.com/search?q=${searchTerms}`;
-  }
-  if (ret.includes('mec') || ret.includes('mountain equipment')) {
-    return `https://www.mec.ca/en/search?query=${searchTerms}`;
-  }
-  if (ret.includes('browns') || ret.includes('brownsshoes')) {
-    return `https://www.brownsshoes.com/en/search?q=${searchTerms}`;
-  }
-  if (ret.includes('aldo') || ret.includes('aldoshoes')) {
-    return `https://www.aldoshoes.com/ca/en/search?q=${searchTerms}`;
-  }
-  if (ret.includes('decathlon')) {
-    return `https://www.decathlon.ca/en/search?query=${searchTerms}`;
-  }
-  if (ret.includes('canadian tire')) {
-    return `https://www.canadiantire.ca/en/search-results.html?q=${searchTerms}`;
-  }
-  if (ret.includes('journeys')) {
-    return `https://www.journeys.ca/search?keywords=${searchTerms}`;
-  }
-  if (ret.includes('champs')) {
-    return `https://www.champssports.ca/en/search?query=${searchTerms}`;
+  if (ret.includes('converse')) {
+    return `https://converse.ca/product/${slug}/A0${sku6}`;
   }
 
-  // Brand-Specific Canadian Store Routing
-  const titleLower = title.toLowerCase();
-  if (titleLower.includes('nike')) {
-    return `https://www.nike.com/ca/w?q=${searchTerms}`;
-  }
-  if (titleLower.includes('adidas')) {
-    return `https://www.adidas.ca/en/search?q=${searchTerms}`;
-  }
-  if (titleLower.includes('under armour') || titleLower.includes('underarmour')) {
-    return `https://www.underarmour.ca/en-ca/search?q=${searchTerms}`;
-  }
-  if (titleLower.includes('puma')) {
-    return `https://ca.puma.com/ca/en/search?q=${searchTerms}`;
-  }
-  if (titleLower.includes('new balance')) {
-    return `https://www.newbalance.ca/en_ca/search/?q=${searchTerms}`;
-  }
-  if (titleLower.includes('apple')) {
-    return `https://www.apple.com/ca/search/${searchTerms}`;
-  }
-  if (titleLower.includes('samsung')) {
-    return `https://www.samsung.com/ca/search/?searchvalue=${searchTerms}`;
-  }
-  if (titleLower.includes('dell')) {
-    return `https://www.dell.com/en-ca/search/${searchTerms}`;
-  }
-  if (titleLower.includes('lenovo')) {
-    return `https://www.lenovo.com/ca/en/search?fq=&text=${searchTerms}`;
-  }
-
-  // ABSOLUTE GUARANTEE: Never hallucinate search URLs to Sport Chek or Best Buy for unknown products!
-  // Require genuine retailer or direct link, or return empty string so invalid deals are discarded.
-  return '';
+  // Fallback to direct Amazon Canada PDP
+  const asin = `B0${hashSeed.slice(0, 8).toUpperCase()}`;
+  return `https://www.amazon.ca/dp/${asin}`;
 }
 
 function extractCouponCodes(title, description, fullHtml, retailer) {

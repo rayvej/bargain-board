@@ -70,15 +70,85 @@ async function runEvaluation() {
   console.log('Navigating to http://localhost:8181...');
   await page.goto('http://localhost:8181', { waitUntil: 'networkidle' });
 
-  // 1. Initial State
+  // 1. Initial State & Results Bar Verification
   await page.waitForSelector('#deal-grid .deal-card', { timeout: 10000 });
   const initialDealCount = await page.$$eval('#deal-grid .deal-card', cards => cards.length);
   const totalCatalogText = await page.$eval('#total-deal-count', el => el.textContent);
-  console.log(`Initial page rendered ${initialDealCount} deal cards on screen (Total catalog matching: ${totalCatalogText}).`);
-  await page.screenshot({ path: path.join(artifactsDir, 'eval_1_landing.png'), fullPage: false });
+  const resultsCountText = await page.$eval('#results-count', el => el.textContent);
+  console.log(`Initial page rendered ${initialDealCount} deal cards on screen.`);
+  console.log(`Sidebar Total Count: ${totalCatalogText}, Results Header Count: ${resultsCountText}`);
+
+  // Verify prominent Results & Sort Header is visible
+  const sortSelectVisible = await page.isVisible('#sort-select');
+  console.log(`Results Sort Select Visible above Grid: ${sortSelectVisible}`);
+  await page.screenshot({ path: path.join(artifactsDir, 'eval_13_sort_header.png'), fullPage: false });
+
+  // 1b. Test Sort: Price Lowest to Highest
+  console.log('\nTesting Sort: Price: Lowest to Highest...');
+  await page.selectOption('#sort-select', 'price_asc');
+  await page.waitForTimeout(600);
+
+  // Extract prices of top 6 cards
+  const ascPrices = await page.$$eval('#deal-grid .deal-card', cards => 
+    cards.slice(0, 6).map(c => {
+      const priceText = c.querySelector('.text-lg.font-extrabold')?.textContent || '$0';
+      return parseFloat(priceText.replace(/[^0-9.]/g, '')) || 0;
+    })
+  );
+  console.log('Top 6 card prices (Lowest to Highest):', ascPrices);
+  const isAscending = ascPrices.every((val, i, arr) => i === 0 || arr[i - 1] <= val);
+  console.log(`Price Lowest to Highest Valid: ${isAscending}`);
+  await page.screenshot({ path: path.join(artifactsDir, 'eval_14_sort_price_asc.png'), fullPage: false });
+
+  // 1c. Test Sort: Price Highest to Lowest
+  console.log('\nTesting Sort: Price: Highest to Lowest...');
+  await page.selectOption('#sort-select', 'price_desc');
+  await page.waitForTimeout(600);
+
+  const descPrices = await page.$$eval('#deal-grid .deal-card', cards => 
+    cards.slice(0, 6).map(c => {
+      const priceText = c.querySelector('.text-lg.font-extrabold')?.textContent || '$0';
+      return parseFloat(priceText.replace(/[^0-9.]/g, '')) || 0;
+    })
+  );
+  console.log('Top 6 card prices (Highest to Lowest):', descPrices);
+  const isDescending = descPrices.every((val, i, arr) => i === 0 || arr[i - 1] >= val);
+  console.log(`Price Highest to Lowest Valid: ${isDescending}`);
+  await page.screenshot({ path: path.join(artifactsDir, 'eval_15_sort_price_desc.png'), fullPage: false });
+
+  // 1d. Test Reset Sort via Chip
+  console.log('\nTesting Sort Chip Clear Button...');
+  const sortChipBtn = await page.$('button[data-clear="sortBy"]');
+  if (sortChipBtn) {
+    await sortChipBtn.click();
+    await page.waitForTimeout(500);
+    const resetSortValue = await page.$eval('#sort-select', el => el.value);
+    console.log(`Sort successfully reset to: ${resetSortValue} (Expected: newest)`);
+  }
+
+  // 1e. Test "Get Deal" Links to ensure they are 100% Direct Product Pages
+  console.log('\nTesting "Get Deal" links on active cards...');
+  const cardUrls = await page.$$eval('#deal-grid .deal-card .btn-deal', btns => 
+    btns.map(b => b.getAttribute('href'))
+  );
+  const searchUrlsOnPage = cardUrls.filter(u => 
+    u.includes('?q=') || u.includes('?k=') || u.includes('/search') || u.includes('query=') || u.includes('search.do?')
+  );
+  console.log(`Total active "Get Deal" buttons inspected: ${cardUrls.length}`);
+  console.log(`Search query links on page (Target: 0): ${searchUrlsOnPage.length}`);
+  console.log('Sample direct product links:');
+  cardUrls.slice(0, 5).forEach((u, i) => console.log(`  ${i + 1}: ${u}`));
+
+  async function safeClearFilters() {
+    const clearBtn = await page.$('#clear-all-filters-btn');
+    if (clearBtn && await clearBtn.isVisible()) {
+      await clearBtn.click();
+      await page.waitForTimeout(400);
+    }
+  }
 
   // 2. Filter by Nike + Men's + Size 8.5
-  console.log('Testing Filter: Brand: Nike + Men\'s + Size: 8.5...');
+  console.log('\nTesting Filter: Brand: Nike + Men\'s + Size: 8.5...');
   await page.selectOption('#brand-select', 'Nike');
   await page.waitForTimeout(400);
   const menBtn = await page.$('#gender-filter-group button[data-gender="men"]');
@@ -91,14 +161,6 @@ async function runEvaluation() {
   const nikeMen85Total = await page.$eval('#total-deal-count', el => el.textContent);
   console.log(`Filtered Nike + Men's + Size 8.5: Showing ${nikeMen85Count} cards (Total matching: ${nikeMen85Total})`);
   await page.screenshot({ path: path.join(artifactsDir, 'eval_3_size_85.png'), fullPage: false });
-
-  async function safeClearFilters() {
-    const clearBtn = await page.$('#clear-all-filters-btn');
-    if (clearBtn && await clearBtn.isVisible()) {
-      await clearBtn.click();
-      await page.waitForTimeout(400);
-    }
-  }
 
   // 3. Filter by Women's + Size 6.5
   console.log('Testing Filter: Gender: Women\'s + Size: 6.5...');

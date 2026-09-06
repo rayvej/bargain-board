@@ -156,10 +156,14 @@ export function setupDealCardListeners(container) {
         const dealBtn = e.target.closest('.btn-deal');
         if (dealBtn) {
             e.stopPropagation();
-            const href = dealBtn.getAttribute('href');
-            if (href && href !== '#') {
-                window.open(href, '_blank', 'noopener,noreferrer');
+            // Auto-copy coupon code if available
+            const card = dealBtn.closest('.deal-card');
+            const couponBtn = card?.querySelector('.copy-coupon-btn');
+            if (couponBtn) {
+                const code = couponBtn.getAttribute('data-code');
+                if (code) copyToClipboard(code);
             }
+            // Native <a target="_blank"> opens the product page cleanly
             return;
         }
 
