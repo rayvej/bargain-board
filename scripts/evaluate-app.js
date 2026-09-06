@@ -162,6 +162,25 @@ async function runEvaluation() {
   console.log(`Filtered Nike + Men's + Size 8.5: Showing ${nikeMen85Count} cards (Total matching: ${nikeMen85Total})`);
   await page.screenshot({ path: path.join(artifactsDir, 'eval_3_size_85.png'), fullPage: false });
 
+  // 2b. Test Multi-Word Smart Search: "nike mens shoes"
+  console.log('\nTesting Smart Search: "nike mens shoes"...');
+  await safeClearFilters();
+  await page.fill('#main-search', 'nike mens shoes');
+  await page.dispatchEvent('#main-search', 'input');
+  await page.waitForTimeout(800);
+  const searchNikeMensShoesTotal = await page.$eval('#total-deal-count', el => el.textContent);
+  console.log(`Smart Search "nike mens shoes": Total matching: ${searchNikeMensShoesTotal}`);
+  await page.screenshot({ path: path.join(artifactsDir, 'eval_smart_search_nike_mens_shoes.png'), fullPage: false });
+
+  // 2c. Test Smart Search: "nike shoes"
+  console.log('Testing Smart Search: "nike shoes"...');
+  await safeClearFilters();
+  await page.fill('#main-search', 'nike shoes');
+  await page.dispatchEvent('#main-search', 'input');
+  await page.waitForTimeout(800);
+  const searchNikeShoesTotal = await page.$eval('#total-deal-count', el => el.textContent);
+  console.log(`Smart Search "nike shoes": Total matching: ${searchNikeShoesTotal}`);
+
   // 3. Filter by Women's + Size 6.5
   console.log('Testing Filter: Gender: Women\'s + Size: 6.5...');
   await safeClearFilters();

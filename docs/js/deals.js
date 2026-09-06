@@ -437,10 +437,51 @@ function filterDeals(deals, filters) {
             if (!brandMatch) return false;
         }
 
-        // 4. Search Query (searches across brand, title, description, retailer, keywords)
+        // 4. Search Query (smart multi-token search with synonyms)
         if (filters.search) {
-            const q = filters.search.toLowerCase().trim();
-            if (!fullSearchable.includes(q)) return false;
+            const qClean = filters.search.toLowerCase().replace(/['"’`]/g, '').trim();
+            const tokens = qClean.split(/\s+/).filter(Boolean);
+
+            const dealCat = (deal.category || '').toLowerCase();
+            const dealSubcat = (deal.subcategory || '').toLowerCase();
+            const dealGender = (deal.gender || '').toLowerCase();
+            const dealSizes = (deal.sizes || []).map(s => String(s).toLowerCase());
+            const titleClean = titleText.replace(/['"’`]/g, '');
+            const descClean = descText.replace(/['"’`]/g, '');
+
+            const isMatch = tokens.every(token => {
+                // Gender synonyms
+                if (['men', 'mens', 'male'].includes(token)) {
+                    return dealGender === 'men' || dealGender === 'unisex' || /\b(men|mens|male)\b/.test(titleClean);
+                }
+                if (['women', 'womens', 'ladies', 'female'].includes(token)) {
+                    return dealGender === 'women' || dealGender === 'unisex' || /\b(women|womens|ladies|female)\b/.test(titleClean);
+                }
+                if (['kid', 'kids', 'boys', 'girls', 'youth', 'toddler'].includes(token)) {
+                    return dealGender === 'kids' || /\b(kid|kids|boy|boys|girl|girls|youth)\b/.test(titleClean);
+                }
+
+                // Footwear / Shoes synonyms
+                if (['shoe', 'shoes', 'sneaker', 'sneakers', 'footwear', 'kicks', 'runner', 'runners', 'cleat', 'cleats'].includes(token)) {
+                    return dealCat === 'shoes' || dealSubcat === 'shoes' ||
+                           /\b(shoes?|sneakers?|boots?|runners?|trainers?|cleats?|slides|sandals|clogs)\b/.test(titleClean);
+                }
+
+                // Clothing synonyms
+                if (['clothing', 'clothes', 'apparel'].includes(token)) {
+                    return dealCat === 'clothing' || dealCat === 'apparel' || ['mens', 'womens', 'activewear'].includes(dealSubcat);
+                }
+
+                // Size token
+                if (/^[0-9]+(?:\.[0-9]+)?y?$/.test(token) || ['xs', 's', 'm', 'l', 'xl', 'xxl', '2xl', '3xl'].includes(token)) {
+                    if (dealSizes.includes(token)) return true;
+                }
+
+                // Brand / Title / Description / Tag token match
+                return fullSearchable.includes(token);
+            });
+
+            if (!isMatch) return false;
         }
 
         // 5. Gender Filter ('men' | 'women' | 'kids' | 'unisex')
@@ -471,7 +512,7 @@ function filterDeals(deals, filters) {
             const s = filters.size.toLowerCase();
             const dealSizes = (deal.sizes || []).map(x => String(x).toLowerCase());
             
-            const isFootwear = deal.subcategory === 'shoes' || 
+            const isFootwear = deal.category === 'shoes' || deal.subcategory === 'shoes' || 
                                /\b(shoes?|sneakers?|boots?|runners?|trainers?|cleats?|slides|sandals|clogs)\b/i.test(titleText);
 
             const isShoeSizeQuery = /^[0-9]+(?:\.[0-9]+)?y?$/i.test(s) && !['28', '30', '32', '34', '36', '38'].includes(s);
@@ -507,8 +548,12 @@ function filterDeals(deals, filters) {
             const dealCat = (deal.category || '').toLowerCase();
             const dealSubcat = (deal.subcategory || '').toLowerCase();
 
-            if (cat === 'clothing') {
-                const isClothing = dealCat === 'clothing' || 
+            if (cat === 'shoes') {
+                const isShoe = dealCat === 'shoes' || dealSubcat === 'shoes' ||
+                    /\b(shoes?|sneakers?|boots?|runners?|trainers?|cleats?|slides|sandals|clogs)\b/i.test(titleText);
+                if (!isShoe) return false;
+            } else if (cat === 'clothing') {
+                const isClothing = dealCat === 'clothing' || dealCat === 'shoes' ||
                     ['shoes', 'mens', 'womens', 'accessories', 'activewear'].includes(dealSubcat);
                 if (!isClothing) return false;
             } else if (cat === 'electronics') {
@@ -518,7 +563,6 @@ function filterDeals(deals, filters) {
             } else {
                 const matchSubcat = dealSubcat === cat;
                 const matchTitle = fullSearchable.includes(cat) || 
-                    (cat === 'shoes' && (fullSearchable.includes('shoe') || fullSearchable.includes('sneaker') || fullSearchable.includes('boot'))) ||
                     (cat === 'laptops' && (fullSearchable.includes('laptop') || fullSearchable.includes('macbook') || fullSearchable.includes('chromebook'))) ||
                     (cat === 'headphones' && (fullSearchable.includes('headphone') || fullSearchable.includes('earbud') || fullSearchable.includes('audio'))) ||
                     (cat === 'mens' && fullSearchable.includes('men')) ||
