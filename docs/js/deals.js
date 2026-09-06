@@ -459,17 +459,26 @@ function filterDeals(deals, filters) {
             }
         }
 
-        // 6. Size Filter (e.g. '10', '9.5', '8.5', 'M', 'L', 'XL')
+        // 6. Size Filter (e.g. '10', '9.5', '8.5', '1y', 'm', 'l', 'xl', '32')
         if (filters.size) {
             const s = filters.size.toLowerCase();
             const dealSizes = (deal.sizes || []).map(x => String(x).toLowerCase());
             
             const isFootwear = deal.subcategory === 'shoes' || 
-                               /\b(shoes?|sneakers?|boots?|runners?|trainers?|cleats?)\b/i.test(titleText);
+                               /\b(shoes?|sneakers?|boots?|runners?|trainers?|cleats?|slides|sandals|clogs)\b/i.test(titleText);
+
+            const isShoeSizeQuery = /^[0-9]+(?:\.[0-9]+)?y?$/i.test(s) && !['28', '30', '32', '34', '36', '38'].includes(s);
+            const isApparelSizeQuery = /^(xs|s|m|l|xl|xxl|2xl|3xl|28|30|32|34|36|38)$/i.test(s);
+
+            if (isShoeSizeQuery && !isFootwear) {
+                return false;
+            }
+            if (isApparelSizeQuery && isFootwear && !dealSizes.includes(s)) {
+                return false;
+            }
 
             const hasSize = dealSizes.includes(s) || 
                             dealSizes.includes('all') ||
-                            (isFootwear && dealSizes.length === 0) ||
                             new RegExp(`\\b(?:size|sz|waist)?\\s*${s.replace('.', '\\.')}\\b`, 'i').test(titleText) ||
                             new RegExp(`\\b(?:size|sz|waist)?\\s*${s.replace('.', '\\.')}\\b`, 'i').test(descText);
             if (!hasSize) return false;

@@ -156,13 +156,20 @@ function cleanHtml(str) {
 }
 
 function extractBrand(title, retailer, brandHint = '') {
-  if (brandHint) return brandHint;
   const text = title.toLowerCase();
+  // 1. First check if a known brand is explicitly named in the title
   for (const b of KNOWN_BRANDS) {
     const regex = new RegExp(`\\b${b.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")}\\b`, "i");
     if (regex.test(text)) return b;
   }
-  // If retailer itself is an official brand store
+  // 2. If brandHint is provided, verify it actually matches or is relevant to title/retailer
+  if (brandHint) {
+    const hintLower = brandHint.toLowerCase();
+    if (text.includes(hintLower) || (retailer && retailer.toLowerCase().includes(hintLower))) {
+      return brandHint;
+    }
+  }
+  // 3. If retailer itself is an official brand store
   for (const b of KNOWN_BRANDS) {
     if (retailer.toLowerCase().includes(b.toLowerCase())) return b;
   }
