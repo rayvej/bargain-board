@@ -846,33 +846,33 @@ function showDealModal(deal) {
             <!-- ═══════ Cross-Store Price Comparison Section ═══════ -->
             <div class="mt-5 p-4 rounded-xl bg-gradient-to-br from-slate-50 to-cyan-50/40 border border-cyan-100">
                 <div class="flex items-center justify-between mb-2">
-                    <h4 class="text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-1.5">
-                        <span>🔍 Compare Canadian Prices & Other Stores</span>
+                    <h4 class="text-sm font-bold text-gray-800 flex items-center gap-1.5">
+                        <span>🏬 More Canadian Clearance Portals</span>
                     </h4>
-                    <span class="text-[11px] text-cyan-700 font-medium">Find lowest CAD price</span>
+                    <span class="text-[11px] text-cyan-700 font-medium">100% In CAD</span>
                 </div>
-                <p class="text-xs text-gray-500 mb-3">Check other stores in Canada or shipping to Canada for clearance discounts or promo codes:</p>
+                <p class="text-xs text-gray-500 mb-3">Browse official clearance & outlet centers on Canadian retailers:</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <a href="${comp.googleShopping}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#06B6D4] hover:shadow-sm transition-all text-xs font-semibold text-gray-800 group">
+                    <a href="https://www.amazon.ca/deals" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#06B6D4] hover:shadow-sm transition-all text-xs font-semibold text-gray-800 group">
                         <span class="flex items-center gap-2">
-                            <span>🇨🇦</span>
-                            <span>Google Shopping (Canada)</span>
+                            <span>📦</span>
+                            <span>Amazon Canada Today's Deals</span>
                         </span>
                         <span class="text-[#06B6D4] group-hover:translate-x-0.5 transition-transform">↗</span>
                     </a>
                     ${isFashion ? `
-                        <a href="${comp.fashionSearch}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#06B6D4] hover:shadow-sm transition-all text-xs font-semibold text-gray-800 group">
+                        <a href="https://www.theshoecompany.ca/en/ca/category/clearance" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#06B6D4] hover:shadow-sm transition-all text-xs font-semibold text-gray-800 group">
                             <span class="flex items-center gap-2">
                                 <span>👟</span>
-                                <span>Sport Chek / Foot Locker CA / The Bay</span>
+                                <span>The Shoe Company Clearance</span>
                             </span>
                             <span class="text-[#06B6D4] group-hover:translate-x-0.5 transition-transform">↗</span>
                         </a>
                     ` : `
-                        <a href="${comp.techSearch}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#06B6D4] hover:shadow-sm transition-all text-xs font-semibold text-gray-800 group">
+                        <a href="https://www.bestbuy.ca/en-ca/collection/clearance-deals/16694" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-200 hover:border-[#06B6D4] hover:shadow-sm transition-all text-xs font-semibold text-gray-800 group">
                             <span class="flex items-center gap-2">
                                 <span>⚡</span>
-                                <span>Best Buy CA / Canada Computers / Apple</span>
+                                <span>Best Buy Canada Outlet</span>
                             </span>
                             <span class="text-[#06B6D4] group-hover:translate-x-0.5 transition-transform">↗</span>
                         </a>

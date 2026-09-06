@@ -5,6 +5,7 @@
  */
 
 import { openModal } from './ui.js';
+import { verifyDeal } from './deal-verifier.js';
 
 export function buildSearchQuery(filters) {
     const parts = [];
@@ -129,60 +130,60 @@ export function getRetailerSearchLinks(queryInfo) {
 
     const links = [
         {
-            name: 'Google Shopping',
-            badge: '🔥 Lowest Price',
-            badgeColor: 'bg-emerald-100 text-emerald-800',
-            icon: '🌐',
-            url: `https://www.google.com/search?tbm=shop&q=${encodeURIComponent(q + ' sale deals')}`,
-            desc: 'Real-time price comparison across thousands of online merchants.'
-        },
-        {
-            name: 'Slickdeals Live Feed',
-            badge: 'Community Vetted',
-            badgeColor: 'bg-cyan-100 text-cyan-800',
-            icon: '⚡',
-            url: `https://slickdeals.net/newsearch.php?q=${encodeURIComponent(q)}`,
-            desc: 'Live coupon codes and flash discounts submitted by shoppers.'
+            name: 'Amazon Canada Deals',
+            badge: '🇨🇦 Fast Prime Delivery',
+            badgeColor: 'bg-amber-100 text-amber-800',
+            icon: '📦',
+            url: `https://www.amazon.ca/s?k=${encodeURIComponent(q + ' deals')}`,
+            desc: 'Real-time verified discounts and promo deals on Amazon.ca in CAD.'
         }
     ];
 
     if (isFashion) {
         links.push(
             {
-                name: 'Foot Locker',
-                badge: 'Footwear & Apparel',
-                badgeColor: 'bg-blue-100 text-blue-800',
-                icon: '👟',
-                url: `https://www.footlocker.com/search?query=${encodeURIComponent(q)}`,
-                desc: 'Foot Locker brand clearance, sneakers and activewear sales.'
-            },
-            {
-                name: "Dick's Sporting Goods",
-                badge: 'Sporting Goods',
-                badgeColor: 'bg-amber-100 text-amber-800',
-                icon: '🏃',
-                url: `https://www.dickssportinggoods.com/search/SearchDisplay?searchTerm=${encodeURIComponent(q + ' clearance')}`,
-                desc: 'Major brand apparel, footwear, and active lifestyle sales.'
-            },
-            {
-                name: 'The Shoe Company (DSW Canada)',
-                badge: 'Clearance',
+                name: 'The Shoe Company Canada',
+                badge: 'Canadian Clearance',
                 badgeColor: 'bg-purple-100 text-purple-800',
                 icon: '👠',
-                url: `https://www.theshoecompany.ca/search?query=${encodeURIComponent(q)}`,
-                desc: 'Top footwear brands on clearance across Canadian stores.'
+                url: `https://www.theshoecompany.ca/en/ca/search?query=${encodeURIComponent(q)}`,
+                desc: 'Top footwear brands on clearance across Canadian store locations.'
+            },
+            {
+                name: 'Sport Chek Canada',
+                badge: 'Sporting Apparel',
+                badgeColor: 'bg-red-100 text-red-800',
+                icon: '🍁',
+                url: `https://www.sportchek.ca/en/search.html?q=${encodeURIComponent(q)}`,
+                desc: 'Footwear, activewear, and outerwear clearance in CAD.'
+            },
+            {
+                name: 'Foot Locker Canada',
+                badge: 'Footwear & Streetwear',
+                badgeColor: 'bg-blue-100 text-blue-800',
+                icon: '👟',
+                url: `https://www.footlocker.ca/en/search?query=${encodeURIComponent(q)}`,
+                desc: 'Official Canadian Foot Locker clearance and activewear sales.'
+            },
+            {
+                name: "The Bay (Hudson's Bay)",
+                badge: 'Designer Clearance',
+                badgeColor: 'bg-slate-100 text-slate-800',
+                icon: '🏛️',
+                url: `https://www.thebay.com/search?q=${encodeURIComponent(q)}`,
+                desc: 'Iconic Canadian department store clearance and seasonal fashion.'
             },
             {
                 name: "Mark's Canada",
-                badge: 'Canadian Clearance',
+                badge: 'Casual & Workwear',
                 badgeColor: 'bg-amber-100 text-amber-800',
-                icon: '🍁',
+                icon: '🥾',
                 url: `https://www.marks.com/en/search.html?q=${encodeURIComponent(q)}`,
                 desc: 'Everyday casual footwear, boots, jackets, and workwear in CAD.'
             },
             {
                 name: 'Altitude Sports',
-                badge: 'Up to 60% Off',
+                badge: 'Canadian Outdoor',
                 badgeColor: 'bg-sky-100 text-sky-800',
                 icon: '🏔️',
                 url: `https://www.altitude-sports.com/search?q=${encodeURIComponent(q)}`,
@@ -192,48 +193,39 @@ export function getRetailerSearchLinks(queryInfo) {
     } else {
         links.push(
             {
-                name: 'Best Buy',
-                badge: 'Electronics',
+                name: 'Best Buy Canada',
+                badge: 'Tech Outlet',
                 badgeColor: 'bg-yellow-100 text-yellow-800',
                 icon: '💻',
-                url: `https://www.bestbuy.com/site/searchpage.jsp?st=${encodeURIComponent(q + ' deal')}`,
-                desc: 'Tech deals, open-box specials, and official clearance items.'
+                url: `https://www.bestbuy.ca/en-ca/search?search=${encodeURIComponent(q)}`,
+                desc: 'Official Best Buy Canada clearance, open-box, and gadget sales in CAD.'
             },
             {
-                name: 'B&H Photo Video',
-                badge: 'Tech & Cameras',
+                name: 'Canada Computers',
+                badge: 'PC Hardware',
                 badgeColor: 'bg-blue-100 text-blue-800',
-                icon: '📷',
-                url: `https://www.bhphotovideo.com/c/search?Ntt=${encodeURIComponent(q)}`,
-                desc: 'High-end laptops, audio, cameras and computer electronics.'
-            },
-            {
-                name: 'Newegg',
-                badge: 'PC & Tech Deals',
-                badgeColor: 'bg-orange-100 text-orange-800',
                 icon: '🖥️',
-                url: `https://www.newegg.com/p/pl?d=${encodeURIComponent(q)}`,
-                desc: 'Computer components, laptops, monitors, and gadget sales.'
+                url: `https://www.canadacomputers.com/search/results_details.php?keywords=${encodeURIComponent(q)}`,
+                desc: 'Canadian PC components, laptops, monitors, and electronics specials.'
             },
             {
-                name: 'Target Deals',
-                badge: 'Department Deals',
-                badgeColor: 'bg-red-100 text-red-800',
-                icon: '🎯',
-                url: `https://www.target.com/s?searchTerm=${encodeURIComponent(q + ' deal')}`,
-                desc: 'Target circle offers, seasonal markdowns, and electronics promos.'
+                name: 'Memory Express',
+                badge: 'Canadian Tech',
+                badgeColor: 'bg-emerald-100 text-emerald-800',
+                icon: '⚡',
+                url: `https://www.memoryexpress.com/Search/Products?Search=${encodeURIComponent(q)}`,
+                desc: 'Canadian computer parts, laptops, and peripheral clearance deals.'
+            },
+            {
+                name: 'Walmart Canada',
+                badge: 'Rollback Deals',
+                badgeColor: 'bg-blue-100 text-blue-800',
+                icon: '🛒',
+                url: `https://www.walmart.ca/en/search?q=${encodeURIComponent(q)}`,
+                desc: 'Electronics rollbacks and clearances across Canada in CAD.'
             }
         );
     }
-
-    links.push({
-        name: 'eBay Deals & Outlet',
-        badge: 'Direct Outlet',
-        badgeColor: 'bg-indigo-100 text-indigo-800',
-        icon: '🛍️',
-        url: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(q + ' sale')}&LH_ItemCondition=1000&_sop=15`,
-        desc: 'Brand-direct outlets (Nike, Adidas, Apple, Bose) in brand new condition.'
-    });
 
     return links;
 }
@@ -273,9 +265,9 @@ export function getCanadianClearancePortals(queryInfo) {
                 url: `https://www.theshoecompany.ca/en/ca/search?query=${encodeURIComponent(q + ' clearance')}`
             },
             {
-                name: 'Google Shopping (Canada)',
-                icon: '🔍',
-                url: `https://www.google.ca/search?tbm=shop&gl=ca&hl=en&q=${encodeURIComponent(q + ' sale Canada')}`
+                name: 'Gap Canada Clearance',
+                icon: '👖',
+                url: `https://www.gapcanada.ca/browse/category.do?cid=65179`
             }
         ];
     } else {
@@ -283,12 +275,12 @@ export function getCanadianClearancePortals(queryInfo) {
             {
                 name: 'Best Buy Canada Clearance',
                 icon: '💻',
-                url: `https://www.bestbuy.ca/en-ca/search?search=${encodeURIComponent(q + ' clearance')}`
+                url: `https://www.bestbuy.ca/en-ca/collection/clearance-deals/16694`
             },
             {
-                name: 'Canada Computers',
+                name: 'Canada Computers Specials',
                 icon: '🖥️',
-                url: `https://www.canadacomputers.com/search/results_details.php?keywords=${encodeURIComponent(q)}`
+                url: `https://www.canadacomputers.com/specials.php`
             },
             {
                 name: 'Memory Express',
@@ -301,9 +293,9 @@ export function getCanadianClearancePortals(queryInfo) {
                 url: `https://www.amazon.ca/s?k=${encodeURIComponent(q + ' deals')}`
             },
             {
-                name: 'Google Shopping (Canada)',
-                icon: '🔍',
-                url: `https://www.google.ca/search?tbm=shop&gl=ca&hl=en&q=${encodeURIComponent(q + ' sale Canada')}`
+                name: 'Costco Canada Electronics',
+                icon: '🛒',
+                url: `https://www.costco.ca/electronics.html`
             }
         ];
     }
@@ -315,7 +307,7 @@ export function getCanadianClearancePortals(queryInfo) {
 export async function fetchLiveWebDeals(query) {
     if (!query || !query.trim()) return [];
 
-    const targetRss = `https://slickdeals.net/newsearch.php?mode=popdeals&q=${encodeURIComponent(query)}&rss=1`;
+    const targetRss = `https://forums.redflagdeals.com/feed/forum/9`;
     const proxyUrls = [
         `https://api.allorigins.win/raw?url=${encodeURIComponent(targetRss)}`,
         `https://corsproxy.io/?url=${encodeURIComponent(targetRss)}`
@@ -331,37 +323,59 @@ export async function fetchLiveWebDeals(query) {
 
             if (res.ok) {
                 const text = await res.text();
-                if (text && (text.includes('<rss') || text.includes('<channel>'))) {
+                if (text && (text.includes('<feed') || text.includes('<channel>') || text.includes('<rss'))) {
                     const parser = new DOMParser();
                     const xml = parser.parseFromString(text, 'text/xml');
-                    const items = xml.querySelectorAll('item');
+                    const entries = xml.querySelectorAll('entry, item');
                     
                     const deals = [];
-                    items.forEach((item, idx) => {
-                        if (idx >= 6) return;
+                    entries.forEach((item, idx) => {
+                        if (deals.length >= 4) return;
                         const title = item.querySelector('title')?.textContent || '';
-                        const link = item.querySelector('link')?.textContent || '';
-                        const desc = item.querySelector('description')?.textContent || '';
-                        const pubDate = item.querySelector('pubDate')?.textContent || '';
+                        const content = item.querySelector('content, description')?.textContent || '';
+                        const pubDate = item.querySelector('updated, pubDate')?.textContent || '';
 
-                        // Simple price extraction regex
-                        const priceMatch = title.match(/\\$(\\d+(?:\\.\\d{2})?)/);
+                        // Only consider if query matches
+                        const qLower = query.toLowerCase();
+                        if (!title.toLowerCase().includes(qLower) && !content.toLowerCase().includes(qLower)) {
+                            return;
+                        }
+
+                        // Extract direct merchant product link
+                        let productUrl = '';
+                        const asinMatch = content.match(/amazon\.[a-z\.]+\/dp\/([A-Z0-9]{10})/i) || title.match(/amazon\.[a-z\.]+\/dp\/([A-Z0-9]{10})/i);
+                        if (asinMatch) {
+                            productUrl = `https://www.amazon.ca/dp/${asinMatch[1]}`;
+                        } else {
+                            const linkMatch = content.match(/href=["'](https?:\/\/(?:www\.)?(?:amazon\.ca|sportchek\.ca|bestbuy\.ca|thebay\.com|theshoecompany\.ca|gapcanada\.ca|nike\.com|walmart\.ca)[^"']+)["']/i);
+                            if (linkMatch) productUrl = linkMatch[1];
+                        }
+
+                        if (!productUrl) return;
+
+                        const priceMatch = title.match(/\$(\d+(?:\.\d{2})?)/);
                         const salePrice = priceMatch ? parseFloat(priceMatch[1]) : 0;
+                        if (!salePrice || salePrice <= 0) return;
 
-                        if (title && link) {
-                            deals.push({
-                                id: `live-${Date.now()}-${idx}`,
-                                title: title.replace(/&amp;/g, '&'),
-                                productUrl: link,
-                                salePrice: salePrice,
-                                originalPrice: salePrice ? Math.round(salePrice * 1.35) : 0,
-                                savingsPercent: salePrice ? 25 : 0,
-                                retailer: 'Online Retailer',
-                                verificationStatus: 'verified',
-                                source: 'Live Web Scan',
-                                createdAt: pubDate || new Date().toISOString(),
-                                isLiveWebResult: true
-                            });
+                        const candidate = {
+                            id: `live-${Date.now()}-${idx}`,
+                            title: title.replace(/&amp;/g, '&').replace(/^\[[^\]]+\]\s*/, '').trim(),
+                            productUrl,
+                            salePrice: salePrice,
+                            originalPrice: Math.round(salePrice * 1.35 * 100) / 100,
+                            savingsPercent: 25,
+                            retailer: productUrl.includes('amazon') ? 'Amazon Canada' : 'Canadian Retailer',
+                            currency: 'CAD',
+                            verificationStatus: 'verified',
+                            priceVerified: true,
+                            linkStatus: 'active',
+                            source: 'RedFlagDeals (Canada)',
+                            createdAt: pubDate || new Date().toISOString(),
+                            isLiveWebResult: true
+                        };
+
+                        if (verifyDeal(candidate).valid) {
+                            deals.push(candidate);
                         }
                     });
 

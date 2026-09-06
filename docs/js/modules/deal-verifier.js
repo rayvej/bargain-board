@@ -27,6 +27,12 @@ const BANNED_PATTERNS = [
     'resale', 'sneakersupply'
 ];
 
+const DIRTY_QUERY_PATTERNS = [
+    'extra%2040', 'extra+40', 'sale%20items', 'sale+items', 'urban%20outfitters',
+    'today%20only', 'cineplex', 'motioncam', 'and%20more', 'free%20shipping',
+    'various%20colors', 'limited%20sizes', 'limited+sizes'
+];
+
 /**
  * Validates a single deal's link, price, and merchant credentials.
  * @param {Object} deal 
@@ -43,6 +49,10 @@ export function verifyDeal(deal) {
     const urlLower = url.toLowerCase();
     if (BANNED_PATTERNS.some(p => urlLower.includes(p))) {
         return { valid: false, reason: 'Forbidden URL / reseller redirect' };
+    }
+
+    if (DIRTY_QUERY_PATTERNS.some(p => urlLower.includes(p))) {
+        return { valid: false, reason: 'Dirty / hallucinated search query' };
     }
 
     try {

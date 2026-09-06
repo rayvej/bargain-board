@@ -68,27 +68,13 @@ const RSS_FEEDS = [
   { category: 'clothing', url: 'https://slickdeals.net/newsearch.php?q=mens+joggers&searcharea=deals&searchin=first&rss=1' },
   { category: 'clothing', url: 'https://slickdeals.net/newsearch.php?q=fleece+jacket&searcharea=deals&searchin=first&rss=1' },
 
-  // ─── RETAILER STORES (SHOE & APPAREL CLEARANCE) ───
-  { category: 'clothing', retailerHint: 'Foot Locker', url: 'https://slickdeals.net/newsearch.php?q=foot+locker&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: "Dick's Sporting Goods", url: 'https://slickdeals.net/newsearch.php?q=dicks+sporting+goods&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'Finish Line', url: 'https://slickdeals.net/newsearch.php?q=finish+line&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'Nordstrom Rack', url: 'https://slickdeals.net/newsearch.php?q=nordstrom+rack&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'DSW', url: 'https://slickdeals.net/newsearch.php?q=dsw+shoes&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: "Macy's", url: 'https://slickdeals.net/newsearch.php?q=macys+shoes&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: "Macy's", url: 'https://slickdeals.net/newsearch.php?q=macys+clothing&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: "Kohl's", url: 'https://slickdeals.net/newsearch.php?q=kohls+shoes&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'REI', url: 'https://slickdeals.net/newsearch.php?q=rei+outlet&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'Zappos', url: 'https://slickdeals.net/newsearch.php?q=zappos+clearance&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'Shoe Carnival', url: 'https://slickdeals.net/newsearch.php?q=shoe+carnival&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'Scheels', url: 'https://slickdeals.net/newsearch.php?q=scheels+shoes&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'Champs Sports', url: 'https://slickdeals.net/newsearch.php?q=champs+sports&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'Journeys', url: 'https://slickdeals.net/newsearch.php?q=journeys+shoes&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'Sierra', url: 'https://slickdeals.net/newsearch.php?q=sierra+shoes&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'Backcountry', url: 'https://slickdeals.net/newsearch.php?q=backcountry+clearance&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'J.Crew', url: 'https://slickdeals.net/newsearch.php?q=j+crew+clearance&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'Gap', url: 'https://slickdeals.net/newsearch.php?q=gap+factory&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'Banana Republic', url: 'https://slickdeals.net/newsearch.php?q=banana+republic+factory&searcharea=deals&searchin=first&rss=1' },
-  { category: 'clothing', retailerHint: 'Old Navy', url: 'https://slickdeals.net/newsearch.php?q=old+navy+clearance&searcharea=deals&searchin=first&rss=1' },
+  // ─── CANADIAN RETAILER APPAREL & SHOE CLEARANCE ───
+  { category: 'clothing', retailerHint: 'Sport Chek', url: 'https://slickdeals.net/newsearch.php?q=sport+chek&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'The Bay', url: 'https://slickdeals.net/newsearch.php?q=hudsons+bay&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Foot Locker Canada', url: 'https://slickdeals.net/newsearch.php?q=foot+locker+canada&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Gap Canada', url: 'https://slickdeals.net/newsearch.php?q=gap+canada&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Old Navy', url: 'https://slickdeals.net/newsearch.php?q=old+navy+canada&searcharea=deals&searchin=first&rss=1' },
+  { category: 'clothing', retailerHint: 'Lululemon', url: 'https://slickdeals.net/newsearch.php?q=lululemon+canada&searcharea=deals&searchin=first&rss=1' },
 
   // ─── ELECTRONICS & TECH HARDWARE FEEDS ───
   { category: 'electronics', retailerHint: 'Best Buy', url: 'https://slickdeals.net/newsearch.php?q=best+buy+deals&searcharea=deals&searchin=first&rss=1' },
@@ -184,17 +170,32 @@ function extractBrand(title, retailer, brandHint = '') {
 }
 
 function extractRetailer(title, fullHtml, retailerHint = '') {
-  // 1. Check title for bracketed retailer e.g. [JD Sports], [Sport Chek], [Nike], [Sierra]
-  const bracketMatch = title.match(/^\[([^\]]+)\]/);
-  if (bracketMatch) {
-    const raw = bracketMatch[1].trim();
-    for (const r of KNOWN_RETAILERS) {
-      if (raw.toLowerCase().includes(r.toLowerCase())) return r;
-    }
-    if (raw.length > 2) return raw;
+  const combined = (title + ' ' + fullHtml).toLowerCase();
+
+  // 1. Direct Amazon check
+  if (combined.includes('amazon.ca') || combined.includes('amazon') || combined.includes('@amazon') || combined.includes('at amazon')) {
+    return 'Amazon Canada';
   }
 
-  // 2. Check HTML data attributes e.g. data-product-exitWebsite="nike.com" or data-store-slug
+  // 2. Check title for bracketed retailer e.g. [Sport Chek], [Walmart], [Best Buy]
+  const bracketMatch = title.match(/^\[([^\]]+)\]/);
+  const NON_RETAILER_TAGS = new Set([
+    'new', 'lightning deal', 'prime', 's&s', 'sns', 'deal', 'hot', 'save', 
+    'sns, ac', 'new, ac', 'app store', 'select stores', 'black only', 'open box',
+    'select accounts', 'refurbished', 'ymmv', 'in-store', 'online'
+  ]);
+
+  if (bracketMatch) {
+    const raw = bracketMatch[1].trim();
+    if (!NON_RETAILER_TAGS.has(raw.toLowerCase())) {
+      for (const r of KNOWN_RETAILERS) {
+        if (raw.toLowerCase().includes(r.toLowerCase())) return r;
+      }
+      if (raw.length > 2 && !raw.includes('$')) return raw;
+    }
+  }
+
+  // 3. Check HTML data attributes e.g. data-product-exitWebsite
   const exitWebsiteMatch = fullHtml.match(/data-product-exitWebsite=["']([^"']+)["']/i);
   if (exitWebsiteMatch) {
     const domain = exitWebsiteMatch[1].toLowerCase().replace(/\.com|\.ca/g, '').replace(/[-_]/g, ' ').trim();
@@ -204,22 +205,22 @@ function extractRetailer(title, fullHtml, retailerHint = '') {
     if (domain.length > 2) return domain.toUpperCase();
   }
 
-  // 3. Check title for "at Store" or "from Store" or "@ Store"
+  // 4. Check title for "at Store" or "from Store" or "@ Store"
   for (const r of KNOWN_RETAILERS) {
     const regex = new RegExp(`(?:at|from|@)\\s+${r.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")}`, "i");
     if (regex.test(title)) return r;
   }
 
-  // 4. Fallback to retailerHint from feed configuration
+  // 5. Fallback to retailerHint from feed configuration
   if (retailerHint) return retailerHint;
 
-  // 5. Fallback search in title
+  // 6. Fallback search in title
   for (const r of KNOWN_RETAILERS) {
     const regex = new RegExp(`\\b${r.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")}\\b`, "i");
     if (regex.test(title)) return r;
   }
 
-  return 'Online Store';
+  return 'Canadian Retailer';
 }
 
 function extractGender(title, category, subcategory) {
@@ -509,13 +510,9 @@ function resolveMerchantUrl(retailer, title, exitWebsite = '', directLink = '', 
     return `https://www.lenovo.com/ca/en/search?fq=&text=${searchTerms}`;
   }
 
-  // ABSOLUTE GUARANTEE: Never fall back to US-only stores, Google Search or eBay!
-  // Route to Canada's premier retailer for that category
-  if (category === 'clothing' || subcategory === 'shoes') {
-    return `https://www.sportchek.ca/en/search.html?q=${searchTerms}`;
-  } else {
-    return `https://www.bestbuy.ca/en-ca/search?search=${searchTerms}`;
-  }
+  // ABSOLUTE GUARANTEE: Never hallucinate search URLs to Sport Chek or Best Buy for unknown products!
+  // Require genuine retailer or direct link, or return empty string so invalid deals are discarded.
+  return '';
 }
 
 function extractCouponCodes(title, description, fullHtml, retailer) {
@@ -667,9 +664,11 @@ function parseSlickdealsItem(itemXml, defaultCategory = 'clothing', brandHint = 
     if (asinMatch) {
       directStoreUrl = `https://www.amazon.ca/dp/${asinMatch[1]}`;
     } else {
-      const exitWebsiteMatch = fullHtml.match(/data-product-exitWebsite=["']([^"']+)["']/i);
-      const exitWebsite = exitWebsiteMatch ? exitWebsiteMatch[1] : '';
       directStoreUrl = resolveMerchantUrl(retailer, title, exitWebsite, '', category, subcategory);
+    }
+
+    if (!directStoreUrl || !directStoreUrl.startsWith('http')) {
+      return null;
     }
 
     const imgMatch = fullHtml.match(/<img[^>]+src=["'](https:\/\/[^"']+)["']/i);
@@ -836,9 +835,23 @@ function parseRedFlagDealsEntry(entryXml, defaultCategory = 'clothing') {
       return null;
     }
 
-    const gender = extractGender(cleanTitle, category, subcategory);
-    const sizes = extractSizes(cleanTitle, fullHtml, subcategory);
-    const directStoreUrl = resolveMerchantUrl(retailer, cleanTitle, '', productUrl, category, subcategory);
+    // Extract direct merchant product link from post body if present
+    let directStoreUrl = '';
+    const asinMatch = fullHtml.match(/amazon\.[a-z\.]+\/dp\/([A-Z0-9]{10})/i) || cleanTitle.match(/amazon\.[a-z\.]+\/dp\/([A-Z0-9]{10})/i);
+    if (asinMatch) {
+      directStoreUrl = `https://www.amazon.ca/dp/${asinMatch[1]}`;
+    } else {
+      const hrefMatch = fullHtml.match(/href=["'](https?:\/\/(?:www\.)?(?:amazon\.ca|sportchek\.ca|bestbuy\.ca|thebay\.com|footlocker\.ca|gapcanada\.ca|oldnavy\.gapcanada\.ca|nike\.com|adidas\.ca|theshoecompany\.ca|walmart\.ca|costco\.ca|apple\.com|lenovo\.com|dell\.com)[^"']+)["']/i);
+      if (hrefMatch) {
+        directStoreUrl = hrefMatch[1];
+      } else {
+        directStoreUrl = resolveMerchantUrl(retailer, cleanTitle, '', productUrl, category, subcategory);
+      }
+    }
+
+    if (!directStoreUrl || !directStoreUrl.startsWith('http')) {
+      return null;
+    }
 
     let imageUrl = '';
     if (category === 'clothing' || subcategory === 'shoes') {

@@ -1,22 +1,10 @@
 import { formatPrice, formatRelativeTime, copyToClipboard } from './ui.js';
 
 export function getComparisonLinks(deal) {
-    const cleanTitle = (deal.title || '')
-        .replace(/^(deal:\s*|\$\d+[\d\.]*\s*\|\s*)/i, '')
-        .replace(/\b(w\/|with|free s&h|free shipping|at [a-z0-9\.\s&]+)\b/gi, '')
-        .replace(/[\(\)\[\]]/g, ' ')
-        .replace(/\s+/g, ' ')
-        .slice(0, 70)
-        .trim();
-
-    const brand = deal.brand && deal.brand !== 'Various' && deal.brand !== 'Online Store' ? deal.brand : '';
-    const query = (brand && !cleanTitle.toLowerCase().includes(brand.toLowerCase()) ? brand + ' ' : '') + cleanTitle;
-
     return {
-        query,
-        googleShopping: `https://www.google.com/search?tbm=shop&gl=ca&hl=en&q=${encodeURIComponent(query)}`,
-        fashionSearch: `https://www.google.com/search?q=${encodeURIComponent(query + ' (site:sportchek.ca OR site:footlocker.ca OR site:thebay.com OR site:theshoecompany.ca OR site:nike.com/ca)')}`,
-        techSearch: `https://www.google.com/search?q=${encodeURIComponent(query + ' (site:bestbuy.ca OR site:canadacomputers.com OR site:memoryexpress.com OR site:apple.com/ca)')}`
+        amazonDeals: 'https://www.amazon.ca/deals',
+        fashionPortal: 'https://www.theshoecompany.ca/en/ca/category/clearance',
+        techPortal: 'https://www.bestbuy.ca/en-ca/collection/clearance-deals/16694'
     };
 }
 
@@ -135,17 +123,16 @@ export function createDealCardHTML(deal) {
                         <a href="${targetUrl}" 
                            target="_blank" 
                            rel="noopener noreferrer" 
-                           class="btn-deal flex-1 text-center bg-bb-accent hover:bg-orange-600 active:scale-[0.98] text-white font-semibold py-2 px-3 rounded-lg transition-all shadow-sm hover:shadow text-xs cursor-pointer select-none truncate">
-                            Go to Deal →
+                           class="btn-deal flex-1 text-center bg-bb-accent hover:bg-orange-600 active:scale-[0.98] text-white font-semibold py-2 px-3 rounded-lg transition-all shadow-sm hover:shadow text-xs cursor-pointer select-none truncate flex items-center justify-center gap-1">
+                            <span>Get Deal</span>
+                            <span>→</span>
                         </a>
-                        <a href="${comp.googleShopping}" 
-                           target="_blank" 
-                           rel="noopener noreferrer" 
-                           class="btn-compare px-2.5 py-2 text-center bg-gray-50 hover:bg-cyan-50 text-gray-700 hover:text-[#06B6D4] font-semibold rounded-lg border border-gray-200 hover:border-cyan-300 transition-all text-xs cursor-pointer select-none flex items-center gap-1"
-                           title="Compare prices across all stores on Google Shopping">
-                            <span>🔍</span>
-                            <span class="hidden sm:inline">Compare</span>
-                        </a>
+                        <button type="button" 
+                           class="open-deal-modal px-3 py-2 text-center bg-gray-50 hover:bg-cyan-50 text-gray-700 hover:text-[#06B6D4] font-semibold rounded-lg border border-gray-200 hover:border-cyan-300 transition-all text-xs cursor-pointer select-none flex items-center gap-1"
+                           title="View deal details and coupon codes">
+                            <span>📋</span>
+                            <span class="hidden sm:inline">Details</span>
+                        </button>
                     </div>
                 </div>
             </div>
