@@ -856,10 +856,30 @@ export async function scrapeAllFeeds() {
   logger.success(`Scraped ${allDeals.length} valid clothing & electronics items, deduped to ${deduped.length} unique items!`);
 
   const docsOutputPath = path.join(__dirname, '../docs/deals-data.json');
-  await fs.writeFile(docsOutputPath, JSON.stringify(deduped, null, 2));
-  logger.success(`Wrote ${deduped.length} clean multi-retailer deals to ${docsOutputPath}`);
+  let existingDeals = [];
+  try {
+    const rawExisting = await fs.readFile(docsOutputPath, 'utf8');
+    existingDeals = JSON.parse(rawExisting);
+  } catch (e) {
+    existingDeals = [];
+  }
 
-  return deduped;
+  // Preserve existing direct verified deals so automated scrapes never regress the catalog
+  const mergedDeals = [...existingDeals];
+  const existingIds = new Set(existingDeals.map(d => d.id));
+  let addedCount = 0;
+  for (const deal of allDeals) {
+    if (deal.id && !existingIds.has(deal.id)) {
+      mergedDeals.push(deal);
+      existingIds.add(deal.id);
+      addedCount++;
+    }
+  }
+
+  await fs.writeFile(docsOutputPath, JSON.stringify(mergedDeals, null, 2));
+  logger.success(`Preserved ${existingDeals.length} existing verified items and merged ${addedCount} new items (Total: ${mergedDeals.length}) to ${docsOutputPath}`);
+
+  return mergedDeals;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
