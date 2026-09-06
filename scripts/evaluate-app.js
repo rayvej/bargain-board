@@ -80,19 +80,24 @@ async function runEvaluation() {
   // 2. Filter by Nike
   console.log('Selecting Brand: Nike...');
   await page.selectOption('#brand-select', 'Nike');
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(600);
   const nikeCount = await page.$$eval('#deal-grid .deal-card', cards => cards.length);
   const totalCountText = await page.$eval('#total-deal-count', el => el.textContent);
   console.log(`Filtered by Nike: Showing ${nikeCount} cards (Total matching: ${totalCountText})`);
   await page.screenshot({ path: path.join(artifactsDir, 'eval_2_nike_filtered.png'), fullPage: false });
 
-  // 3. Filter by Size 8.5
+  // 3. Filter by Men's and Size 8.5
+  console.log("Selecting Gender: Men's...");
+  const menBtn = await page.$('#gender-filter-group button[data-gender="men"]');
+  if (menBtn) await menBtn.click();
+  await page.waitForTimeout(600);
+
   console.log('Selecting Size: 8.5...');
   await page.selectOption('#size-select', '8.5');
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(600);
   const sizeCount = await page.$$eval('#deal-grid .deal-card', cards => cards.length);
   const sizeTotalCount = await page.$eval('#total-deal-count', el => el.textContent);
-  console.log(`Filtered by Size 8.5: Showing ${sizeCount} cards (Total matching: ${sizeTotalCount})`);
+  console.log(`Filtered by Nike + Men's + Size 8.5: Showing ${sizeCount} cards (Total matching: ${sizeTotalCount})`);
   await page.screenshot({ path: path.join(artifactsDir, 'eval_3_size_85.png'), fullPage: false });
 
   // 4. Inspect First Deal Card Data & Links

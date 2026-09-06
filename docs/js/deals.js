@@ -442,6 +442,9 @@ function filterDeals(deals, filters) {
             const dealGender = (deal.gender || '').toLowerCase();
 
             if (g === 'men') {
+                if (dealGender === 'women' || /\b(women|womens|women's|ladies|female|dress|skirt)\b/i.test(titleText)) {
+                    return false;
+                }
                 const matchMen = dealGender === 'men' || dealGender === 'unisex' || 
                                  /\b(men|mens|men's|male)\b/i.test(titleText);
                 if (!matchMen) return false;
@@ -456,15 +459,19 @@ function filterDeals(deals, filters) {
             }
         }
 
-        // 6. Size Filter (e.g. '10', '9.5', 'M', 'L', 'XL', '32')
+        // 6. Size Filter (e.g. '10', '9.5', '8.5', 'M', 'L', 'XL')
         if (filters.size) {
             const s = filters.size.toLowerCase();
             const dealSizes = (deal.sizes || []).map(x => String(x).toLowerCase());
             
+            const isFootwear = deal.subcategory === 'shoes' || 
+                               /\b(shoes?|sneakers?|boots?|runners?|trainers?|cleats?)\b/i.test(titleText);
+
             const hasSize = dealSizes.includes(s) || 
                             dealSizes.includes('all') ||
-                            new RegExp(`\\b(?:size|sz|waist)?\\s*${s}\\b`, 'i').test(titleText) ||
-                            new RegExp(`\\b(?:size|sz|waist)?\\s*${s}\\b`, 'i').test(descText);
+                            (isFootwear && dealSizes.length === 0) ||
+                            new RegExp(`\\b(?:size|sz|waist)?\\s*${s.replace('.', '\\.')}\\b`, 'i').test(titleText) ||
+                            new RegExp(`\\b(?:size|sz|waist)?\\s*${s.replace('.', '\\.')}\\b`, 'i').test(descText);
             if (!hasSize) return false;
         }
 
