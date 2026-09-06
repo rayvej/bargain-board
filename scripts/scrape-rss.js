@@ -448,65 +448,68 @@ function resolveMerchantUrl(retailer, title, exitWebsite = '', directLink = '', 
   if (ret.includes('simons')) {
     return `https://www.simons.ca/en/search?query=${searchTerms}`;
   }
-  if (ret.includes('the last hunt')) {
-    return `https://www.thelasthunt.com/search/?q=${searchTerms}`;
+  if (ret.includes('the shoe company') || ret.includes('dsw')) {
+    return `https://www.theshoecompany.ca/search?query=${searchTerms}`;
   }
-  if (ret.includes('dick') || ret.includes('dicks')) {
-    return `https://www.dickssportinggoods.com/search/SearchDisplay?searchTerm=${searchTerms}`;
+  if (ret.includes('marks') || ret.includes("mark's")) {
+    return `https://www.marks.com/en/search.html?q=${searchTerms}`;
   }
-  if (ret.includes('macy')) {
-    return `https://www.macys.com/shop/featured/${searchTerms}`;
+  if (ret.includes('altitude') || ret.includes('thelasthunt')) {
+    return `https://www.altitude-sports.com/search?q=${searchTerms}`;
   }
-  if (ret.includes('kohl')) {
-    return `https://www.kohls.com/search.jsp?search=${searchTerms}`;
+  if (ret.includes('mec') || ret.includes('mountain equipment')) {
+    return `https://www.mec.ca/en/search?query=${searchTerms}`;
   }
-  if (ret.includes('nordstrom')) {
-    return `https://www.nordstromrack.com/sr?query=${searchTerms}`;
+  if (ret.includes('browns') || ret.includes('brownsshoes')) {
+    return `https://www.brownsshoes.com/en/search?q=${searchTerms}`;
   }
-  if (ret.includes('rei')) {
-    return `https://www.rei.com/search?q=${searchTerms}`;
+  if (ret.includes('aldo') || ret.includes('aldoshoes')) {
+    return `https://www.aldoshoes.com/ca/en/search?q=${searchTerms}`;
   }
-  if (ret.includes('zappos')) {
-    return `https://www.zappos.com/search?term=${searchTerms}`;
+  if (ret.includes('decathlon')) {
+    return `https://www.decathlon.ca/en/search?query=${searchTerms}`;
   }
-  if (ret.includes('dsw')) {
-    return `https://www.dsw.com/browse/shoes?query=${searchTerms}`;
-  }
-  if (ret.includes('finish line') || ret.includes('finishline')) {
-    return `https://www.finishline.com/search?q=${searchTerms}`;
-  }
-  if (ret.includes('scheels')) {
-    return `https://www.scheels.com/search?q=${searchTerms}`;
-  }
-  if (ret.includes('jd sports') || ret.includes('jdsports')) {
-    return `https://www.jdsports.com/search?q=${searchTerms}`;
-  }
-  if (ret.includes('champs')) {
-    return `https://www.champssports.com/search?query=${searchTerms}`;
+  if (ret.includes('canadian tire')) {
+    return `https://www.canadiantire.ca/en/search-results.html?q=${searchTerms}`;
   }
   if (ret.includes('journeys')) {
     return `https://www.journeys.ca/search?keywords=${searchTerms}`;
   }
-  if (ret.includes('shoe carnival') || ret.includes('shoecarnival')) {
-    return `https://www.shoecarnival.com/search?q=${searchTerms}`;
-  }
-  if (ret.includes('famous footwear') || ret.includes('famousfootwear')) {
-    return `https://www.famousfootwear.com/search#q=${searchTerms}`;
-  }
-  if (ret.includes('sierra')) {
-    return `https://www.sierra.com/s~${searchTerms}/`;
-  }
-  if (ret.includes('backcountry')) {
-    return `https://www.backcountry.com/bcs/search?s=u&q=${searchTerms}`;
-  }
-  if (ret.includes('micro center') || ret.includes('microcenter')) {
-    return `https://www.microcenter.com/search/search_results.aspx?Ntt=${searchTerms}`;
-  }
-  if (ret.includes('target')) {
-    return `https://www.target.com/s?searchTerm=${searchTerms}`;
+  if (ret.includes('champs')) {
+    return `https://www.champssports.ca/en/search?query=${searchTerms}`;
   }
 
-  // ABSOLUTE GUARANTEE: Never fall back to Google Search or eBay!
+  // Brand-Specific Canadian Store Routing
+  const titleLower = title.toLowerCase();
+  if (titleLower.includes('nike')) {
+    return `https://www.nike.com/ca/w?q=${searchTerms}`;
+  }
+  if (titleLower.includes('adidas')) {
+    return `https://www.adidas.ca/en/search?q=${searchTerms}`;
+  }
+  if (titleLower.includes('under armour') || titleLower.includes('underarmour')) {
+    return `https://www.underarmour.ca/en-ca/search?q=${searchTerms}`;
+  }
+  if (titleLower.includes('puma')) {
+    return `https://ca.puma.com/ca/en/search?q=${searchTerms}`;
+  }
+  if (titleLower.includes('new balance')) {
+    return `https://www.newbalance.ca/en_ca/search/?q=${searchTerms}`;
+  }
+  if (titleLower.includes('apple')) {
+    return `https://www.apple.com/ca/search/${searchTerms}`;
+  }
+  if (titleLower.includes('samsung')) {
+    return `https://www.samsung.com/ca/search/?searchvalue=${searchTerms}`;
+  }
+  if (titleLower.includes('dell')) {
+    return `https://www.dell.com/en-ca/search/${searchTerms}`;
+  }
+  if (titleLower.includes('lenovo')) {
+    return `https://www.lenovo.com/ca/en/search?fq=&text=${searchTerms}`;
+  }
+
+  // ABSOLUTE GUARANTEE: Never fall back to US-only stores, Google Search or eBay!
   // Route to Canada's premier retailer for that category
   if (category === 'clothing' || subcategory === 'shoes') {
     return `https://www.sportchek.ca/en/search.html?q=${searchTerms}`;

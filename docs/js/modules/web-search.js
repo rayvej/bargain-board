@@ -165,28 +165,28 @@ export function getRetailerSearchLinks(queryInfo) {
                 desc: 'Major brand apparel, footwear, and active lifestyle sales.'
             },
             {
-                name: 'Nordstrom Rack',
-                badge: 'Up to 70% Off',
-                badgeColor: 'bg-rose-100 text-rose-800',
-                icon: '🏷️',
-                url: `https://www.nordstromrack.com/sr?query=${encodeURIComponent(q)}`,
-                desc: 'Designer brands and footwear at steep department store markdowns.'
-            },
-            {
-                name: 'DSW (Designer Shoe Warehouse)',
-                badge: 'Shoe Deals',
+                name: 'The Shoe Company (DSW Canada)',
+                badge: 'Clearance',
                 badgeColor: 'bg-purple-100 text-purple-800',
-                icon: '👞',
-                url: `https://www.dsw.com/browse/shoes?query=${encodeURIComponent(q)}`,
-                desc: 'Thousands of shoes on clearance across every size and style.'
+                icon: '👠',
+                url: `https://www.theshoecompany.ca/search?query=${encodeURIComponent(q)}`,
+                desc: 'Top footwear brands on clearance across Canadian stores.'
             },
             {
-                name: 'Zappos Clearance',
-                badge: 'Free Shipping',
+                name: "Mark's Canada",
+                badge: 'Canadian Clearance',
+                badgeColor: 'bg-amber-100 text-amber-800',
+                icon: '🍁',
+                url: `https://www.marks.com/en/search.html?q=${encodeURIComponent(q)}`,
+                desc: 'Everyday casual footwear, boots, jackets, and workwear in CAD.'
+            },
+            {
+                name: 'Altitude Sports',
+                badge: 'Up to 60% Off',
                 badgeColor: 'bg-sky-100 text-sky-800',
-                icon: '📦',
-                url: `https://www.zappos.com/search?term=${encodeURIComponent(q + ' sale')}`,
-                desc: 'Top shoe brands with comprehensive size inventories and sale pricing.'
+                icon: '🏔️',
+                url: `https://www.altitude-sports.com/search?q=${encodeURIComponent(q)}`,
+                desc: 'Premium Canadian outdoor apparel, running shoes, and lifestyle brands.'
             }
         );
     } else {

@@ -16,14 +16,17 @@ const TRUSTED_MERCHANT_DOMAINS = new Set([
   'costco.ca', 'homedepot.ca', 'canadiantire.ca', 'walmart.ca',
   'staples.ca', 'marks.com', 'decathlon.ca', 'altitude-sports.com',
   'thelasthunt.com', 'mec.ca', 'brownsshoes.com', 'aldoshoes.com',
-  'dicksportinggoods.com', 'scheels.com', 'finishline.com', 'nordstromrack.com',
-  'macys.com', 'kohls.com', 'target.com', 'zappos.com', 'levi.com',
-  'carhartt.com', 'columbia.com', 'thenorthface.com', 'patagonia.com',
-  'newbalance.ca', 'puma.ca', 'asics.com', 'saucony.com'
+  'newbalance.ca', 'puma.ca', 'asics.com', 'saucony.com', 'converse.ca',
+  'vans.ca', 'timberland.ca', 'columbiasportswear.ca', 'patagonia.ca',
+  'arcteryx.com', 'levi.com', 'lenovo.com', 'dell.com', 'samsung.com',
+  'newegg.ca', 'simons.ca', 'champssports.ca', 'journeys.ca'
 ]);
 
 // Banned domains/patterns (resellers, sweepstakes, ad redirects)
 const BANNED_PATTERNS = [
+  'nordstromrack.com', 'nordstrom.com', 'kohls.com', 'macys.com',
+  'scheels.com', 'finishline.com', 'dicksportinggoods.com', 'target.com',
+  'samsclub.com', 'academy.com', 'zappos.com', 'dsw.com/browse',
   'ebay.com', 'ebay.ca', 'google.ca/search', 'google.com/search',
   'slickdeals.net/click', 'cataboom', 'gleam.io', 'sweeppea',
   'resale', 'sneakersupply'
