@@ -230,7 +230,30 @@ async function runEvaluation() {
   const smartCount = await page.$$eval('#deal-grid .deal-card', cards => cards.length);
   const smartTotal = await page.$eval('#total-deal-count', el => el.textContent);
   console.log(`Category Smart Home: Showing ${smartCount} cards (Total matching: ${smartTotal})`);
-  await page.screenshot({ path: path.join(artifactsDir, 'eval_12_smarthome_category.png'), fullPage: false });
+  // 7b. Test Shoes Category & Distinct Images Verification
+  console.log('Testing Category: Shoes & Image Uniqueness...');
+  await safeClearFilters();
+
+  const shoesLink = await page.$('button[data-category="shoes"], #sidebar a[data-category="shoes"]');
+  if (shoesLink) await shoesLink.click();
+  await page.waitForTimeout(600);
+
+  const shoesCount = await page.$$eval('#deal-grid .deal-card', cards => cards.length);
+  const shoesTotal = await page.$eval('#total-deal-count', el => el.textContent);
+  console.log(`Category Shoes: Showing ${shoesCount} cards (Total matching: ${shoesTotal})`);
+
+  // Verify image uniqueness across rendered shoe cards
+  const renderedShoeImages = await page.$$eval('#deal-grid .deal-card img', imgs => imgs.map(i => i.src));
+  const uniqueShoeImages = new Set(renderedShoeImages);
+  console.log(`Rendered shoe images: ${renderedShoeImages.length}, Unique images: ${uniqueShoeImages.size}`);
+  const allImagesUnique = renderedShoeImages.length === uniqueShoeImages.size;
+  console.log(`All shoe images distinct and unique: ${allImagesUnique}`);
+
+  await page.evaluate(() => window.scrollBy(0, 450));
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: path.join(artifactsDir, 'eval_shoes_distinct_images.png'), fullPage: false });
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(300);
 
   // 8. Test Promo Codes Only Toggle
   console.log('Testing Promo Codes Only Toggle...');
