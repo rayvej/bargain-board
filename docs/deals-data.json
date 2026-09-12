@@ -71678,5 +71678,123 @@
     "verifiedAt": "2026-09-12T14:56:21.662Z",
     "createdAt": "2026-09-12T14:56:21.662Z",
     "updatedAt": "2026-09-12T14:56:21.662Z"
+  },
+  {
+    "id": "77bb3f621fe30e66",
+    "title": "Amazon – Vilanva Women's Lace Detail Fashion Sneakers - $32.49 w/ Code",
+    "description": "Vilanva via Amazon has the Vilanva Women's Lace Detail Fashion Sneakers for $49.99. Apply promo code O9TL3LET at checkout for 35% off = $32.49. Product Link: https://www.amazon.com/dp/B0FLPM79JV...",
+    "brand": "Amazon Canada",
+    "retailer": "Amazon Canada",
+    "gender": "women",
+    "sizes": [
+      "All"
+    ],
+    "originalPrice": 59.65,
+    "salePrice": 44.19,
+    "savingsPercent": 26,
+    "currency": "CAD",
+    "productUrl": "https://www.amazon.ca/dp/B0FLPM79JV",
+    "sourceUrl": "https://slickdeals.net/f/20006019-amazon-vilanva-women-s-lace-detail-fashion-sneakers-32-49-w-code",
+    "imageUrl": "https://static.slickdealscdn.com/attachment/1/2/4/9/0/7/0/8/300x300/21576501.thumb",
+    "category": "clothing",
+    "subcategory": "shoes",
+    "tags": [
+      "amazon",
+      "vilanva",
+      "women",
+      "lace",
+      "amazon canada"
+    ],
+    "keywords": [
+      "amazon",
+      "vilanva",
+      "women",
+      "lace",
+      "detail",
+      "fashion",
+      "sneakers",
+      "code",
+      "amazon canada"
+    ],
+    "couponCodes": [
+      {
+        "code": "O9TL3LET",
+        "discount": "35% OFF",
+        "verified": true,
+        "verifiedAt": "2026-09-12T20:07:30.929Z",
+        "stacksWithSale": true,
+        "multiCodeStackable": true,
+        "stackingPolicy": "Stacks with on-page clip coupons and existing deal markdowns at checkout.",
+        "checkoutInstructions": "At final review screen, enter code in \"Gift Cards & Promotional Codes\"."
+      },
+      {
+        "code": "VILANVA",
+        "discount": "35% OFF",
+        "verified": true,
+        "verifiedAt": "2026-09-12T20:07:30.929Z",
+        "stacksWithSale": true,
+        "multiCodeStackable": true,
+        "stackingPolicy": "Stacks with on-page clip coupons and existing deal markdowns at checkout.",
+        "checkoutInstructions": "At final review screen, enter code in \"Gift Cards & Promotional Codes\"."
+      }
+    ],
+    "source": "Verified Retailer Feed",
+    "verificationStatus": "verified",
+    "priceVerified": true,
+    "linkStatus": "active",
+    "httpStatus": 200,
+    "lastVerifiedAt": "2026-09-12T20:07:30.929Z",
+    "verifiedAt": "2026-09-12T20:07:30.929Z",
+    "createdAt": "2026-09-12T20:07:30.929Z",
+    "updatedAt": "2026-09-12T20:07:30.929Z"
+  },
+  {
+    "id": "a243687afa6ff4f6",
+    "title": "$24.99* | 2-Pk Anker Zolo 4-Port up to 50W USB-C & USB-A Wall Chargers (Black) at Amazon",
+    "description": "AnkerDirect via Amazon [amazon.com] has *2-Pk Anker Zolo 4-Port up to 50W USB-C & USB-A Wall Chargers *(Black) for *$24.99*. *Shipping is free* with Prime or on $35+ orders. *** Previous...",
+    "brand": "Anker",
+    "retailer": "Amazon Canada",
+    "gender": "all",
+    "sizes": [],
+    "originalPrice": 45.89,
+    "salePrice": 33.99,
+    "savingsPercent": 26,
+    "currency": "CAD",
+    "productUrl": "https://www.amazon.ca/dp/B0FCFL13ZL",
+    "sourceUrl": "https://slickdeals.net/f/20006283-24-99-2-pk-anker-zolo-4-port-up-to-50w-usb-c-usb-a-wall-chargers-black-at-amazon",
+    "imageUrl": "https://static.slickdealscdn.com/attachment/1/1/7/1/5/2/7/300x300/21576888.thumb",
+    "category": "electronics",
+    "subcategory": "laptops",
+    "tags": [
+      "anker",
+      "zolo",
+      "port",
+      "50w",
+      "amazon canada",
+      "all"
+    ],
+    "keywords": [
+      "anker",
+      "zolo",
+      "port",
+      "50w",
+      "usb",
+      "wall",
+      "chargers",
+      "black",
+      "amazon",
+      "amazon canada",
+      "all"
+    ],
+    "couponCodes": [],
+    "source": "Verified Retailer Feed",
+    "verificationStatus": "verified",
+    "priceVerified": true,
+    "linkStatus": "active",
+    "httpStatus": 200,
+    "lastVerifiedAt": "2026-09-12T20:08:56.852Z",
+    "verifiedAt": "2026-09-12T20:08:56.852Z",
+    "createdAt": "2026-09-12T20:08:56.852Z",
+    "updatedAt": "2026-09-12T20:08:56.852Z"
   }
 ]
