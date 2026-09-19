@@ -82126,5 +82126,204 @@
     "verifiedAt": "2026-09-18T20:21:29.261Z",
     "createdAt": "2026-09-18T20:21:29.261Z",
     "updatedAt": "2026-09-18T20:21:29.261Z"
+  },
+  {
+    "id": "607f35aceb9d1634",
+    "title": "Bruno Marc Men's Lace-Up Derby Oxford Dress Shoes (Brown or Black) $25.29 + Free Shipping w/ Prime or on $35+",
+    "description": "topshoesUS via Amazon [amazon.com] has *Bruno Marc Men's Lace-Up Derby Oxford Dress Shoes *(Brown or Black) for $45.99 - 45% off when you apply promo code 45NVLYWI at checkout = *$25.29*. Shipping is...",
+    "brand": "Amazon Canada",
+    "retailer": "Amazon Canada",
+    "gender": "women",
+    "sizes": [
+      "All"
+    ],
+    "originalPrice": 47.6,
+    "salePrice": 34.39,
+    "savingsPercent": 28,
+    "currency": "CAD",
+    "productUrl": "https://www.amazon.ca/dp/B0G6Z7XP2L",
+    "sourceUrl": "https://slickdeals.net/f/20034870-bruno-marc-men-s-lace-up-derby-oxford-dress-shoes-brown-or-black-25-29-free-shipping-w-prime-or-on-35",
+    "imageUrl": "https://static.slickdealscdn.com/attachment/3/1/1/9/6/7/1/6/300x300/21645750.thumb",
+    "category": "clothing",
+    "subcategory": "shoes",
+    "tags": [
+      "bruno",
+      "marc",
+      "men",
+      "lace",
+      "amazon canada",
+      "women"
+    ],
+    "keywords": [
+      "bruno",
+      "marc",
+      "men",
+      "lace",
+      "derby",
+      "oxford",
+      "dress",
+      "shoes",
+      "brown",
+      "black",
+      "amazon canada",
+      "women"
+    ],
+    "couponCodes": [
+      {
+        "code": "45NVLYWI",
+        "discount": "45% OFF",
+        "verified": true,
+        "verifiedAt": "2026-09-19T02:54:52.365Z",
+        "stacksWithSale": true,
+        "multiCodeStackable": true,
+        "stackingPolicy": "Stacks with on-page clip coupons and existing deal markdowns at checkout.",
+        "checkoutInstructions": "At final review screen, enter code in \"Gift Cards & Promotional Codes\"."
+      }
+    ],
+    "source": "Verified Retailer Feed",
+    "verificationStatus": "verified",
+    "priceVerified": true,
+    "linkStatus": "active",
+    "httpStatus": 200,
+    "lastVerifiedAt": "2026-09-19T02:54:52.365Z",
+    "verifiedAt": "2026-09-19T02:54:52.365Z",
+    "createdAt": "2026-09-19T02:54:52.365Z",
+    "updatedAt": "2026-09-19T02:54:52.365Z"
+  },
+  {
+    "id": "bf58b27cabbe3e52",
+    "title": "Amazon – Men’s Slip-On Walking/Running Shoes - $29.69 w/ Code",
+    "description": "COOSTAR via Amazon has the Men’s Slip-On Walking/Running Shoes for $53.99. Apply promo code JIO3C3VN at checkout = $29.69. Product Link: https://www.amazon.com/dp/B0H3Z4R61J * Promo Code:...",
+    "brand": "Amazon Canada",
+    "retailer": "Amazon Canada",
+    "gender": "men",
+    "sizes": [
+      "All"
+    ],
+    "originalPrice": 54.51,
+    "salePrice": 40.38,
+    "savingsPercent": 26,
+    "currency": "CAD",
+    "productUrl": "https://www.amazon.ca/dp/B0H3Z4R61J",
+    "sourceUrl": "https://slickdeals.net/f/20034675-amazon-men-s-slip-on-walking-running-shoes-29-69-w-code",
+    "imageUrl": "https://static.slickdealscdn.com/attachment/1/2/4/9/0/7/0/8/300x300/21645024.thumb",
+    "category": "clothing",
+    "subcategory": "shoes",
+    "tags": [
+      "amazon",
+      "men",
+      "slip",
+      "walking",
+      "amazon canada"
+    ],
+    "keywords": [
+      "amazon",
+      "men",
+      "slip",
+      "walking",
+      "running",
+      "shoes",
+      "code",
+      "amazon canada"
+    ],
+    "couponCodes": [
+      {
+        "code": "JIO3C3VN",
+        "discount": "45% OFF",
+        "verified": true,
+        "verifiedAt": "2026-09-19T02:54:52.365Z",
+        "stacksWithSale": true,
+        "multiCodeStackable": true,
+        "stackingPolicy": "Stacks with on-page clip coupons and existing deal markdowns at checkout.",
+        "checkoutInstructions": "At final review screen, enter code in \"Gift Cards & Promotional Codes\"."
+      },
+      {
+        "code": "COOSTAR",
+        "discount": "45% OFF",
+        "verified": true,
+        "verifiedAt": "2026-09-19T02:54:52.365Z",
+        "stacksWithSale": true,
+        "multiCodeStackable": true,
+        "stackingPolicy": "Stacks with on-page clip coupons and existing deal markdowns at checkout.",
+        "checkoutInstructions": "At final review screen, enter code in \"Gift Cards & Promotional Codes\"."
+      }
+    ],
+    "source": "Verified Retailer Feed",
+    "verificationStatus": "verified",
+    "priceVerified": true,
+    "linkStatus": "active",
+    "httpStatus": 200,
+    "lastVerifiedAt": "2026-09-19T02:54:52.365Z",
+    "verifiedAt": "2026-09-19T02:54:52.365Z",
+    "createdAt": "2026-09-19T02:54:52.365Z",
+    "updatedAt": "2026-09-19T02:54:52.365Z"
+  },
+  {
+    "id": "d9cbf4d48a32f0e6",
+    "title": "Amazon – Vilanva Women’s Walking/Tennis Shoes - $34.44 w/ Code",
+    "description": "Vilanva via Amazon has the Vilanva Women’s Walking/Tennis Shoes for $52.99. Apply promo code QGS6TVVQ at checkout = $34.44. Product Link: https://www.amazon.com/dp/B0GWZBL6PM * Promo Code:...",
+    "brand": "Amazon Canada",
+    "retailer": "Amazon Canada",
+    "gender": "women",
+    "sizes": [
+      "All"
+    ],
+    "originalPrice": 63.23,
+    "salePrice": 46.84,
+    "savingsPercent": 26,
+    "currency": "CAD",
+    "productUrl": "https://www.amazon.ca/dp/B0GWZBL6PM",
+    "sourceUrl": "https://slickdeals.net/f/20034630-amazon-vilanva-women-s-walking-tennis-shoes-34-44-w-code",
+    "imageUrl": "https://static.slickdealscdn.com/attachment/1/2/4/9/0/7/0/8/300x300/21644874.thumb",
+    "category": "clothing",
+    "subcategory": "shoes",
+    "tags": [
+      "amazon",
+      "vilanva",
+      "women",
+      "walking",
+      "amazon canada"
+    ],
+    "keywords": [
+      "amazon",
+      "vilanva",
+      "women",
+      "walking",
+      "tennis",
+      "shoes",
+      "code",
+      "amazon canada"
+    ],
+    "couponCodes": [
+      {
+        "code": "QGS6TVVQ",
+        "discount": "35% OFF",
+        "verified": true,
+        "verifiedAt": "2026-09-19T02:54:59.749Z",
+        "stacksWithSale": true,
+        "multiCodeStackable": true,
+        "stackingPolicy": "Stacks with on-page clip coupons and existing deal markdowns at checkout.",
+        "checkoutInstructions": "At final review screen, enter code in \"Gift Cards & Promotional Codes\"."
+      },
+      {
+        "code": "VILANVA",
+        "discount": "35% OFF",
+        "verified": true,
+        "verifiedAt": "2026-09-19T02:54:59.749Z",
+        "stacksWithSale": true,
+        "multiCodeStackable": true,
+        "stackingPolicy": "Stacks with on-page clip coupons and existing deal markdowns at checkout.",
+        "checkoutInstructions": "At final review screen, enter code in \"Gift Cards & Promotional Codes\"."
+      }
+    ],
+    "source": "Verified Retailer Feed",
+    "verificationStatus": "verified",
+    "priceVerified": true,
+    "linkStatus": "active",
+    "httpStatus": 200,
+    "lastVerifiedAt": "2026-09-19T02:54:59.749Z",
+    "verifiedAt": "2026-09-19T02:54:59.749Z",
+    "createdAt": "2026-09-19T02:54:59.749Z",
+    "updatedAt": "2026-09-19T02:54:59.749Z"
   }
 ]
