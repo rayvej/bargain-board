@@ -82619,5 +82619,67 @@
     "verifiedAt": "2026-09-19T15:17:23.496Z",
     "createdAt": "2026-09-19T15:17:23.496Z",
     "updatedAt": "2026-09-19T15:17:23.496Z"
+  },
+  {
+    "id": "cfa6daf2be0822fe",
+    "title": "$45.59 to $47.99 (select sizes) FS AMAZON NORTIV   Women's Walking Shoes Running Tennis Sneakers",
+    "description": "https://www.amazon.com/dp/B0CTQHMMJS?th promo code 05ASEE90 for additional $2.40 off on select sizes (confirmed on size 8)",
+    "brand": "Amazon Canada",
+    "retailer": "Amazon Canada",
+    "gender": "women",
+    "sizes": [
+      "8"
+    ],
+    "originalPrice": 65.27,
+    "salePrice": 62,
+    "savingsPercent": 5,
+    "currency": "CAD",
+    "productUrl": "https://www.amazon.ca/dp/B0CTQHMMJS",
+    "sourceUrl": "https://slickdeals.net/f/20037288-45-59-to-47-99-select-sizes-fs-amazon-nortiv-women-s-walking-shoes-running-tennis-sneakers",
+    "imageUrl": "https://static.slickdealscdn.com/attachment/1/2/8/0/9/4/300x300/21650205.thumb",
+    "category": "clothing",
+    "subcategory": "shoes",
+    "tags": [
+      "select",
+      "sizes",
+      "amazon",
+      "nortiv",
+      "amazon canada",
+      "women"
+    ],
+    "keywords": [
+      "select",
+      "sizes",
+      "amazon",
+      "nortiv",
+      "women",
+      "walking",
+      "shoes",
+      "running",
+      "tennis",
+      "sneakers",
+      "amazon canada"
+    ],
+    "couponCodes": [
+      {
+        "code": "05ASEE90",
+        "discount": "$2.40 OFF",
+        "verified": true,
+        "verifiedAt": "2026-09-19T19:58:32.828Z",
+        "stacksWithSale": true,
+        "multiCodeStackable": true,
+        "stackingPolicy": "Stacks with on-page clip coupons and existing deal markdowns at checkout.",
+        "checkoutInstructions": "At final review screen, enter code in \"Gift Cards & Promotional Codes\"."
+      }
+    ],
+    "source": "Verified Retailer Feed",
+    "verificationStatus": "verified",
+    "priceVerified": true,
+    "linkStatus": "active",
+    "httpStatus": 200,
+    "lastVerifiedAt": "2026-09-19T19:58:32.828Z",
+    "verifiedAt": "2026-09-19T19:58:32.828Z",
+    "createdAt": "2026-09-19T19:58:32.828Z",
+    "updatedAt": "2026-09-19T19:58:32.828Z"
   }
 ]
