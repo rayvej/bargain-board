@@ -87567,5 +87567,53 @@
     "verifiedAt": "2026-09-23T21:02:43.715Z",
     "createdAt": "2026-09-23T21:02:43.715Z",
     "updatedAt": "2026-09-23T21:02:43.715Z"
+  },
+  {
+    "id": "3cce68a714c92332",
+    "title": "$23.03* | Disney Epic Mickey: Rebrushed (Nintendo Switch) at Amazon",
+    "description": "Amazon [amazon.com] has *Disney Epic Mickey: Rebrushed *(Nintendo Switch) for *$23.03*. *Shipping is free* with Prime or on $35+ orders. *** Previous *Frontpage Deal* at *$23* with *48* Deal...",
+    "brand": "Nintendo",
+    "retailer": "Amazon Canada",
+    "gender": "all",
+    "sizes": [],
+    "originalPrice": 42.28,
+    "salePrice": 31.32,
+    "savingsPercent": 26,
+    "currency": "CAD",
+    "productUrl": "https://www.amazon.ca/dp/B0CW3LVC9H",
+    "sourceUrl": "https://slickdeals.net/f/20055204-23-03-disney-epic-mickey-rebrushed-nintendo-switch-at-amazon",
+    "imageUrl": "https://static.slickdealscdn.com/attachment/1/1/7/1/5/2/7/300x300/21694815.thumb",
+    "category": "electronics",
+    "subcategory": "gaming",
+    "tags": [
+      "disney",
+      "epic",
+      "mickey",
+      "rebrushed",
+      "nintendo",
+      "amazon canada",
+      "all"
+    ],
+    "keywords": [
+      "disney",
+      "epic",
+      "mickey",
+      "rebrushed",
+      "nintendo",
+      "switch",
+      "amazon",
+      "amazon canada",
+      "all"
+    ],
+    "couponCodes": [],
+    "source": "Verified Retailer Feed",
+    "verificationStatus": "verified",
+    "priceVerified": true,
+    "linkStatus": "active",
+    "httpStatus": 200,
+    "lastVerifiedAt": "2026-09-24T02:56:51.873Z",
+    "verifiedAt": "2026-09-24T02:56:51.873Z",
+    "createdAt": "2026-09-24T02:56:51.873Z",
+    "updatedAt": "2026-09-24T02:56:51.873Z"
   }
 ]
