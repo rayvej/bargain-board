@@ -90069,5 +90069,53 @@
     "verifiedAt": "2026-09-26T15:40:51.709Z",
     "createdAt": "2026-09-26T15:40:51.709Z",
     "updatedAt": "2026-09-26T15:40:51.709Z"
+  },
+  {
+    "id": "e6d3dc2103576d30",
+    "title": "Crucial P3 PCIe Gen3 NVMe 1TB SSD, Up to 3,500MB/s Read $89.99",
+    "description": "Crucial P3 PCIe Gen3 NVMe 1TB SSD, Up to 3,500MB/s Read, Laptop & Desktop (PC) Compatible, Solid State Drive – CT1000P3SSD8 https://www.amazon.com/dp/B0B25LZGGW?lv",
+    "brand": "Amazon Canada",
+    "retailer": "Amazon Canada",
+    "gender": "all",
+    "sizes": [],
+    "originalPrice": 165.23,
+    "salePrice": 122.39,
+    "savingsPercent": 26,
+    "currency": "CAD",
+    "productUrl": "https://www.amazon.ca/dp/B0B25LZGGW",
+    "sourceUrl": "https://slickdeals.net/f/20064699-crucial-p3-pcie-gen3-nvme-1tb-ssd-up-to-3-500mb-s-read-89-99",
+    "imageUrl": "https://static.slickdealscdn.com/attachment/1/8/3/7/3/2/0/1/300x300/21721554.thumb",
+    "category": "electronics",
+    "subcategory": "laptops",
+    "tags": [
+      "crucial",
+      "pcie",
+      "gen3",
+      "nvme",
+      "amazon canada",
+      "all"
+    ],
+    "keywords": [
+      "crucial",
+      "pcie",
+      "gen3",
+      "nvme",
+      "1tb",
+      "ssd",
+      "500mb",
+      "read",
+      "amazon canada",
+      "all"
+    ],
+    "couponCodes": [],
+    "source": "Verified Retailer Feed",
+    "verificationStatus": "verified",
+    "priceVerified": true,
+    "linkStatus": "active",
+    "httpStatus": 200,
+    "lastVerifiedAt": "2026-09-26T20:37:43.586Z",
+    "verifiedAt": "2026-09-26T20:37:43.586Z",
+    "createdAt": "2026-09-26T20:37:43.586Z",
+    "updatedAt": "2026-09-26T20:37:43.586Z"
   }
 ]
