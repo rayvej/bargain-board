@@ -97246,5 +97246,65 @@
     "verifiedAt": "2026-10-02T21:47:46.638Z",
     "createdAt": "2026-10-02T21:47:46.638Z",
     "updatedAt": "2026-10-02T21:47:46.638Z"
+  },
+  {
+    "id": "158955413c2478ab",
+    "title": "2-Pack EYAIOROTES Universal Samsung TV Replacement Remote Control $6.49 + Free Shipping w/ Prime or on $35+",
+    "description": "Eyaoo Smart Remote Control via Amazon [amazon.com] has *2-Pack EYAIOROTES Universal Samsung TV Replacement Remote Control* on sale for $12.98 - 50% with promo code QEAF7TOB = *$6.49*. Shipping is...",
+    "brand": "Samsung",
+    "retailer": "Amazon Canada",
+    "gender": "all",
+    "sizes": [],
+    "originalPrice": 47.6,
+    "salePrice": 8.83,
+    "savingsPercent": 81,
+    "currency": "CAD",
+    "productUrl": "https://www.amazon.ca/dp/B0FPWW9TPR",
+    "sourceUrl": "https://slickdeals.net/f/20088588-2-pack-eyaiorotes-universal-samsung-tv-replacement-remote-control-6-49-free-shipping-w-prime-or-on-35",
+    "imageUrl": "https://static.slickdealscdn.com/attachment/3/3/7/1/0/1/3/4/300x300/21783273.thumb",
+    "category": "electronics",
+    "subcategory": "tvs",
+    "tags": [
+      "pack",
+      "eyaiorotes",
+      "universal",
+      "samsung",
+      "amazon canada",
+      "all"
+    ],
+    "keywords": [
+      "pack",
+      "eyaiorotes",
+      "universal",
+      "samsung",
+      "replacement",
+      "remote",
+      "control",
+      "shipping",
+      "prime",
+      "amazon canada",
+      "all"
+    ],
+    "couponCodes": [
+      {
+        "code": "QEAF7TOB",
+        "discount": "Verified Promo Code",
+        "verified": true,
+        "verifiedAt": "2026-10-03T03:35:30.688Z",
+        "stacksWithSale": true,
+        "multiCodeStackable": true,
+        "stackingPolicy": "Stacks with on-page clip coupons and existing deal markdowns at checkout.",
+        "checkoutInstructions": "At final review screen, enter code in \"Gift Cards & Promotional Codes\"."
+      }
+    ],
+    "source": "Verified Retailer Feed",
+    "verificationStatus": "verified",
+    "priceVerified": true,
+    "linkStatus": "active",
+    "httpStatus": 200,
+    "lastVerifiedAt": "2026-10-03T03:35:30.688Z",
+    "verifiedAt": "2026-10-03T03:35:30.688Z",
+    "createdAt": "2026-10-03T03:35:30.688Z",
+    "updatedAt": "2026-10-03T03:35:30.688Z"
   }
 ]
