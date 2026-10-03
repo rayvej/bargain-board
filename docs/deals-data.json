@@ -97715,5 +97715,98 @@
     "verifiedAt": "2026-10-03T11:03:22.899Z",
     "createdAt": "2026-10-03T11:03:22.899Z",
     "updatedAt": "2026-10-03T11:03:22.899Z"
+  },
+  {
+    "id": "f3fc661b7ef5299d",
+    "title": "$94.95 | Brooks Men’s Ghost Max 3 Running Shoe at Amazon",
+    "description": "Playmakers via Amazon [amazon.com] has *Brooks Men’s Ghost Max 3 Running Shoe* for *$94.95*. *Shipping is free*.[list][*]Black/Black/Ebony, 10 [amazon.com][*]Black/Black/Ebony, 12.5...",
+    "brand": "Brooks",
+    "retailer": "Amazon Canada",
+    "gender": "men",
+    "sizes": [
+      "All"
+    ],
+    "originalPrice": 174.32,
+    "salePrice": 129.13,
+    "savingsPercent": 26,
+    "currency": "CAD",
+    "productUrl": "https://www.amazon.ca/dp/B0DM3DKKP4",
+    "sourceUrl": "https://slickdeals.net/f/20092341-94-95-brooks-men-s-ghost-max-3-running-shoe-at-amazon",
+    "imageUrl": "https://static.slickdealscdn.com/attachment/1/1/7/1/5/2/7/300x300/21791808.thumb",
+    "category": "clothing",
+    "subcategory": "mens",
+    "tags": [
+      "brooks",
+      "men",
+      "ghost",
+      "max",
+      "amazon canada"
+    ],
+    "keywords": [
+      "brooks",
+      "men",
+      "ghost",
+      "max",
+      "running",
+      "shoe",
+      "amazon",
+      "amazon canada"
+    ],
+    "couponCodes": [],
+    "source": "Verified Retailer Feed",
+    "verificationStatus": "verified",
+    "priceVerified": true,
+    "linkStatus": "active",
+    "httpStatus": 200,
+    "lastVerifiedAt": "2026-10-03T15:38:10.821Z",
+    "verifiedAt": "2026-10-03T15:38:10.821Z",
+    "createdAt": "2026-10-03T15:38:10.821Z",
+    "updatedAt": "2026-10-03T15:38:10.821Z"
+  },
+  {
+    "id": "3099aa8b89838b7c",
+    "title": "Brooks Men's Revel 8 Running Shoes from $64.95 + Free S&H",
+    "description": "Playmakers via Amazon [amazon.com] has *Brooks Men’s Revel 8 Running Shoe* for *$64.95*. *Shipping is free*.[list][*]*Coconut/Gray Mist/Sand*[list][*]9 [amazon.com] - *$64.95*[*]10.5 [amazon.com] -...",
+    "brand": "Brooks",
+    "retailer": "Amazon Canada",
+    "gender": "men",
+    "sizes": [
+      "All"
+    ],
+    "originalPrice": 119.24,
+    "salePrice": 88.33,
+    "savingsPercent": 26,
+    "currency": "CAD",
+    "productUrl": "https://www.amazon.ca/dp/B0DM36X4MD",
+    "sourceUrl": "https://slickdeals.net/f/20091807-brooks-men-s-revel-8-running-shoes-from-64-95-free-s-h",
+    "imageUrl": "https://static.slickdealscdn.com/attachment/1/1/7/1/5/2/7/300x300/21790857.thumb",
+    "category": "clothing",
+    "subcategory": "shoes",
+    "tags": [
+      "brooks",
+      "men",
+      "revel",
+      "running",
+      "amazon canada"
+    ],
+    "keywords": [
+      "brooks",
+      "men",
+      "revel",
+      "running",
+      "shoes",
+      "from",
+      "amazon canada"
+    ],
+    "couponCodes": [],
+    "source": "Verified Retailer Feed",
+    "verificationStatus": "verified",
+    "priceVerified": true,
+    "linkStatus": "active",
+    "httpStatus": 200,
+    "lastVerifiedAt": "2026-10-03T15:38:10.822Z",
+    "verifiedAt": "2026-10-03T15:38:10.822Z",
+    "createdAt": "2026-10-03T15:38:10.822Z",
+    "updatedAt": "2026-10-03T15:38:10.822Z"
   }
 ]
