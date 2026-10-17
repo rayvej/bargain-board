@@ -130394,5 +130394,65 @@
     "verifiedAt": "2026-10-17T14:54:06.587Z",
     "createdAt": "2026-10-17T14:54:06.587Z",
     "updatedAt": "2026-10-17T14:54:06.587Z"
+  },
+  {
+    "id": "1ee5ceea46971233",
+    "title": "ORICO USB 3.1 10Gbps to M.2 NVMe SSD Enclosure $10.48 + Free Shipping w/ Prime or orders $35+",
+    "description": "ORICO Direct US Store via Amazon [amazon.com] has ORICO USB 3.1 10Gbps to M.2 NVMe SSD Enclosure on sale for *$10.48* w/ code *RJ0SVV9F* at checkout. Shipping is free w/ Prime or orders $35+ ...",
+    "brand": "Amazon Canada",
+    "retailer": "Amazon Canada",
+    "gender": "all",
+    "sizes": [],
+    "originalPrice": 47.6,
+    "salePrice": 14.25,
+    "savingsPercent": 70,
+    "currency": "CAD",
+    "productUrl": "https://www.amazon.ca/dp/B08G14NBCS",
+    "sourceUrl": "https://slickdeals.net/f/20172093-orico-usb-3-1-10gbps-to-m-2-nvme-ssd-enclosure-10-48-free-shipping-w-prime-or-orders-35",
+    "imageUrl": "https://static.slickdealscdn.com/attachment/3/4/2/9/3/0/8/300x300/22001394.thumb",
+    "category": "electronics",
+    "subcategory": "laptops",
+    "tags": [
+      "orico",
+      "usb",
+      "10gbps",
+      "nvme",
+      "amazon canada",
+      "all"
+    ],
+    "keywords": [
+      "orico",
+      "usb",
+      "10gbps",
+      "nvme",
+      "ssd",
+      "enclosure",
+      "shipping",
+      "prime",
+      "orders",
+      "amazon canada",
+      "all"
+    ],
+    "couponCodes": [
+      {
+        "code": "RJ0SVV9F",
+        "discount": "Verified Promo Code",
+        "verified": true,
+        "verifiedAt": "2026-10-17T20:03:20.515Z",
+        "stacksWithSale": true,
+        "multiCodeStackable": true,
+        "stackingPolicy": "Stacks with on-page clip coupons and existing deal markdowns at checkout.",
+        "checkoutInstructions": "At final review screen, enter code in \"Gift Cards & Promotional Codes\"."
+      }
+    ],
+    "source": "Verified Retailer Feed",
+    "verificationStatus": "verified",
+    "priceVerified": true,
+    "linkStatus": "active",
+    "httpStatus": 200,
+    "lastVerifiedAt": "2026-10-17T20:03:20.515Z",
+    "verifiedAt": "2026-10-17T20:03:20.515Z",
+    "createdAt": "2026-10-17T20:03:20.515Z",
+    "updatedAt": "2026-10-17T20:03:20.515Z"
   }
 ]
