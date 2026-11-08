@@ -165992,5 +165992,54 @@
     "verifiedAt": "2026-11-08T12:42:38.871Z",
     "createdAt": "2026-11-08T12:42:38.871Z",
     "updatedAt": "2026-11-08T12:42:38.871Z"
+  },
+  {
+    "id": "19c6c42ac236e309",
+    "title": "$6.20 to $6.76 Amazon Essentials Mens Athletic Zip Up Jacket  (sizes M, L and XL)",
+    "description": "M green $6.20 https://www.amazon.com/Amazon-Ess...th=1&psc=1",
+    "brand": "Amazon Canada",
+    "retailer": "Amazon Canada",
+    "gender": "men",
+    "sizes": [
+      "S"
+    ],
+    "originalPrice": 9.19,
+    "salePrice": 8.43,
+    "savingsPercent": 8,
+    "currency": "CAD",
+    "productUrl": "https://www.amazon.ca/dp/B0F79VNFKJ",
+    "sourceUrl": "https://slickdeals.net/f/20276202-6-20-to-6-76-amazon-essentials-mens-athletic-zip-up-jacket-sizes-m-l-and-xl",
+    "imageUrl": "https://static.slickdealscdn.com/attachment/2/1/9/3/4/6/6/300x300/22263393.thumb",
+    "category": "clothing",
+    "subcategory": "mens",
+    "tags": [
+      "amazon",
+      "essentials",
+      "mens",
+      "athletic",
+      "amazon canada",
+      "men"
+    ],
+    "keywords": [
+      "amazon",
+      "essentials",
+      "mens",
+      "athletic",
+      "zip",
+      "jacket",
+      "sizes",
+      "amazon canada",
+      "men"
+    ],
+    "couponCodes": [],
+    "source": "Verified Retailer Feed",
+    "verificationStatus": "verified",
+    "priceVerified": true,
+    "linkStatus": "active",
+    "httpStatus": 200,
+    "lastVerifiedAt": "2026-11-08T21:38:55.984Z",
+    "verifiedAt": "2026-11-08T21:38:55.984Z",
+    "createdAt": "2026-11-08T21:38:55.984Z",
+    "updatedAt": "2026-11-08T21:38:55.984Z"
   }
 ]
